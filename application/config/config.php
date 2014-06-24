@@ -14,7 +14,7 @@
  | path to your installation.
  |
  */
-$config['base_url']	="http://".$_SERVER['SERVER_NAME']."/NewLMS/";
+$config['base_url']	="http://".$_SERVER['SERVER_NAME'].":8080/NewLMS/";
 
 /*
  |--------------------------------------------------------------------------

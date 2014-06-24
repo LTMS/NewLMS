@@ -67,7 +67,7 @@
 	value='<?php echo $this->session->userdata('fullname');?>' />
 <script
 	type="text/javascript"
-	src="<?php echo base_url(); ?>js/Timesheet/timesheet.js"></script>
+	src="<?php echo base_url(); ?>js/Timesheet/timesheet_reports.js"></script>
 <script
 	type="text/javascript"
-	src="<?php echo base_url(); ?>js/custom/print.js"></script>
+	src="<?php echo base_url(); ?>js/Timesheet/timesheet_print.js"></script>
