@@ -1,12 +1,12 @@
 <?php
-class timesheet extends CI_Controller
+class timesheet_reports extends CI_Controller
 {
 
 	function __construct()
 	{
 			
 		parent::__construct();
-		$this->load->model('TimeSheet/timesheet_model');
+		$this->load->model('TimeSheet/timesheet_reports_model');
 
 		$this->load->helper('url');
 
@@ -21,7 +21,59 @@ class timesheet extends CI_Controller
 	function index()
 	{
 	}
+	function mysheet()
+	{
+		$data["menu"]='timesheet';
+		$data["submenu"]='mysheet';
+		$this->template->write('titleText', "My  Time Sheet");
+		$this->template->write_view('sideLinks', 'General/menu',$data);
+		$this->template->write_view('bodyContent', 'Timesheet/Timesheet_Reports/mysheet',$data);
+		$this->template->render();
+	}
+	
+	function user_timesheet_overall(){
+		$result= $this->input->post();
+		$data["history"]=$this->timesheet_reports_model->user_timesheet_overall($result["d1"],$result["d2"]);
+		$data["tothrs"]=$this->timesheet_reports_model->user_timesheet_overall_hrs($result["d1"],$result["d2"]);
+		$this->load->view('Timesheet/Timesheet_Reports/teamsheet_user',$data);
+	}
+	
+	function user_timesheet_jobwise(){
+		$result= $this->input->post();
+		$data["history"]=$this->timesheet_reports_model->user_timesheet_jobwise($result["d1"],$result["d2"],$result["num"]);
+		$data["tothrs"]=$this->timesheet_reports_model->user_timesheet_jobwise_hrs($result["d1"],$result["d2"],$result["num"]);
+		$this->load->view('Timesheet/Timesheet_Reports/teamsheet_jobwise_user',$data);
+	}
+	function timesheet_activity_user(){
+		$result= $this->input->post();
+		$data["history"]=$this->timesheet_reports_model->timesheet_activity_user($result["d1"],$result["d2"]);
+		$data["tothrs"]=$this->timesheet_reports_model->timesheet_activity_user_hrs($result["d1"],$result["d2"]);
+		$data["leaves"]=$this->timesheet_reports_model->showLeaves_user($result["d1"],$result["d2"]);
+		$this->load->view('Timesheet/Timesheet_Reports/timesheet_activity_user',$data);
+	}
 
+			
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	function timesheet_entry()
 	{
 			
@@ -107,16 +159,7 @@ class timesheet extends CI_Controller
 		
 		
 	 
-	function mysheet()
-	{
-		$data["menu"]='timesheet';
-		$data["submenu"]='mysheet';
 
-		$this->template->write('titleText', "My  Time Sheet");
-		$this->template->write_view('sideLinks', 'general/menu',$data);
-		$this->template->write_view('bodyContent', 'timesheet/mysheet',$data);
-		$this->template->render();
-	}
 		
 	function edit_timesheet()
 	{
@@ -234,29 +277,9 @@ class timesheet extends CI_Controller
 		
 		
 		
-	function user_timesheet_overall(){
-		$result= $this->input->post();
-		$data["history"]=$this->timesheet_model->user_timesheet_overall($result["d1"],$result["d2"]);
-		$data["tothrs"]=$this->timesheet_model->user_timesheet_overall_hrs($result["d1"],$result["d2"]);
-		$this->load->view('timesheet/teamsheet_user',$data);
-	}
-
-	function user_timesheet_jobwise(){
-		$result= $this->input->post();
-		$data["history"]=$this->timesheet_model->user_timesheet_jobwise($result["d1"],$result["d2"],$result["num"]);
-		$data["tothrs"]=$this->timesheet_model->user_timesheet_jobwise_hrs($result["d1"],$result["d2"],$result["num"]);
-		$this->load->view('timesheet/teamsheet_jobwise_user',$data);
-	}
-		
-	function timesheet_activity_user(){
-		$result= $this->input->post();
-		$data["history"]=$this->timesheet_model->timesheet_activity_user($result["d1"],$result["d2"]);
-		$data["tothrs"]=$this->timesheet_model->timesheet_activity_user_hrs($result["d1"],$result["d2"]);
-		$data["leaves"]=$this->timesheet_model->showLeaves_user($result["d1"],$result["d2"]);
-		$this->load->view('timesheet/timesheet_activity_user',$data);
-	}
-
-		
+	
+	
+	
 		
 		
 		

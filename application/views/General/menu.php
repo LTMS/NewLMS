@@ -38,7 +38,7 @@
 			<ul style="display: block;">
 					<?php if($this->session->userdata('Emp_Role')=='Engineer' || $this->session->userdata('Emp_Role')=='teamleader' || $this->session->userdata('Emp_Role')=='admin'){ ?>	
     	  			<li><a href="<?php echo site_url("Timesheet/timesheet_entry/entry"); ?>" <?php if ($submenu=='entry'){?>class="current"<?php }?> >Time Sheet Entry</a></li>
-    				<li><a href="<?php echo site_url("Timesheet/timesheet/mysheet"); ?>" <?php if ($submenu=='mysheet'){?>class="current"<?php }?> >My Time Sheet Report</a></li>
+    				<li><a href="<?php echo site_url("Timesheet/timesheet_reports/mysheet"); ?>" <?php if ($submenu=='mysheet'){?>class="current"<?php }?> >My Time Sheet Report</a></li>
     				<li><a href="<?php echo site_url("Timesheet/overtime/my_ot"); ?>" <?php if ($submenu=='my_ot'){?>class="current"<?php }?> >My Over Time Details</a></li>
     				<li><a href="<?php echo site_url("Timesheet/overtime/my_otsummary"); ?>" <?php if ($submenu=='my_otsummary'){?>class="current"<?php }?> >My Over Time Summary</a></li>
     				
