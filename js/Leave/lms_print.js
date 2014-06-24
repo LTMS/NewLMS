@@ -4,26 +4,19 @@ function printLeaveHistory(){
 		
 			var disp_setting="toolbar=yes,location=no,directories=yes,menubar=yes,";
 			disp_setting+="scrollbars=yes,width=700, height=500, left=10, top=25";
-			var sdate=document.getElementById("date_from").value;
-			var edate=document.getElementById("date_to").value;
-			var emp = document.getElementById('report_option').value;
 			
-			
+			var txt = document.getElementById("report_option").value;
 			var content_value = document.getElementById("normal_report").innerHTML;
-			var docprint=window.open("","",disp_setting);
+				var docprint=window.open("","",disp_setting);
 			docprint.document.open();
 			docprint.document.write('<html><head>');
 			docprint.document.write('</head><body onLoad="self.print()"><center>');
 			
 			docprint.document.write("<table align='center' width='100%'><tr style='font-size:20px;color:black;font-weight:bolder'><td align='center'>PREIPOLAR ENGINEERING PRIVATE LIMITED</td></td></tr></table>");
 			docprint.document.write("<table align='center' width='100%'><tr style='font-size:16px;color:black;font-weight:bolder;background:white'><td align='center'>M-17, SIPCOT, Hi-Tech, SEZ, Sriperumbudur, Sunguvarchathiram, Kanchipuram 602105 - India</td></tr></table>");
-			docprint.document.write("<p align='center' style='font-size:16px;color: black;font-weight:bold;'> "+emp+"</p>");
-						docprint.document.write("");
-			if(sdate!='' && edate!=''){
-				docprint.document.write("<p align='left' style='font-size:15px;color: black;font-weight:bold;'> Date From "+sdate+" To "+edate+"</p>");
-				}
-			docprint.document.write(content_value);
-			
+			docprint.document.write("<p align='center' style='font-size:16px;color: black;font-weight:bold;'> "+txt+"</p>");
+			docprint.document.write("");
+			docprint.document.write(content_value);			
 			docprint.document.write('</center></body></html>');
 			docprint.document.close();
 			docprint.focus();

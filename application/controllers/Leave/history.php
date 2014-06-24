@@ -221,7 +221,7 @@ class History extends CI_Controller
 
 	function my_leavehistory_general_filter(){
 		$form_data = $this->input->post();
-		$data["result"]=$this->history_model->my_leavehistory_general_filter($form_data["year"],$form_data["emp"],$form_data["leave"]);
+		$data["result"]=$this->history_model->my_leavehistory_general_filter($form_data["year"],$form_data["leave"]);
 		$this->load->view('Leave/History/my_leavehistory_general',$data);
 		$this->load->view('Leave/History/my_leavehistory_general_print',$data);
 	}

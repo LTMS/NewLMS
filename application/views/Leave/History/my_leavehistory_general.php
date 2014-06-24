@@ -2,6 +2,7 @@
 				<?php
 				
 				print("<table   valign='top' border='1' align='left' cellpadding='1' cellspacing='1'  class='alt_row' style='border-collapse:collapse;overflow-y:scroll;'>");
+				print("<tr  style='font-size:14px;font-weight:bold;color:black;'><td id='title_row' colspan='10'></td></tr>");
 				print("<tr id='hdr_row' style='font-size:14px;font-weight:bold;background-color:#EAF1FB;color:black;border-right:1px solid black; '>");
 				print("<td width='1%' align='center'>S.No</td>");
 				print("<td width='8%' align='center'>Leave Type</td>");
@@ -55,4 +56,4 @@
 				<input type='hidden' value=''		id='type'>
 				<input type='hidden' value=''	id='uname'>
 				<input type='hidden' value=''	id='days'>
-				<script	type="text/javascript" src="<?php echo base_url(); ?>js/Leave/print.js"></script>
+	

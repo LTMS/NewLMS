@@ -78,4 +78,4 @@
 				<input type='hidden' value=''	id='type'>
 				<input type='hidden' value=''	id='uname'>
 				<input type='hidden' value=''	id='days'>
-				<script	type="text/javascript" src="<?php echo base_url(); ?>js/Leave/print.js"></script>
+	
