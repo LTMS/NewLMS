@@ -1,0 +1,270 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Rule Engine</title>
+
+<!-- Easy UI -->
+<link rel="stylesheet" type="text/css" href="themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="themes/icon.css">
+<script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="js/jquery.easyui.min.js"></script>
+
+<link rel="stylesheet" type="text/css"
+	href="jsoneditor/jsoneditor-min.css">
+<script type="text/javascript" src="jsoneditor/jsoneditor-min.js"></script>
+
+<script>
+	var editor = null;
+	
+	$(function(){
+		
+		$('#ruleNav').tree({
+			url:'php/rule_nav.php',
+			onClick: function(node){
+				if($(this).tree('isLeaf',node.target)){
+					var container = document.getElementById('jsoneditor');
+				      editor = new JSONEditor(container);
+					var file_name=node.text;
+					document.getElementById("url").value=file_name;
+					var id =node.id;
+					document.getElementById("file_id").value=id;
+					var url = "php/load_json.php?id="+id;
+				      $.ajax({
+				        'type': 'GET',
+				        'url': url,
+				        'dataType': 'json',
+				        'success': function (doc) {
+				          editor.set(doc);
+				        }
+				      });
+				}
+				else
+					{
+					$(this).tree('toggle', node.target);		
+					}},
+			onContextMenu: function(e,node){
+				e.preventDefault();
+				$(this).tree('select',node.target);
+				if($(this).tree('isLeaf',node.target)){
+					$('#childMenu').menu('show',{
+						left: e.pageX,
+						top: e.pageY
+					});
+				}else{					
+					$('#parentMenu').menu('show',{
+						left: e.pageX,
+						top: e.pageY
+					});
+				}
+			},
+			onAfterEdit: function(node){
+				var id =node.id;
+				var name =node.text;
+				 $.get("php/rename.php?name="+name+"&id="+id, function(result){
+				       alert(result);
+			    	  });
+			},
+			onDblClick: function(node){$(this).tree('beginEdit',node.target);
+			},
+			onLoadSuccess:function(node, data){
+                alert(data);
+            }
+		});
+		 
+	});
+		function rename(){
+			var node = $('#ruleNav').tree('getSelected');
+			$('#ruleNav').tree('beginEdit',node.target);
+			
+		}
+		function collapse(){
+			var node = $('#ruleNav').tree('getSelected');
+			$('#ruleNav').tree('collapse',node.target);
+		}
+		function expand(){
+			var node = $('#ruleNav').tree('getSelected');
+			$('#ruleNav').tree('expand',node.target);
+		}
+		
+		function appendFolder(){
+			var node = $('#ruleNav').tree('getSelected');
+			var pid=node.id;
+			$('#ruleNav').tree('append',{
+				parent: (node?node.target:null),
+				data:[{
+					text:'NewFolder',
+					children:[{
+						text:'NewFile'
+					}]
+				}]
+			});
+
+			 $.get("php/append_folder.php?pid="+pid, function(result){
+				 var response=result.split("::");
+				 if(response[0]=="OK"){
+					 document.getElementById("file_id").value=response[1]
+						$('#ruleNav').tree('reload', node.target);
+			    	    alert("Add folder");
+			    	 	 
+				 }
+				 else
+				 alert(response);
+
+				  });
+		}
+		
+		function appendFile(){
+			var node = $('#ruleNav').tree('getSelected');
+			var pid=node.id;
+			$('#ruleNav').tree('append',{
+				parent: (node?node.target:null),
+				data:[{	text:'NewFile'	}]
+			});
+			 $.get("php/append_file.php?pid="+pid, function(result){
+				 document.getElementById("file_id").value=result
+					$('#ruleNav').tree('reload', node.target);
+		    	    alert("Add file");
+		    	  });
+
+		}
+		function remove(){
+			var node = $('#ruleNav').tree('getSelected');
+			$('#ruleNav').tree('remove', node.target);
+			var pid=node.id;
+			 $.get("php/remove.php?pid="+pid, function(result){
+		    	    alert(result);
+		    	  });
+		}
+		
+
+	    function init() {
+	      var container = document.getElementById('jsoneditor');
+	      editor = new JSONEditor(container);
+	     
+	      document.getElementById('url').focus();
+	    }
+	    
+	    function load() {
+	      var url = document.getElementById("url").value;
+	      $.ajax({
+	        'type': 'GET',
+	        'url': url,
+	        'dataType': 'json',
+	        'success': function (doc) {
+	          editor.set(doc);
+	        }
+	      });
+	    }
+	    
+	    function save() {
+
+		    
+	    	var doc = editor.get();
+	      var file_id = document.getElementById("file_id").value;
+	     // alert(file_id);
+	      var text=JSON.stringify(doc);
+	       $.get("php/json_file.php?text="+text+"&file_id="+file_id, function(result){
+	    	    alert(result);
+	    	  });
+	    }
+	</script>
+</head>
+<body onload="init()" class="easyui-layout">
+	<div data-options="region:'north',border:false"
+		style="height: 30px; background: #B3DFDA;">
+		<div
+			style="background: url('themes/default/images/tabs_enabled.png') repeat-x left top; width: 100%; height: 30px;">
+			<a href="javascript:void(0)" id="mb1" class="easyui-menubutton"
+				data-options="menu:'#mm1'">File</a> <a href="javascript:void(0)"
+				id="mb2" class="easyui-menubutton" data-options="menu:'#mm2'">New</a>
+			<a href="javascript:void(0)" id="mb3" class="easyui-menubutton"
+				data-options="menu:'#mm3'">Rule</a> <a href="javascript:void(0)"
+				id="mb4" class="easyui-menubutton" data-options="menu:'#mm4'">Folder</a>
+			<a href="javascript:void(0)" id="mb5" class="easyui-menubutton"
+				data-options="menu:'#mm5'">Local Variable</a>
+		</div>
+		<div id="mm1" style="width: 150px;">
+			<div>Save</div>
+			<div>Save As</div>
+			<div>Print</div>
+			<div>Log Out</div>
+		</div>
+		<div id="mm2" style="width: 100px;">
+			<div>Rule</div>
+			<div>Folder</div>
+		</div>
+		<div id="mm3" style="width: 100px;">
+			<div>Open</div>
+			<div>List</div>
+			<div>Rename</div>
+			<div>Move</div>
+			<div>Invoke Rule</div>
+		</div>
+		<div id="mm4" style="width: 100px;">
+			<div>List</div>
+			<div>Move</div>
+		</div>
+		<div id="mm5" style="width: 100px;">
+			<div>Open</div>
+			<div>List</div>
+			<div>Rename</div>
+			<div>Move</div>
+			<div>Invoke Rule</div>
+		</div>
+	</div>
+	<div data-options="region:'west',split:true,title:'Navigation'"
+		style="width: 200px; padding: 10px;">
+		<div id="container">
+			<ul id="ruleNav" class="easyui-tree">
+			</ul>
+			<!--<div id="ruleNav"></div>-->
+			<div id="parentMenu" class="easyui-menu" style="width: 120px;">
+				<div onclick="appendFile()" data-options="iconCls:'icon-new-list'">Add
+					File</div>
+				<div onclick="appendFolder()"
+					data-options="iconCls:'icon-new-folder'">Add Folder</div>
+				<div onclick="remove()" data-options="iconCls:'icon-no'">Remove</div>
+				<div onclick="rename()" data-options="iconCls:'icon-new'">Rename</div>
+				<div class="menu-sep"></div>
+				<div onclick="expand()">Expand</div>
+				<div onclick="collapse()">Collapse</div>
+			</div>
+			<div id="childMenu" class="easyui-menu" style="width: 120px;">
+				<div onclick="remove()" data-options="iconCls:'icon-no'">Remove</div>
+				<div onclick="rename()" data-options="iconCls:'icon-new'">Rename</div>
+			</div>
+		</div>
+	</div>
+	<div
+		data-options="region:'east',split:true,collapsed:true,title:'Variables'"
+		style="width: 150px; padding: 10px;">east region</div>
+	<div
+		data-options="region:'south',split:true,collapsed:true,title:'Output'"
+		style="height: 100px; padding: 10px;">south region</div>
+	<div data-options="region:'center'">
+		<table align="center" width="100%" height="100%">
+			<tr>
+				<td style="height: 30px;">
+					<table width="100%">
+						<col width="100px"></col>
+						<col></col>
+						<col width="50px"></col>
+						<col width="50px"></col>
+						<tr>
+							<td>File Name:</td>
+							<td><input type="text" id="url" style="width: 100%;"
+								readonly='readonly'>
+							</td>
+							<td><input type="button" value="Save" onclick="save();" />
+							</td>
+						</tr>
+					</table></td>
+			</tr>
+			<tr>
+				<td valign="top" id="jsoneditor"></td>
+			</tr>
+		</table>
+	</div>
+	<input type="hidden" id='file_id'>
+</body>
+</html>

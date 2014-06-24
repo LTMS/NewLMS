@@ -1,0 +1,17 @@
+[12-Jan-2014 22:37:02 America/Chicago] PHP Parse error:  syntax error, unexpected T_VARIABLE in /home/deastech/public_html/LMS/application/controllers/lms.php on line 295
+[12-Jan-2014 22:37:05 America/Chicago] PHP Parse error:  syntax error, unexpected T_VARIABLE in /home/deastech/public_html/LMS/application/controllers/lms.php on line 295
+[12-Jan-2014 22:37:09 America/Chicago] PHP Parse error:  syntax error, unexpected T_VARIABLE in /home/deastech/public_html/LMS/application/controllers/lms.php on line 295
+[12-Jan-2014 22:37:30 America/Chicago] PHP Parse error:  syntax error, unexpected T_VARIABLE in /home/deastech/public_html/LMS/application/controllers/lms.php on line 295
+[12-Jan-2014 22:38:48 America/Chicago] PHP Parse error:  syntax error, unexpected T_VARIABLE in /home/deastech/public_html/LMS/application/controllers/lms.php on line 294
+[12-Jan-2014 22:38:51 America/Chicago] PHP Parse error:  syntax error, unexpected T_VARIABLE in /home/deastech/public_html/LMS/application/controllers/lms.php on line 294
+[12-Jan-2014 22:39:19 America/Chicago] PHP Parse error:  syntax error, unexpected T_VARIABLE in /home/deastech/public_html/LMS/application/controllers/lms.php on line 294
+[13-Jan-2014 04:37:33 America/Chicago] PHP Parse error:  syntax error, unexpected ';' in /home/deastech/public_html/LMS/application/controllers/lms.php on line 302
+[13-Jan-2014 04:37:36 America/Chicago] PHP Parse error:  syntax error, unexpected ';' in /home/deastech/public_html/LMS/application/controllers/lms.php on line 302
+[16-Jan-2014 07:52:19 America/Chicago] PHP Parse error:  syntax error, unexpected T_OBJECT_OPERATOR in /home/deastech/public_html/LMS/application/controllers/lms.php on line 188
+[16-Jan-2014 07:53:00 America/Chicago] PHP Parse error:  syntax error, unexpected T_OBJECT_OPERATOR in /home/deastech/public_html/LMS/application/controllers/lms.php on line 188
+[16-Jan-2014 07:54:39 America/Chicago] PHP Fatal error:  Call to undefined function resultmail() in /home/deastech/public_html/LMS/application/controllers/lms.php on line 188
+[16-Jan-2014 07:54:48 America/Chicago] PHP Fatal error:  Call to undefined function resultmail() in /home/deastech/public_html/LMS/application/controllers/lms.php on line 188
+[28-Jan-2014 05:53:05 America/Chicago] PHP Parse error:  syntax error, unexpected '>', expecting T_STRING or T_VARIABLE or '{' or '$' in /home/deastech/public_html/LMS/application/controllers/lms.php on line 10
+[28-Jan-2014 05:53:08 America/Chicago] PHP Parse error:  syntax error, unexpected '>', expecting T_STRING or T_VARIABLE or '{' or '$' in /home/deastech/public_html/LMS/application/controllers/lms.php on line 10
+[28-Jan-2014 05:53:21 America/Chicago] PHP Parse error:  syntax error, unexpected '>', expecting T_STRING or T_VARIABLE or '{' or '$' in /home/deastech/public_html/LMS/application/controllers/lms.php on line 10
+[28-Jan-2014 05:53:44 America/Chicago] PHP Parse error:  syntax error, unexpected '>', expecting T_STRING or T_VARIABLE or '{' or '$' in /home/deastech/public_html/LMS/application/controllers/lms.php on line 10

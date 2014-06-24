@@ -1,0 +1,34 @@
+{
+  "rl:Rule": {
+    "-xmlns:rl": "http://www.example.org/RulesSchema",
+    "rl.ruleName": "00271-CLAIMANT INELIGIBLE FOR DOS",
+    "rl:conditionWithBlock": {
+      "-condition": "all",
+      "rl:stringOpr": {
+        "-condition": "equal",
+        "-left": "Claim Type",
+        "-right": "I"
+      },
+      "rl:matchCondition": {
+        "rl:conditionWithBlock": {
+          "-condition": "all",
+          "rl:event": {
+            "-eventId": "IsClaimanTEligibleForDOS",
+            "rl:parameter": [
+              "Claim From DOS",
+              "Claim Through DOS"
+            ]
+          },
+          "rl:matchCondition": {
+            "rl:event": {
+              "-eventId": "PostAtHeader",
+              "rl:parameter": "00271"
+            }
+          },
+          "rl:elseCondition": ""
+        }
+      },
+      "rl:elseCondition": ""
+    }
+  }
+}

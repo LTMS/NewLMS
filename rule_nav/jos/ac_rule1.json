@@ -1,0 +1,26 @@
+{
+  "rl:Rule": {
+    "-xmlns:rl": "http://www.example.org/RulesSchema",
+    "rl.ruleName": "00205-DOS LESS THAN DATE OF INJURY",
+    "rl:conditionWithBlock": {
+      "-condition": "all",
+      "rl:stringOpr": {
+        "-condition": "equal",
+        "-left": "Program",
+        "-right": "DFEC"
+      },
+      "rl:dateOpr": {
+        "-condition": "lesserThan",
+        "-left": "Line Service From Date",
+        "-right": "Date of Injury"
+      },
+      "rl:matchCondition": {
+        "rl:event": {
+          "-eventId": "PostAtLine",
+          "rl:parameter": "00205"
+        }
+      },
+      "rl:elseCondition": ""
+    }
+  }
+}

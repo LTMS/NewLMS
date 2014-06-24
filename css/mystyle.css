@@ -1,0 +1,218 @@
+@CHARSET "ISO-8859-1";
+
+.tab_header_bg {
+	color: black;
+	background-color: #dddddd;
+	font-size: 15px;
+}
+
+.alt_row tr:nth-child(even) {
+	background-color: WHITE;
+	color: #2E2E2E;
+}
+
+.alt_row tr:nth-child(odd) {
+	background-color: #EEEEEE;
+	color: #2E2E2E;
+}
+
+.datefld_txt {
+	width: 100%;
+	border: none;
+	background: white;
+	font-weight: bolder;
+	color: #3090C7;
+}
+
+.td_rows {
+	background-color: #eee;
+	color: #3090C7;
+	font-weight: bold;
+}
+
+.plain_txt {
+	width: 100%;
+	border: none;
+	background: none;
+	font-weight: bold;
+	font-size: 12px;
+	color: #0e8c3a;
+	overflow: hidden;
+	resize: none;
+	-webkit-appearance: none;
+}
+/*.input
+	{
+	border:1px solid #d0d0d0;
+	background:#f0f0f0;
+	color:#7e2217;
+	} */
+.dropdown {
+	padding: 0px;
+	border: 1px solid #d0d0d0;
+	background: #f0f0f0;
+	color: #7e2217;
+}
+
+.link {
+	display: inline-block;
+	margin-left: 80px;
+}
+
+.link:focus {
+	height: 60px;
+	width: 60px;
+	border: 2px solid #52d017
+}
+
+.print {
+	height: 60px;
+	width: 60px;
+}
+
+.add {
+	height: 20px;
+	width: 20px;
+}
+
+.add_link {
+	display: inline-block;
+}
+
+.add_link:focus {
+	height: 20px;
+	width: 20px;
+	border: 1px solid #52d017
+}
+
+.radio:checked+label {
+	font-size: 12px;
+	color: white;
+}
+
+​ /*.button {
+	font-family: Arial, Helvetica, sans-serif;
+	display: inline-block;
+	background: #053883 url('../images/bg-button-green.gif') top left repeat-x !important;
+	border: 1px solid #053883 !important;
+	padding: 4px 7px 4px 7px !important;
+	color: #fff !important;
+	font-size: 14px !important;
+	cursor: pointer;
+}
+.button:active {
+	padding: 8px 7px 4px 9px !important;
+}*/ 
+input[type="text"] {
+	padding: 0px 0px 0px 5px;
+}
+
+input[type="text"]:focus {
+	outline: 1px SOLID #ffe87c;
+}
+
+input[type="password"] {
+	padding: 0px 0px 0px 5px;
+}
+
+input[type="password"]:focus {
+	outline: 1px SOLID #ffe87c;
+}
+
+.font_align {
+	font-size: 17px;
+}
+
+textarea:focus {
+	outline: 1px SOLID #ffe87c;
+}
+/*.txtarea
+	{
+	resize:none;
+	overflow:hidden;
+	color:#7e2217;
+	border:1px solid #d0d0d0;
+	background:#f0f0f0;
+	}*/
+.drop {
+	padding: 3px;
+	margin: 0;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	background: #eee;
+	color: #0e8c3a;
+	border: none;
+	outline: none;
+	display: inline-block;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	cursor: pointer;
+}
+
+/* Targetting Webkit browsers only. FF will show the dropdown arrow with so much padding. */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+	.drop {
+		padding-right: 40px
+	}
+}
+
+.lab {
+	position: relative
+}
+
+.lab:after {
+	content: '>';
+	font: 14px "Consolas", monospace;
+	color: #000000;
+	-webkit-transform: rotate(90deg);
+	-moz-transform: rotate(90deg);
+	-ms-transform: rotate(90deg);
+	transform: rotate(90deg);
+	right: 11px;
+	top: 0px;
+	padding: 0 0 0px;
+	border-bottom: 1px solid #ddd;
+	position: absolute;
+	pointer-events: none;
+}
+
+.lab:before {
+	content: '';
+	right: 6px;
+	top: 0px;
+	width: 10px;
+	height: 20px;
+	background: #eee;
+	position: absolute;
+	pointer-events: none;
+	display: block;
+}
+
+.small {
+	width: 100%;
+	border: none;
+	font-weight: bold;
+	font-size: 12px;
+	color: #0e8c3a;
+	background-color: #eee;
+}
+
+.cati {
+	margin-top: 0px;
+	margin-left: 10px;
+	background-color: #79cdcd;
+	width: 140px;
+	moz-border-radius: 10px;
+	webkit-border-radius: 10px;
+	border-radius: 3px;
+	border: 0px solid;
+	display: none;
+}
+
+.ui-autocomplete {
+	max-height: 150px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}

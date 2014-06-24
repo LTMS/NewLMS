@@ -1,0 +1,22 @@
+[{
+	"id":1,
+	"text":"JSON",
+	"children":[{
+		"id":2,
+		"text":"nav_data",
+		"checked":true
+	},{
+		"id":3,
+		"text":"Folder2",
+		"state":"open",
+		"children":[{
+			"id":4,
+			"text":"File3",
+			"attributes":{
+				"p1":"value1",
+				"p2":"value2"
+			},
+			"checked":true
+		}]
+	}]
+}]
