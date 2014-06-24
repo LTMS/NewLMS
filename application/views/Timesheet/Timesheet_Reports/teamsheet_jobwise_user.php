@@ -53,5 +53,4 @@ if($counter!=0){
 
 
 	<?php }?>
-<script
-	type="text/javascript" src="<?php echo base_url(); ?>js/custom/lms.js"></script>
+

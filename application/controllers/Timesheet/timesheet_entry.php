@@ -60,7 +60,20 @@ class timesheet_entry extends CI_Controller
 		$col=$this->timesheet_entry_model->get_INOUT($result["d1"]);
 		echo $col;
 	}
-	
+
+	function intro_admin()
+	{
+		$data["menu"]='e_reports';
+		$data["submenu"]='tms_intro';
+		$data["activity"]=$this->timesheet_entry_model->get_activity_code();
+		$data["job"]=$this->timesheet_entry_model->get_jobs();
+		$data["np"]=$this->timesheet_entry_model->get_np_jobs();
+			
+		$this->template->write('titleText', "Time Sheet  Entry");
+		$this->template->write_view('sideLinks', 'general/menu',$data);
+		$this->template->write_view('bodyContent', 'timesheet/Timesheet_Entry/tms_intro',$data);
+		$this->template->render();
+	}
 	
 	
 	
@@ -83,19 +96,6 @@ class timesheet_entry extends CI_Controller
 		$this->template->render();
 	}
 
-	function intro_admin()
-	{
-		$data["menu"]='e_reports';
-		$data["submenu"]='tms_intro';
-		$data["activity"]=$this->timesheet_model->get_activity_code();
-		$data["job"]=$this->timesheet_model->get_jobs();
-		$data["np"]=$this->timesheet_model->get_np_jobs();
-			
-		$this->template->write('titleText', "Time Sheet  Entry");
-		$this->template->write_view('sideLinks', 'general/menu',$data);
-		$this->template->write_view('bodyContent', 'timesheet/tms_intro',$data);
-		$this->template->render();
-	}
 
 	function teamsheet()
 	{

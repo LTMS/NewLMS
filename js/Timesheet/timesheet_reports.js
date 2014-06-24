@@ -47,7 +47,36 @@ function user_timesheet_jobwise(){
 		}	
 }
 
+function timesheet_job_activity_user(){
+	var date1 = document.getElementById('date_from').value;
+	var date2 = document.getElementById('date_to').value;
+	var uname=document.getElementById('emp_name').value;
+	document.getElementById('report_option').value="Job Activities Report of "+uname;
+	document.getElementById('getjob').style.display="";
+	document.getElementById('getjob').style.display="none";
+	document.getElementById('getjob').value="";
 
+				$.post(site_url+"/Timesheet/timesheet_reports/timesheet_job_activity_user",{d1:date1,d2:date2},function(data){							
+							$("#contentData").html("");
+							$("#contentData").append(data);
+					});	
+						
+}
+function timesheet_activity_user(){
+	var date1 = document.getElementById('date_from').value;
+	var date2 = document.getElementById('date_to').value;
+	var uname=document.getElementById('emp_name').value;
+	document.getElementById('report_option').value="Time Activities Report of "+uname;
+	document.getElementById('getjob').style.display="";
+	document.getElementById('getjob').style.display="none";
+	document.getElementById('getjob').value="";
+
+				$.post(site_url+"/Timesheet/timesheet_reports/timesheet_activity_user",{d1:date1,d2:date2},function(data){							
+							$("#contentData").html("");
+							$("#contentData").append(data);
+					});	
+						
+}
 
 
 
@@ -458,22 +487,7 @@ function user_timesheet_jobwise(){
 		
 			
 			
-			function timesheet_activity_user(){
-				var date1 = document.getElementById('date_from').value;
-				var date2 = document.getElementById('date_to').value;
-				var uname=document.getElementById('emp_name').value;
-				document.getElementById('report_option').value="Time Activities Report of "+uname;
-				document.getElementById('getjob').style.display="";
-				document.getElementById('getjob').style.display="none";
-				document.getElementById('getjob').value="";
 			
-							$.post(site_url+"/Timesheet/timesheet/timesheet_activity_user",{d1:date1,d2:date2},function(data){							
-										$("#contentData").html("");
-										$("#contentData").append(data);
-								});	
-									
-			}
-
 				
 			function team_timesheet_overall(){
 				var date1 = document.getElementById('date_from').value;
@@ -923,21 +937,7 @@ function user_timesheet_jobwise(){
 			
 			
 			
-			function timesheet_job_activity_user(){
-				var date1 = document.getElementById('date_from').value;
-				var date2 = document.getElementById('date_to').value;
-				var uname=document.getElementById('emp_name').value;
-				document.getElementById('report_option').value="Job Activities Report of "+uname;
-				document.getElementById('getjob').style.display="";
-				document.getElementById('getjob').style.display="none";
-				document.getElementById('getjob').value="";
-			
-							$.post(site_url+"/Timesheet/timesheet/timesheet_job_activity_user",{d1:date1,d2:date2},function(data){							
-										$("#contentData").html("");
-										$("#contentData").append(data);
-								});	
-									
-			}
+		
 			
 			function timesheet_job_activity_emp(){
 				var date1 = document.getElementById('date_from').value;

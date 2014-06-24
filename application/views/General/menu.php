@@ -42,7 +42,7 @@
     				<li><a href="<?php echo site_url("Timesheet/overtime/my_ot"); ?>" <?php if ($submenu=='my_ot'){?>class="current"<?php }?> >My Over Time Details</a></li>
     				<li><a href="<?php echo site_url("Timesheet/overtime/my_otsummary"); ?>" <?php if ($submenu=='my_otsummary'){?>class="current"<?php }?> >My Over Time Summary</a></li>
     				
- 		   			<li><a href="<?php echo site_url("Timesheet/timesheet/intro_admin"); ?>" <?php if ($submenu=='tms_intro'){?>class="current"<?php }?> >Time Sheet Criteria</a></li>
+ 		   			<li><a href="<?php echo site_url("Timesheet/timesheet_entry/intro_admin"); ?>" <?php if ($submenu=='tms_intro'){?>class="current"<?php }?> >Time Sheet Criteria</a></li>
 				
     				<?php }?>
 					<?php if( $this->session->userdata('Emp_Role')=='teamleader'){ ?>	
