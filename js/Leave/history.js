@@ -220,18 +220,27 @@
 							}
 							var year1=document.getElementById('year').value;
 							var month1=document.getElementById('month').value;
-						
+							var emp_name=document.getElementById('month').value;
+							if(month1=="All"){
+								var date_txt=year1;
+							}
+							else{
+								var date_txt=month1+" - "+year1;
+							}
 									
 									if(year1!=""  && leave1=="All"){
 												$.post(site_url+"/Leave/history/my_leavehistory_general_all",{year:year1,month:month1},function(data){
 															//alert(data);
+															document.getElementById('report_option').value=emp_name+" Leave History for "+date_txt;
 															$("#contentData").html("");
 															$("#contentData").append(data);
+															
 													});
 										}
 									if(year1!=""  && leave1!="All"){
+												document.getElementById('report_option').value=emp_name+" Leave History of  " +leave1+" for "+year1;
 												$.post(site_url+"/Leave/history/my_leavehistory_general_filter",{year:year1,month:month1,leave:leave1},function(data){
-															//alert(data);
+															//alert(month1);
 															$("#contentData").html("");
 															$("#contentData").append(data);
 												});
@@ -248,6 +257,7 @@
 							if(year1!=""){
 											$.post(site_url+"/Leave/history/my_leavehistory_approved",{year:year1},function(data){
 													//alert(data);
+															document.getElementById('report_option').value=emp_name+" Leave History [ Approved ] for "+year1;
 															$("#contentData").html("");
 															$("#contentData").append(data);
 												});

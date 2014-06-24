@@ -18,8 +18,8 @@
 					print("<td  align='center'>".date("d-m-Y", strtotime($openrow["From_Date"]))."</td>");
 					print("<td  align='center'>".$openrow["Leave_Type"]."</td>");
 					print("<td  align='center'>".$openrow["Total_Days"]."</td>");
-					print("<td  align='left'>".$openrow["Reported_By"]."</td>");
-					print("<td  align='left'>".$openrow["Approved_By"]."</td>");
+					print("<td  align='center'>".$openrow["Reported_By"]."</td>");
+					print("<td  align='center'>".$openrow["Approved_By"]."</td>");
 					print("<td  align='left'>".$openrow["Reason"]."</td>");
 					print("</tr>");
 				}

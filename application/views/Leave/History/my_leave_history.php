@@ -86,10 +86,9 @@
 
 	</table>
 	<hr width="100%">
-	
 	<div id="contentData" style="height: 640px; overflow: scroll;"></div>
-	
-</div>
+	</div>
 <input type="hidden"	id="report_option" value="" />
+<input type="hidden"	id="emp_name" value="<?php echo $this->session->userdata('Emp_Name');?>" />
 <script	type="text/javascript" src="<?php echo base_url(); ?>js/Leave/history.js"></script>
-<script	type="text/javascript"	src="<?php echo base_url(); ?>js/Leave/print.js"></script>
+<script	type="text/javascript"	src="<?php echo base_url(); ?>js/Leave/lms_print.js"></script>
