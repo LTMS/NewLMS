@@ -410,4 +410,5 @@
 <input id="out_date"
 	type="hidden" value="" />
 
-
+<script type="text/javascript"
+	src="<?php echo base_url(); ?>js/Timesheet/timesheet_entry.js"> </script>

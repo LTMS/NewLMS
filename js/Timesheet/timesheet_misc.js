@@ -14,6 +14,185 @@ $("#date_to").datepicker({
 });
 
 
+function check_job(job1){ 
+	document.getElementById('error1').style.display="none";
+	document.getElementById('row_job1').style.display="";
+	document.getElementById("job_no").removeAttribute("readonly",1);
+	document.getElementById("job_desc").removeAttribute("readonly",1);
+	document.getElementById("job_desc").value="";
+
+		if(job1!=""){
+	$.post(site_url+"/Timesheet/timesheet_misc/check_job",{job:job1},function(data1){			
+		//alert(data1);
+				if(data1!=""){
+					document.getElementById('error1').style.display="";
+					document.getElementById('row_job1').style.display="none";
+					document.getElementById('job_desc').value=data1;				
+					document.getElementById("job_desc").setAttribute("readonly",1);
+						}	
+				else{
+					$.post(site_url+"/Timesheet/timesheet_misc/fetch_job",{job:job1},function(data){										
+						document.getElementById('job_no').value=job1;
+						document.getElementById('job_desc').value=data;
+						document.getElementById("job_no").removeAttribute("readonly",1);
+						document.getElementById("job_desc").removeAttribute("readonly",1);
+				
+					});						
+		}
+		});	
+	}
+	
+}
+
+
+function add_job(type1){
+	
+	if(type1=='1'){
+		var job_no = document.getElementById("job_no").value;
+		var desc1 = document.getElementById("job_desc").value;
+		
+		}
+	
+	if(type1=='2'){
+		var job_no = document.getElementById("npjob_no").value;
+		var desc1 = document.getElementById("npjob_desc").value;
+		}
+	
+	
+	if(job_no !="" && desc1 !=""){
+		$.post(site_url+"/Timesheet/timesheet_misc/add_jobs/",{num:job_no,desc:desc1,type:type1},function(result){
+			window.location.reload();
+			//alert(result);
+	});
+	
+	}
+		
+}
+
+function update_job(type1){
+	
+	if(type1=='1'){
+		var job_no = document.getElementById("job_no").value;
+		var desc1 = document.getElementById("job_desc").value;
+		var id1 = document.getElementById("edit_id1").value;
+			
+		}
+	
+	if(type1=='2'){
+		var job_no = document.getElementById("npjob_no").value;
+		var desc1 = document.getElementById("npjob_desc").value;
+		var id1 = document.getElementById("edit_id2").value;
+			}
+	
+	
+	if(job_no !="" && desc1 !=""){
+		$.post(site_url+"/Timesheet/timesheet_misc/update_jobs/",{num:job_no,desc:desc1,type:type1,id:id1},function(result){
+			window.location.reload();
+	});
+	
+	}
+		
+}
+
+function check_npjob(job1){
+	document.getElementById('error2').style.display="none";
+	document.getElementById('row_npjob1').style.display="";
+	document.getElementById("npjob_no").removeAttribute("readonly",0);
+	document.getElementById("npjob_desc").removeAttribute("readonly",0);
+	document.getElementById("npjob_desc").value="";
+
+	if(job1!=""){
+		$.post(site_url+"/Timesheet/timesheet_misc/check_npjob",{job:job1},function(data1){			
+			//alert(data);
+					if(data1!=""){
+						document.getElementById('error2').style.display="";
+						document.getElementById('row_npjob1').style.display="none";
+						document.getElementById('npjob_desc').value=data1;									
+						document.getElementById("npjob_desc").setAttribute("readonly",1);
+						}	
+					else{
+						$.post(site_url+"/Timesheet/timesheet_misc/fetch_npjob",{job:job1},function(data){										
+							document.getElementById('npjob_no').value=job1;
+							document.getElementById('npjob_desc').value=data;
+							document.getElementById("npjob_no").removeAttribute("readonly",1);
+							document.getElementById("npjob_desc").removeAttribute("readonly",1);
+				
+						});						
+			}
+			});	
+		}
+		
+	}
+function clear_job(op){
+	if(op=='1'){
+		document.getElementById('job_no').value="";
+		document.getElementById('job_desc').value="";
+		document.getElementById("job_no").removeAttribute("readonly",1);
+		document.getElementById("job_desc").removeAttribute("readonly",1);
+		document.getElementById('error1').style.display="none";
+		document.getElementById('row_job1').style.display="";
+
+	}
+	if(op=='2'){
+		document.getElementById('npjob_no').value="";
+		document.getElementById('npjob_desc').value="";
+		document.getElementById("npjob_no").removeAttribute("readonly",1);
+		document.getElementById("npjob_desc").removeAttribute("readonly",1);
+		document.getElementById('error2').style.display="none";
+		document.getElementById('row_npjob1').style.display="";
+
+	}
+	
+}
+function edit_npjobs(no,desc,id){
+	//document.getElementById('tit2').innerHTML="Edit Job";
+	document.getElementById('npjob_no').value=no;
+	document.getElementById('npjob_desc').value=desc;
+	document.getElementById('edit_id2').value=id;
+	document.getElementById('row_npjob1').style.display="none";
+	document.getElementById('row_npjob2').style.display="";
+	document.getElementById("npjob_no").setAttribute("readonly",1);
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 			function timesheet_data(){
 				document.getElementById('error').innerHTML="";
 				document.getElementById('button').style.display="none";
@@ -150,16 +329,7 @@ $("#date_to").datepicker({
 										
 			}
 			
-			function edit_npjobs(no,desc,id){
-				//document.getElementById('tit2').innerHTML="Edit Job";
-				document.getElementById('npjob_no').value=no;
-				document.getElementById('npjob_desc').value=desc;
-				document.getElementById('edit_id2').value=id;
-				document.getElementById('row_npjob1').style.display="none";
-				document.getElementById('row_npjob2').style.display="";
-				document.getElementById("npjob_no").setAttribute("readonly",1);
-				
-			}
+		
 			
 			
 			function process_npjobs(val,no){
@@ -180,57 +350,9 @@ $("#date_to").datepicker({
 			
 				}		
 				
-				
-			function add_job(type1){
-				
-				if(type1=='1'){
-					var job_no = document.getElementById("job_no").value;
-					var desc1 = document.getElementById("job_desc").value;
-					
-					}
-				
-				if(type1=='2'){
-					var job_no = document.getElementById("npjob_no").value;
-					var desc1 = document.getElementById("npjob_desc").value;
-					}
-				
-				
-				if(job_no !="" && desc1 !=""){
-					$.post(site_url+"/Timesheet/timesheet/add_jobs/",{num:job_no,desc:desc1,type:type1},function(result){
-						window.location.reload();
-						//alert(result);
-				});
-				
-				}
-					
-			}
+		
 			
-			
-			function update_job(type1){
-				
-				if(type1=='1'){
-					var job_no = document.getElementById("job_no").value;
-					var desc1 = document.getElementById("job_desc").value;
-					var id1 = document.getElementById("edit_id1").value;
-						
-					}
-				
-				if(type1=='2'){
-					var job_no = document.getElementById("npjob_no").value;
-					var desc1 = document.getElementById("npjob_desc").value;
-					var id1 = document.getElementById("edit_id2").value;
-						}
-				
-				
-				if(job_no !="" && desc1 !=""){
-					$.post(site_url+"/Timesheet/timesheet/update_jobs/",{num:job_no,desc:desc1,type:type1,id:id1},function(result){
-						window.location.reload();
-				});
-				
-				}
-					
-			}
-			
+		
 			
 		
 			
@@ -921,89 +1043,11 @@ $("#date_to").datepicker({
 	}
 			
 			
+		
 			
-			function check_job(job1){ 
-				document.getElementById('error1').style.display="none";
-				document.getElementById('row_job1').style.display="";
-				document.getElementById("job_no").removeAttribute("readonly",1);
-				document.getElementById("job_desc").removeAttribute("readonly",1);
-				document.getElementById("job_desc").value="";
-
-					if(job1!=""){
-				$.post(site_url+"/Timesheet/timesheet/check_job",{job:job1},function(data1){			
-					//alert(data1);
-							if(data1!=""){
-								document.getElementById('error1').style.display="";
-								document.getElementById('row_job1').style.display="none";
-								document.getElementById('job_desc').value=data1;				
-								document.getElementById("job_desc").setAttribute("readonly",1);
-									}	
-							else{
-								$.post(site_url+"/Timesheet/timesheet/fetch_job",{job:job1},function(data){										
-									document.getElementById('job_no').value=job1;
-									document.getElementById('job_desc').value=data;
-									document.getElementById("job_no").removeAttribute("readonly",1);
-									document.getElementById("job_desc").removeAttribute("readonly",1);
-							
-								});						
-					}
-					});	
-				}
-				
-			}
+		
 			
-			
-			function check_npjob(job1){
-				document.getElementById('error2').style.display="none";
-				document.getElementById('row_npjob1').style.display="";
-				document.getElementById("npjob_no").removeAttribute("readonly",0);
-				document.getElementById("npjob_desc").removeAttribute("readonly",0);
-				document.getElementById("npjob_desc").value="";
-
-				if(job1!=""){
-					$.post(site_url+"/Timesheet/timesheet/check_npjob",{job:job1},function(data1){			
-						//alert(data);
-								if(data1!=""){
-									document.getElementById('error2').style.display="";
-									document.getElementById('row_npjob1').style.display="none";
-									document.getElementById('npjob_desc').value=data1;									
-									document.getElementById("npjob_desc").setAttribute("readonly",1);
-									}	
-								else{
-									$.post(site_url+"/Timesheet/timesheet/fetch_npjob",{job:job1},function(data){										
-										document.getElementById('npjob_no').value=job1;
-										document.getElementById('npjob_desc').value=data;
-										document.getElementById("npjob_no").removeAttribute("readonly",1);
-										document.getElementById("npjob_desc").removeAttribute("readonly",1);
-							
-									});						
-						}
-						});	
-					}
-					
-				}
-			
-			function clear_job(op){
-				if(op=='1'){
-					document.getElementById('job_no').value="";
-					document.getElementById('job_desc').value="";
-					document.getElementById("job_no").removeAttribute("readonly",1);
-					document.getElementById("job_desc").removeAttribute("readonly",1);
-					document.getElementById('error1').style.display="none";
-					document.getElementById('row_job1').style.display="";
-
-				}
-				if(op=='2'){
-					document.getElementById('npjob_no').value="";
-					document.getElementById('npjob_desc').value="";
-					document.getElementById("npjob_no").removeAttribute("readonly",1);
-					document.getElementById("npjob_desc").removeAttribute("readonly",1);
-					document.getElementById('error2').style.display="none";
-					document.getElementById('row_npjob1').style.display="";
-
-				}
-				
-			}
+		
 
 			
 			

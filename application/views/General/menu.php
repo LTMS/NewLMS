@@ -37,13 +37,12 @@
 <li><a href="javascript:void(0);" class="nav-top-item <?php if(($this->session->userdata('admin_logged_in'))&&($menu=='timesheet')) echo "current"; ?>">TimeSheet Management</a>
 			<ul style="display: block;">
 					<?php if($this->session->userdata('Emp_Role')=='Engineer' || $this->session->userdata('Emp_Role')=='teamleader' || $this->session->userdata('Emp_Role')=='admin'){ ?>	
+    	  			<li><a href="<?php echo site_url("Timesheet/timesheet_entry/intro_admin"); ?>" <?php if ($submenu=='tms_intro'){?>class="current"<?php }?> >Time Sheet Criteria</a></li>
     	  			<li><a href="<?php echo site_url("Timesheet/timesheet_entry/entry"); ?>" <?php if ($submenu=='entry'){?>class="current"<?php }?> >Time Sheet Entry</a></li>
     				<li><a href="<?php echo site_url("Timesheet/timesheet_reports/mysheet"); ?>" <?php if ($submenu=='mysheet'){?>class="current"<?php }?> >My Time Sheet Report</a></li>
     				<li><a href="<?php echo site_url("Timesheet/overtime/my_ot"); ?>" <?php if ($submenu=='my_ot'){?>class="current"<?php }?> >My Over Time Details</a></li>
     				<li><a href="<?php echo site_url("Timesheet/overtime/my_otsummary"); ?>" <?php if ($submenu=='my_otsummary'){?>class="current"<?php }?> >My Over Time Summary</a></li>
-    				
- 		   			<li><a href="<?php echo site_url("Timesheet/timesheet_entry/intro_admin"); ?>" <?php if ($submenu=='tms_intro'){?>class="current"<?php }?> >Time Sheet Criteria</a></li>
-				
+    				<li><a href="<?php echo site_url("Timesheet/timesheet_misc/addjobs"); ?>" <?php if ($submenu=='addjobs'){?>class="current"<?php }?> >Manage Jobs</a></li>
     				<?php }?>
 					<?php if( $this->session->userdata('Emp_Role')=='teamleader'){ ?>	
 					<li><a href="<?php echo site_url("Timesheet/timesheet/teamsheet_leader"); ?>" <?php if ($submenu=='teamsheet_leader'){?>class="current"<?php }?> >My Team Time Sheet</a></li> 
@@ -82,7 +81,7 @@
 <li><a href="javascript:void(0);" class="nav-top-item <?php if(($this->session->userdata('admin_logged_in'))&&($menu=='misc')) echo "current"; ?>">Miscellaneous</a>
 			<ul style="display: block;">
 					<?php if($this->session->userdata('Emp_Role')=='Engineer' || $this->session->userdata('Emp_Role')=='teamleader' || $this->session->userdata('Emp_Role')=='admin' ) {?>
-    				<li><a href="<?php echo site_url("Timesheet/timesheet/addjobs"); ?>" <?php if ($submenu=='addjobs'){?>class="current"<?php }?> >Manage Jobs</a></li> 
+    				 
 					<?php }?>
 					<?php if($this->session->userdata('Emp_Role')=='Engineer' || $this->session->userdata('Emp_Role')=='teamleader'){?>
     				<li><a href="<?php echo site_url("general/holidays_emp");?>" <?php if ($submenu=='holidays_emp'){?>class="current"<?php }?> > Holidays  Details</a></li>

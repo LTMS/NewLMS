@@ -1,12 +1,12 @@
 <?php
-class timesheet extends CI_Controller
+class timesheet_misc extends CI_Controller
 {
 
 	function __construct()
 	{
 			
 		parent::__construct();
-		$this->load->model('TimeSheet/timesheet_model');
+		$this->load->model('TimeSheet/timesheet_misc_model');
 
 		$this->load->helper('url');
 
@@ -22,6 +22,60 @@ class timesheet extends CI_Controller
 	{
 	}
 
+	function addjobs()
+	{
+		$data["menu"]='misc';
+		$data["submenu"]='addjobs';
+		$data["jobs"]=$this->timesheet_misc_model->get_all_jobs();
+		$data["npjobs"]=$this->timesheet_misc_model->get_all_npjobs();
+
+		$this->template->write('titleText', "	Manage Jobs");
+		$this->template->write_view('sideLinks', 'general/menu',$data);
+		$this->template->write_view('bodyContent', 'Timesheet/Timesheet_misc/addjobs',$data);
+		$this->template->render();
+	}
+function check_job(){
+		$result= $this->input->post();
+		echo  $this->timesheet_model->check_job($result["job"]);
+	}
+	
+function add_jobs(){
+		$result= $this->input->post();
+		$this->timesheet_model->add_jobs($result["num"],$result["desc"],$result["type"]);
+			
+	}
+function update_jobs(){
+		$result= $this->input->post();
+		$this->timesheet_model->update_jobs($result["num"],$result["desc"],$result["type"],$result["id"]);
+			
+	}
+
+	function fetch_job(){
+		$result= $this->input->post();
+		echo  $this->timesheet_model->fetch_job($result["job"]);
+	}
+	
+	function check_npjob(){
+		$result= $this->input->post();
+		echo	$this->timesheet_model->check_npjob($result["job"]);
+
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	function timesheet_entry()
 	{
 			
@@ -145,18 +199,6 @@ class timesheet extends CI_Controller
 		
 		
 		
-	function addjobs()
-	{
-		$data["menu"]='misc';
-		$data["submenu"]='addjobs';
-		$data["jobs"]=$this->timesheet_model->get_all_jobs();
-		$data["npjobs"]=$this->timesheet_model->get_all_npjobs();
-
-		$this->template->write('titleText', "	Manage Jobs");
-		$this->template->write_view('sideLinks', 'general/menu',$data);
-		$this->template->write_view('bodyContent', 'timesheet/addjobs',$data);
-		$this->template->render();
-	}
 
 		
 	function insert_timesheet_data(){
@@ -179,17 +221,9 @@ class timesheet extends CI_Controller
 			
 	}
 
-	function add_jobs(){
-		$result= $this->input->post();
-		$this->timesheet_model->add_jobs($result["num"],$result["desc"],$result["type"]);
-			
-	}
+	
 		
-	function update_jobs(){
-		$result= $this->input->post();
-		$this->timesheet_model->update_jobs($result["num"],$result["desc"],$result["type"],$result["id"]);
-			
-	}
+	
 		
 		
 
@@ -374,21 +408,8 @@ class timesheet extends CI_Controller
 		$this->load->view('timesheet/timesheet_job_activity_emp',$data);
 	}
 		
-	function check_job(){
-		$result= $this->input->post();
-		echo  $this->timesheet_model->check_job($result["job"]);
-	}
-	function fetch_job(){
-		$result= $this->input->post();
-		echo  $this->timesheet_model->fetch_job($result["job"]);
-	}
-
-	function check_npjob(){
-		$result= $this->input->post();
-		echo	$this->timesheet_model->check_npjob($result["job"]);
-
-	}
-
+	
+	
 	function locked_users()
 	{
 		$data["menu"]='misc';

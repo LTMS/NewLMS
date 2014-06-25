@@ -1,10 +1,48 @@
 <?php
-Class timesheet_model extends CI_Model{
+Class timesheet_misc_model extends CI_Model{
 	function _construct()
 	{
 		parent::_construct();
 	}
 
+	
+	function get_all_jobs()
+	{
+		$uname=$this->session->userdata('fullname');
+		return $this->db->query("SELECT job_id, job_no, job_desc, CASE WHEN  enabled='1' THEN 'Enabled' WHEN  enabled='0' THEN 'Disabled' END as  status, enabled as enb FROM jobs WHERE job_no!='Nil' AND name='$uname' ORDER BY addedtime desc ")->result_array();
+	}
+	function get_all_npjobs()
+	{
+		$uname=$this->session->userdata('fullname');
+		return $this->db->query("SELECT id_npjobs, job_no, job_desc, CASE WHEN  enabled='1' THEN 'Enabled' WHEN  enabled='0' THEN 'Disabled' END as status, enabled as enb FROM np_jobs WHERE job_no!='Nil' AND name='$uname' ORDER BY addedtime desc ")->result_array();
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	function get_parameters()
 	{
@@ -75,12 +113,6 @@ Class timesheet_model extends CI_Model{
 	}
 		
 
-	function get_all_jobs()
-	{
-		$uname=$this->session->userdata('fullname');
-		return $this->db->query("SELECT job_id, job_no, job_desc, CASE WHEN  enabled='1' THEN 'Enabled' WHEN  enabled='0' THEN 'Disabled' END as  status, enabled as enb FROM jobs WHERE job_no!='Nil' AND name='$uname' ORDER BY addedtime desc ")->result_array();
-	}
-
 	function get_job_num()
 	{
 		$uname=$this->session->userdata('fullname');
@@ -106,11 +138,7 @@ Class timesheet_model extends CI_Model{
 		return  $this->db->query("SELECT  ts_name AS name FROM time_sheet WHERE ts_name LIKE '$name' ")->result_array();
 	}
 
-	function get_all_npjobs()
-	{
-		$uname=$this->session->userdata('fullname');
-		return $this->db->query("SELECT id_npjobs, job_no, job_desc, CASE WHEN  enabled='1' THEN 'Enabled' WHEN  enabled='0' THEN 'Disabled' END as status, enabled as enb FROM np_jobs WHERE job_no!='Nil' AND name='$uname' ORDER BY addedtime desc ")->result_array();
-	}
+	
 		
 	function process_npjobs($value,$num)
 	{

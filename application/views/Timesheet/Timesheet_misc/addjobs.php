@@ -7,7 +7,7 @@
 			<td align='left'
 				style="margin-bottom: 20px; font-size: 21pt; position: inline; color: white; font-weight: bolder">Manage
 				Jobs</td>
-			<td style="color: white; font-size: 15pt" align="right">Hi, <b><?php echo $this->session->userdata('fullname');?>
+			<td style="color: white; font-size: 15pt" align="right">Hi, <b><?php echo $this->session->userdata('Emp_Name');?>
 			</b> ..!</td>
 			<td align="left" style="color: white; font-size: 15pt; width: 50px">
 				<a href="<?php echo site_url("logincheck/logout"); ?>"><img
@@ -37,7 +37,7 @@
 						<td style="font-size: 12px; font-weight: bolder; color: black">Job
 							No :<input name="job_no" id="job_no" class="input" type="text"
 							style="width: 80px; height: 18px;" value=""
-							onblur="check_job(this.value)">
+							onblur="javascript:check_job(this.value)">
 						</td>
 						<td style="font-size: 12px; font-weight: bolder; color: black">Description
 							: <input placeholder='Do not use quotes' name="job_desc"
@@ -237,4 +237,4 @@
 
 <script
 	type="text/javascript"
-	src="<?php echo base_url(); ?>js/Timesheet/timesheet.js"></script>
+	src="<?php echo base_url(); ?>js/Timesheet/timesheet_misc.js"></script>
