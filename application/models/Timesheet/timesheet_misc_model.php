@@ -16,11 +16,87 @@ Class timesheet_misc_model extends CI_Model{
 		$uname=$this->session->userdata('fullname');
 		return $this->db->query("SELECT id_npjobs, job_no, job_desc, CASE WHEN  enabled='1' THEN 'Enabled' WHEN  enabled='0' THEN 'Disabled' END as status, enabled as enb FROM np_jobs WHERE job_no!='Nil' AND name='$uname' ORDER BY addedtime desc ")->result_array();
 	}
+function check_job($job){
+			$user=$this->session->userdata('fullname');
+			$data= $this->db->query("SELECT job_desc FROM jobs WHERE job_no='$job'  AND name='$user' limit 1")->result_array();
+			if(empty($data)){return $row1="";}
+			foreach($data as $row){
+				$row1=$row["job_desc"];
+			}
+			return $row1;
+		}
+function add_jobs($num,$desc,$type)
+	{
+		$uname=$this->session->userdata('fullname');
+		if($type==1){
+			$this->db->query("INSERT INTO jobs (job_no,job_desc,name) VALUES ('$num',\"$desc\",'$uname')");
+		}
+		else {
+			$this->db->query("INSERT INTO np_jobs (job_no,job_desc,name) VALUES ('$num',\"$desc\",'$uname')");
+		}
+
+	}
+	function update_jobs($num,$desc,$type,$id)
+	{
+		$uname=$this->session->userdata('fullname');
+		if($type==1){
+			$this->db->query("UPDATE jobs SET job_no='$num',job_desc=\"$desc\"  WHERE job_id='$id'");
+		}
+		else {
+			$this->db->query("UPDATE np_jobs SET job_no='$num',job_desc=\"$desc\" WHERE id_npjobs='$id'");
+		}
+
+	}
+function fetch_job($job){
+			$user=$this->session->userdata('fullname');
+			$data= $this->db->query("SELECT job_desc FROM jobs WHERE job_no='$job'   AND job_no NOT IN (SELECT job_no FROM jobs WHERE name='$user')  limit 1")->result_array();
+			if(empty($data)){return $row1="";}
+			foreach($data as $row){
+				$row1=$row["job_desc"];
+			}
+			return $row1;
+		}	
+		
+		function check_npjob($job){
+			$user=$this->session->userdata('fullname');
+			$data=$this->db->query("SELECT job_desc FROM np_jobs WHERE job_no='$job'  AND  name='$user'  limit 1")->result_array();
+			if(empty($data)){return $row1="";}
+			foreach($data as $row){
+				$row1=$row["job_desc"];
+			}
+			return $row1;
+		}
+			
+		function fetch_npjob($job){
+			$user=$this->session->userdata('fullname');
+			$data=$this->db->query("SELECT job_desc FROM np_jobs WHERE job_no='$job'  AND job_no NOT IN (SELECT job_no FROM jobs WHERE name='$user')  limit 1")->result_array();
+			if(empty($data)){return $row1="";}
+			foreach($data as $row){
+				$row1=$row["job_desc"];
+			}
+			return $row1;
+		}
 	
-	
-	
-	
-	
+	function process_npjobs($value,$num)
+	{
+		if($value==0){
+			return $this->db->query("UPDATE np_jobs SET enabled='1' WHERE id_npjobs='$num' ");
+		}
+		else {
+			return $this->db->query("UPDATE np_jobs SET enabled='0'  WHERE id_npjobs='$num' ");
+		}
+	}
+		
+	function process_jobs($value,$num)
+	{
+		if($value==0){
+			$this->db->query("UPDATE jobs SET enabled=1 WHERE job_id='$num' ");
+		}
+		else {
+			$this->db->query("UPDATE jobs SET enabled=0 WHERE job_id='$num' ");
+		}
+
+	}	
 	
 	
 	
@@ -139,53 +215,12 @@ Class timesheet_misc_model extends CI_Model{
 	}
 
 	
+	
 		
-	function process_npjobs($value,$num)
-	{
-		if($value==0){
-			return $this->db->query("UPDATE np_jobs SET enabled='1' WHERE id_npjobs='$num' ");
-		}
-		else {
-			return $this->db->query("UPDATE np_jobs SET enabled='0'  WHERE id_npjobs='$num' ");
-		}
-	}
-		
-	function process_jobs($value,$num)
-	{
-		if($value==0){
-			$this->db->query("UPDATE jobs SET enabled=1 WHERE job_id='$num' ");
-		}
-		else {
-			$this->db->query("UPDATE jobs SET enabled=0 WHERE job_id='$num' ");
-		}
-
-	}
-		
-	function add_jobs($num,$desc,$type)
-	{
-		$uname=$this->session->userdata('fullname');
-		if($type==1){
-			$this->db->query("INSERT INTO jobs (job_no,job_desc,name) VALUES ('$num',\"$desc\",'$uname')");
-		}
-		else {
-			$this->db->query("INSERT INTO np_jobs (job_no,job_desc,name) VALUES ('$num',\"$desc\",'$uname')");
-		}
-
-	}
+	
 		
 		
-	function update_jobs($num,$desc,$type,$id)
-	{
-		$uname=$this->session->userdata('fullname');
-		if($type==1){
-			$this->db->query("UPDATE jobs SET job_no='$num',job_desc=\"$desc\"  WHERE job_id='$id'");
-		}
-		else {
-			$this->db->query("UPDATE np_jobs SET job_no='$num',job_desc=\"$desc\" WHERE id_npjobs='$id'");
-		}
-
-	}
-		
+	
 
 	function get_timesheet_overall_hrs($d1,$d2){
 
@@ -952,45 +987,10 @@ Class timesheet_misc_model extends CI_Model{
 		}
 			
 			
-		function check_job($job){
-			$user=$this->session->userdata('fullname');
-			$data= $this->db->query("SELECT job_desc FROM jobs WHERE job_no='$job'  AND name='$user' limit 1")->result_array();
-			if(empty($data)){return $row1="";}
-			foreach($data as $row){
-				$row1=$row["job_desc"];
-			}
-			return $row1;
-		}
+		
 			
-		function fetch_job($job){
-			$user=$this->session->userdata('fullname');
-			$data= $this->db->query("SELECT job_desc FROM jobs WHERE job_no='$job'   AND job_no NOT IN (SELECT job_no FROM jobs WHERE name='$user')  limit 1")->result_array();
-			if(empty($data)){return $row1="";}
-			foreach($data as $row){
-				$row1=$row["job_desc"];
-			}
-			return $row1;
-		}
-			
-		function check_npjob($job){
-			$user=$this->session->userdata('fullname');
-			$data=$this->db->query("SELECT job_desc FROM np_jobs WHERE job_no='$job'  AND  name='$user'  limit 1")->result_array();
-			if(empty($data)){return $row1="";}
-			foreach($data as $row){
-				$row1=$row["job_desc"];
-			}
-			return $row1;
-		}
-			
-		function fetch_npjob($job){
-			$user=$this->session->userdata('fullname');
-			$data=$this->db->query("SELECT job_desc FROM np_jobs WHERE job_no='$job'  AND job_no NOT IN (SELECT job_no FROM jobs WHERE name='$user')  limit 1")->result_array();
-			if(empty($data)){return $row1="";}
-			foreach($data as $row){
-				$row1=$row["job_desc"];
-			}
-			return $row1;
-		}
+		
+	
 
 
 		function showLeaves_emp($d1,$d2,$user){

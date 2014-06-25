@@ -7,7 +7,7 @@
 			<td align='left'
 				style="margin-bottom: 20px; font-size: 21pt; position: inline; color: white; font-weight: bolder">Employees
 				Time Sheet</td>
-			<td style="color: white; font-size: 15pt" align="right">Hi, <b><?php echo $this->session->userdata('fullname');?>
+			<td style="color: white; font-size: 15pt" align="right">Hi, <b><?php echo $this->session->userdata('Emp_Name');?>
 			</b> ..!</td>
 			<td align="left" style="color: white; font-size: 15pt; width: 50px">
 				<a href="<?php echo site_url("logincheck/logout"); ?>"><img
@@ -111,7 +111,7 @@
 	id='report_option' value='' />
 <script
 	type="text/javascript"
-	src="<?php echo base_url(); ?>js/custom/timesheet.js"></script>
+	src="<?php echo base_url(); ?>js/Timesheet/timesheet_reports.js"></script>
 <script
 	type="text/javascript"
-	src="<?php echo base_url(); ?>js/custom/print.js"></script>
+	src="<?php echo base_url(); ?>js/Timesheet/timesheet_print.js"></script>

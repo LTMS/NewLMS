@@ -78,20 +78,331 @@ function timesheet_activity_user(){
 						
 }
 
+function team_timesheet_overall(){
+	var date1 = document.getElementById('date_from').value;
+	var date2 = document.getElementById('date_to').value;
+	document.getElementById('getjob').style.display="none";
+	document.getElementById('getjob').value="";
+	document.getElementById('getuser').style.display="none";
+	document.getElementById('getuser').value="";
+	document.getElementById('getuser1').style.display="none";
+	document.getElementById('getuser1').value="";
+	var uname=document.getElementById('emp_name').value;
+	document.getElementById('report_option').value="Over all Jobwise Report of "+uname;
+	
+			
+				$.post(site_url+"/Timesheet/timesheet_reports/team_timesheet_overall",{d1:date1,d2:date2},function(data){							
+							$("#contentData").html("");
+							$("#contentData").append(data);
+					});	
+
+}
+function team_timesheet_jobwise(){
+	var date1 = document.getElementById('date_from').value;
+	var date2 = document.getElementById('date_to').value;
+	document.getElementById('getjob').style.display="";
+	var num1 = document.getElementById('getjob').value;
+	document.getElementById('getuser').style.display="none";
+	document.getElementById('getuser').value="";
+	document.getElementById('getuser1').style.display="none";
+	document.getElementById('getuser1').value="";
+	var uname=document.getElementById('emp_name').value;
+	document.getElementById('report_option').value="Time Sheet Report for JOB No: "+num1+" of "+uname;
+
+		if( num1 != "" ){	
+			
+				$.post(site_url+"/Timesheet/timesheet_reports/team_timesheet_jobwise",{d1:date1,d2:date2,num:num1},function(data){							
+							$("#contentData").html("");
+							$("#contentData").append(data);
+					});	
+
+		}	
+}
+function get_timesheet_userwise(){
+	var date1 = document.getElementById('date_from').value;
+	var date2 = document.getElementById('date_to').value;
+	document.getElementById('getuser').style.display="";
+	var user1 = document.getElementById('getuser').value;
+	document.getElementById('getjob').style.display="none";
+	document.getElementById('getjob').value="";
+	document.getElementById('getuser1').style.display="none";
+	document.getElementById('getuser1').value="";
+	document.getElementById('getuser2').style.display="none";
+	document.getElementById('getuser2').value="";
+	document.getElementById('report_option').value="Time Sheet Report of "+user1;
+	
+	
+		if(user1 != "" ){	
+			
+				$.post(site_url+"/Timesheet/timesheet_reports/get_timesheet_userwise",{d1:date1,d2:date2,user:user1},function(data){							
+							$("#contentData").html("");
+							$("#contentData").append(data);
+					});	
+	}
+					
+}
+
+function team_timesheet_ot(){
+	var date1 = document.getElementById('date_from').value;
+	var date2 = document.getElementById('date_to').value;
+	document.getElementById('getjob').style.display="none";
+	document.getElementById('getjob').value="";
+	document.getElementById('getuser').style.display="none";
+	document.getElementById('getuser').value="";
+	document.getElementById('getuser1').style.display="none";
+	document.getElementById('getuser1').value="";
+	var uname=document.getElementById('emp_name').value;
+	document.getElementById('report_option').value="Total Working Hours Details of "+uname;
+
+//	if( date1 != "" && date2!="" ){	
+				$.post(site_url+"/Timesheet/timesheet_reports/team_timesheet_ot",{d1:date1,d2:date2},function(data){							
+							$("#contentData").html("");
+							$("#contentData").append(data);
+					});	
+	//}
+}
+
+function timesheet_activity_emp(){
+		var date1 = document.getElementById('date_from').value;
+		var date2 = document.getElementById('date_to').value;
+		document.getElementById('getuser1').style.display="";
+		var user1 = document.getElementById('getuser1').value;
+		document.getElementById('getjob').style.display="none";
+		document.getElementById('getjob').value="";
+		document.getElementById('getuser').style.display="none";
+		document.getElementById('getuser').value="";
+		document.getElementById('getuser2').style.display="none";
+		document.getElementById('getuser2').value="";
+		document.getElementById('report_option').value="Time Activities Report of "+user1;
+		
+		
+			if(user1 != "" ){	
+				
+					$.post(site_url+"/Timesheet/timesheet_reports/timesheet_activity_emp",{d1:date1,d2:date2,user:user1},function(data){							
+								$("#contentData").html("");
+								$("#contentData").append(data);
+						});	
+		}
+					
+}
+function get_timesheet_overall(){
+	var date1 = document.getElementById('date_from').value;
+	var date2 = document.getElementById('date_to').value;
+	document.getElementById('getjob').style.display="none";
+	document.getElementById('getjob').value="";
+	document.getElementById('getuser').style.display="none";
+	document.getElementById('getuser').value="";
+	document.getElementById('getuser1').style.display="none";
+	document.getElementById('getuser1').value="";
+	document.getElementById('getuser2').style.display="none";
+	document.getElementById('getuser2').value="";
+	document.getElementById('report_option').value="Over all Jobwise Report";
+	
+			
+				$.post(site_url+"/Timesheet/timesheet_reports/get_timesheet_overall",{d1:date1,d2:date2},function(data){							
+							$("#contentData").html("");
+							$("#contentData").append(data);
+					});	
+
+}
+function get_timesheet_jobwise(){
+	var date1 = document.getElementById('date_from').value;
+	var date2 = document.getElementById('date_to').value;
+	document.getElementById('getjob').style.display="";
+	var num1 = document.getElementById('getjob').value;
+	document.getElementById('getuser').style.display="none";
+	document.getElementById('getuser').value="";
+	document.getElementById('getuser1').style.display="none";
+	document.getElementById('getuser1').value="";
+	document.getElementById('getuser2').style.display="none";
+	document.getElementById('getuser2').value="";
+	document.getElementById('report_option').value="Time Sheet Report for JOB No: "+num1;
+	
+		if( num1 != "" ){	
+			
+				$.post(site_url+"/Timesheet/timesheet_reports/get_timesheet_jobwise",{d1:date1,d2:date2,num:num1},function(data){							
+							$("#contentData").html("");
+							$("#contentData").append(data);
+					});	
+
+		}	
+}
+function get_timesheet_ot(){
+	var date1 = document.getElementById('date_from').value;
+	var date2 = document.getElementById('date_to').value;
+	document.getElementById('getjob').style.display="none";
+	document.getElementById('getjob').value="";
+	document.getElementById('getuser').style.display="none";
+	document.getElementById('getuser').value="";
+	document.getElementById('getuser1').style.display="none";
+	document.getElementById('getuser1').value="";
+	document.getElementById('getuser2').style.display="none";
+	document.getElementById('getuser2').value="";
+	document.getElementById('report_option').value="Employees Over all Working Hours Details";
+	
+	
+		if(date1!="" && date2 !="" ){	
+			
+				$.post(site_url+"/Timesheet/timesheet_reports/get_timesheet_ot",{d1:date1,d2:date2},function(data){							
+							$("#contentData").html("");
+							$("#contentData").append(data);
+					});	
+	}
+					
+}
+function timesheet_job_activity_emp(){
+	var date1 = document.getElementById('date_from').value;
+	var date2 = document.getElementById('date_to').value;
+	document.getElementById('getuser2').style.display="";
+	var user2 = document.getElementById('getuser2').value;
+
+	document.getElementById('getuser1').style.display="none";
+	document.getElementById('getjob').style.display="none";
+	document.getElementById('getjob').value="";
+	document.getElementById('getuser').style.display="none";
+	document.getElementById('getuser').value="";
+	document.getElementById('report_option').value="Time Activities Report of "+user2;
+	
+	//alert(user2);
+		if(user2 != "" ){	
+			
+				$.post(site_url+"/Timesheet/timesheet_reports/timesheet_job_activity_emp",{d1:date1,d2:date2,user:user2},function(data){							
+				//	alert(data);	
+					$("#contentData").html("");
+							$("#contentData").append(data);
+					});	
+	}
+				
+}
+
+function get_timesheet_Dept(){
+	var date1 = document.getElementById('date_from').value;
+	var date2 = document.getElementById('date_to').value;
+	document.getElementById('getjob').style.display="none";
+	document.getElementById('getjob').value="";
+	document.getElementById('getuser').style.display="none";
+	document.getElementById('getuser').value="";
+	document.getElementById('getuser1').style.display="none";
+	document.getElementById('getuser1').value="";
+	document.getElementById('getuser2').style.display="none";
+	document.getElementById('getuser2').value="";
+	document.getElementById('report_option').value="Employees Over all Working Hours Details";
+	
+	
+		if(date1!="" && date2 !="" ){	
+			
+				$.post(site_url+"/Timesheet/timesheet_reports/get_timesheet_dept",{d1:date1,d2:date2},function(data){							
+							$("#contentData").html("");
+							$("#contentData").append(data);
+					});	
+	}
+					
+}
+
+function chooseFunction(){
+	var dept1 = document.getElementById('getDept').value;
+	var team1 = document.getElementById('getTeam').value;
+	var job1 = document.getElementById('getjob').value;
+	if(team1 != "" && job1=="" ){
+		get_timesheet_Team();
+	}
+			if(dept1 != ""  && job1==""){
+				get_timesheet_Dept();
+			}
+			if( job1!=""){
+				timesheet_team_job();
+			}
+			
+}
+function team_activity_emp(){
+	var date1 = document.getElementById('date_from').value;
+	var date2 = document.getElementById('date_to').value;
+	document.getElementById('getjob').style.display="none";
+	var job1=document.getElementById('getjob').value;
+
+	var user1 = document.getElementById('getUser').value;
+	document.getElementById('getDept').value="";
+	document.getElementById('report_option').value="Time Sheet Activities Report of "+user1;
+	
+	
+		if(user1 != "" ){	
+			
+			$.post(site_url+"/Timesheet/timesheet_reports/get_timesheet_userwise",{d1:date1,d2:date2,user:user1},function(data){							
+				$("#contentData").html("");
+				$("#contentData").append(data);
+		});	
+	}
+
+}
+function get_timesheet_Dept(){
+	var date1 = document.getElementById('date_from').value;
+	var date2 = document.getElementById('date_to').value;
+	var dept1 = document.getElementById('getDept').value;
+	document.getElementById('getjob').style.display="none";
+	document.getElementById('getjob').value="";
+	document.getElementById('getUser').value="";
+	document.getElementById('getTeam').value="";
+	document.getElementById('report_option').value="Time Sheet Activities Report of "+dept1+" Department";
+	
+	
+		if(dept1 != "" ){	
+			
+				$.post(site_url+"/Timesheet/timesheet_reports/get_timesheet_Dept",{d1:date1,d2:date2,dept:dept1},function(data){							
+							$("#contentData").html("");
+							$("#contentData").append(data);
+					});	
+	}
+
+}
+
+function get_timesheet_Team(){
+	var date1 = document.getElementById('date_from').value;
+	var date2 = document.getElementById('date_to').value;
+	var team1 = document.getElementById('getTeam').value;
+	document.getElementById('getUser').value="";
+			
+	var job1 = document.getElementById('getjob').value;
+	if(job1==""){
+	document.getElementById('getjob').style.display="none";
+	document.getElementById('getjob').value="";
+	
+	document.getElementById('getDept').value="";
+	document.getElementById('report_option').value="Time Sheet Activities Report of "+team1+" Team";
+	
+				if(team1 != "" ){	
+					
+						$.post(site_url+"/Timesheet/timesheet_reports/get_timesheet_Team/",{d1:date1,d2:date2,team:team1},function(data){							
+									$("#contentData").html("");
+									$("#contentData").append(data);
+							});	
+			}
+	}
+	else{
+		timesheet_team_job();
+	}
+}
 
 
+function timesheet_team_job(){
+	var date1 = document.getElementById('date_from').value;
+	var date2 = document.getElementById('date_to').value;
+	document.getElementById('getjob').style.display="";
+	var job1=document.getElementById('getjob').value;
+	var team1 = document.getElementById('getTeam').value;
+	document.getElementById('getUser').value="";
+	document.getElementById('getDept').value="";
+	document.getElementById('report_option').value="Time Sheet Activities Report of "+team1+" Team for JOB No: "+job1;
+	
+	
+		if(job1 != "" ){	
+			
+				$.post(site_url+"/Timesheet/timesheet_reports/timesheet_team_job",{d1:date1,d2:date2,job:job1,team:team1},function(data){							
+							$("#contentData").html("");
+							$("#contentData").append(data);
+					});	
+	}
 
-
-
-
-
-
-
-
-
-
-
-
+}
 
 
 
@@ -340,146 +651,16 @@ function timesheet_activity_user(){
 			
 		
 			
-			function get_timesheet_overall(){
-				var date1 = document.getElementById('date_from').value;
-				var date2 = document.getElementById('date_to').value;
-				document.getElementById('getjob').style.display="none";
-				document.getElementById('getjob').value="";
-				document.getElementById('getuser').style.display="none";
-				document.getElementById('getuser').value="";
-				document.getElementById('getuser1').style.display="none";
-				document.getElementById('getuser1').value="";
-				document.getElementById('getuser2').style.display="none";
-				document.getElementById('getuser2').value="";
-				document.getElementById('report_option').value="Over all Jobwise Report";
-				
-						
-							$.post(site_url+"/Timesheet/timesheet/get_timesheet_overall",{d1:date1,d2:date2},function(data){							
-										$("#contentData").html("");
-										$("#contentData").append(data);
-								});	
-	
-		}
-			
-			function get_timesheet_jobwise(){
-				var date1 = document.getElementById('date_from').value;
-				var date2 = document.getElementById('date_to').value;
-				document.getElementById('getjob').style.display="";
-				var num1 = document.getElementById('getjob').value;
-				document.getElementById('getuser').style.display="none";
-				document.getElementById('getuser').value="";
-				document.getElementById('getuser1').style.display="none";
-				document.getElementById('getuser1').value="";
-				document.getElementById('getuser2').style.display="none";
-				document.getElementById('getuser2').value="";
-				document.getElementById('report_option').value="Time Sheet Report for JOB No: "+num1;
-				
-					if( num1 != "" ){	
-						
-							$.post(site_url+"/Timesheet/timesheet/get_timesheet_jobwise",{d1:date1,d2:date2,num:num1},function(data){							
-										$("#contentData").html("");
-										$("#contentData").append(data);
-								});	
 		
-					}	
-		}
 			
 			
-			function get_timesheet_userwise(){
-				var date1 = document.getElementById('date_from').value;
-				var date2 = document.getElementById('date_to').value;
-				document.getElementById('getuser').style.display="";
-				var user1 = document.getElementById('getuser').value;
-				document.getElementById('getjob').style.display="none";
-				document.getElementById('getjob').value="";
-				document.getElementById('getuser1').style.display="none";
-				document.getElementById('getuser1').value="";
-				document.getElementById('getuser2').style.display="none";
-				document.getElementById('getuser2').value="";
-				document.getElementById('report_option').value="Time Sheet Report of "+user1;
-				
-				
-					if(user1 != "" ){	
-						
-							$.post(site_url+"/Timesheet/timesheet/get_timesheet_userwise",{d1:date1,d2:date2,user:user1},function(data){							
-										$("#contentData").html("");
-										$("#contentData").append(data);
-								});	
-				}
-								
-		}
-			
-			function get_timesheet_ot(){
-				var date1 = document.getElementById('date_from').value;
-				var date2 = document.getElementById('date_to').value;
-				document.getElementById('getjob').style.display="none";
-				document.getElementById('getjob').value="";
-				document.getElementById('getuser').style.display="none";
-				document.getElementById('getuser').value="";
-				document.getElementById('getuser1').style.display="none";
-				document.getElementById('getuser1').value="";
-				document.getElementById('getuser2').style.display="none";
-				document.getElementById('getuser2').value="";
-				document.getElementById('report_option').value="Employees Over all Working Hours Details";
-				
-				
-					if(date1!="" && date2 !="" ){	
-						
-							$.post(site_url+"/Timesheet/timesheet/get_timesheet_ot",{d1:date1,d2:date2},function(data){							
-										$("#contentData").html("");
-										$("#contentData").append(data);
-								});	
-				}
-								
-		}
-			function get_timesheet_Dept(){
-				var date1 = document.getElementById('date_from').value;
-				var date2 = document.getElementById('date_to').value;
-				document.getElementById('getjob').style.display="none";
-				document.getElementById('getjob').value="";
-				document.getElementById('getuser').style.display="none";
-				document.getElementById('getuser').value="";
-				document.getElementById('getuser1').style.display="none";
-				document.getElementById('getuser1').value="";
-				document.getElementById('getuser2').style.display="none";
-				document.getElementById('getuser2').value="";
-				document.getElementById('report_option').value="Employees Over all Working Hours Details";
-				
-				
-					if(date1!="" && date2 !="" ){	
-						
-							$.post(site_url+"/Timesheet/timesheet/get_timesheet_ot",{d1:date1,d2:date2},function(data){							
-										$("#contentData").html("");
-										$("#contentData").append(data);
-								});	
-				}
-								
-		}
 			
 			
-			function timesheet_activity_emp(){
-					var date1 = document.getElementById('date_from').value;
-					var date2 = document.getElementById('date_to').value;
-					document.getElementById('getuser1').style.display="";
-					var user1 = document.getElementById('getuser1').value;
-					document.getElementById('getjob').style.display="none";
-					document.getElementById('getjob').value="";
-					document.getElementById('getuser').style.display="none";
-					document.getElementById('getuser').value="";
-					document.getElementById('getuser2').style.display="none";
-					document.getElementById('getuser2').value="";
-					document.getElementById('report_option').value="Time Activities Report of "+user1;
-					
-					
-						if(user1 != "" ){	
-							
-								$.post(site_url+"/Timesheet/timesheet/timesheet_activity_emp",{d1:date1,d2:date2,user:user1},function(data){							
-											$("#contentData").html("");
-											$("#contentData").append(data);
-									});	
-					}
-								
-		}
+		
+			
+		
+			
+		
 			
 			
 		
@@ -489,47 +670,9 @@ function timesheet_activity_user(){
 			
 			
 				
-			function team_timesheet_overall(){
-				var date1 = document.getElementById('date_from').value;
-				var date2 = document.getElementById('date_to').value;
-				document.getElementById('getjob').style.display="none";
-				document.getElementById('getjob').value="";
-				document.getElementById('getuser').style.display="none";
-				document.getElementById('getuser').value="";
-				document.getElementById('getuser1').style.display="none";
-				document.getElementById('getuser1').value="";
-				var uname=document.getElementById('emp_name').value;
-				document.getElementById('report_option').value="Over all Jobwise Report of "+uname;
-				
-						
-							$.post(site_url+"/Timesheet/timesheet/team_timesheet_overall",{d1:date1,d2:date2},function(data){							
-										$("#contentData").html("");
-										$("#contentData").append(data);
-								});	
-	
-		}
+		
 			
-			function team_timesheet_jobwise(){
-				var date1 = document.getElementById('date_from').value;
-				var date2 = document.getElementById('date_to').value;
-				document.getElementById('getjob').style.display="";
-				var num1 = document.getElementById('getjob').value;
-				document.getElementById('getuser').style.display="none";
-				document.getElementById('getuser').value="";
-				document.getElementById('getuser1').style.display="none";
-				document.getElementById('getuser1').value="";
-				var uname=document.getElementById('emp_name').value;
-				document.getElementById('report_option').value="Time Sheet Report for JOB No: "+num1+" of "+uname;
 		
-					if( num1 != "" ){	
-						
-							$.post(site_url+"/Timesheet/timesheet/team_timesheet_jobwise",{d1:date1,d2:date2,num:num1},function(data){							
-										$("#contentData").html("");
-										$("#contentData").append(data);
-								});	
-		
-					}	
-		}
 			
 			function team_timesheet_emp(){
 				var date1 = document.getElementById('date_from').value;
@@ -555,26 +698,7 @@ function timesheet_activity_user(){
 		
 	
 		
-		
-		function team_timesheet_ot(){
-			var date1 = document.getElementById('date_from').value;
-			var date2 = document.getElementById('date_to').value;
-			document.getElementById('getjob').style.display="none";
-			document.getElementById('getjob').value="";
-			document.getElementById('getuser').style.display="none";
-			document.getElementById('getuser').value="";
-			document.getElementById('getuser1').style.display="none";
-			document.getElementById('getuser1').value="";
-			var uname=document.getElementById('emp_name').value;
-			document.getElementById('report_option').value="Total Working Hours Details of "+uname;
-
-		//	if( date1 != "" && date2!="" ){	
-						$.post(site_url+"/Timesheet/timesheet/team_timesheet_ot",{d1:date1,d2:date2},function(data){							
-									$("#contentData").html("");
-									$("#contentData").append(data);
-							});	
-			//}
-	}
+	
 			
 			
 			function get_timedate(date1){
@@ -657,112 +781,13 @@ function timesheet_activity_user(){
 			
 			
 	
+		
 			
-			function chooseFunction(){
-				var dept1 = document.getElementById('getDept').value;
-				var team1 = document.getElementById('getTeam').value;
-				var job1 = document.getElementById('getjob').value;
-				if(team1 != "" && job1=="" ){
-					get_timesheet_Team();
-				}
-						if(dept1 != ""  && job1==""){
-							get_timesheet_Dept();
-						}
-						if( job1!=""){
-							timesheet_team_job();
-						}
-						
-			}
 			
-			function get_timesheet_Dept(){
-				var date1 = document.getElementById('date_from').value;
-				var date2 = document.getElementById('date_to').value;
-				var dept1 = document.getElementById('getDept').value;
-				document.getElementById('getjob').style.display="none";
-				document.getElementById('getjob').value="";
-				document.getElementById('getUser').value="";
-				document.getElementById('getTeam').value="";
-				document.getElementById('report_option').value="Time Sheet Activities Report of "+dept1+" Department";
-				
-				
-					if(dept1 != "" ){	
-						
-							$.post(site_url+"/Timesheet/timesheet/get_timesheet_Dept",{d1:date1,d2:date2,dept:dept1},function(data){							
-										$("#contentData").html("");
-										$("#contentData").append(data);
-								});	
-				}
-	
-			}
+		
+		
 			
-			function get_timesheet_Team(){
-				var date1 = document.getElementById('date_from').value;
-				var date2 = document.getElementById('date_to').value;
-				var team1 = document.getElementById('getTeam').value;
-				document.getElementById('getUser').value="";
-						
-				var job1 = document.getElementById('getjob').value;
-				if(job1==""){
-				document.getElementById('getjob').style.display="none";
-				document.getElementById('getjob').value="";
-				
-				document.getElementById('getDept').value="";
-				document.getElementById('report_option').value="Time Sheet Activities Report of "+team1+" Team";
-				
-							if(team1 != "" ){	
-								
-									$.post(site_url+"/Timesheet/timesheet/get_timesheet_Team/",{d1:date1,d2:date2,team:team1},function(data){							
-												$("#contentData").html("");
-												$("#contentData").append(data);
-										});	
-						}
-				}
-				else{
-					timesheet_team_job();
-				}
-			}
-			
-			function timesheet_team_job(){
-				var date1 = document.getElementById('date_from').value;
-				var date2 = document.getElementById('date_to').value;
-				document.getElementById('getjob').style.display="";
-				var job1=document.getElementById('getjob').value;
-				var team1 = document.getElementById('getTeam').value;
-				document.getElementById('getUser').value="";
-				document.getElementById('getDept').value="";
-				document.getElementById('report_option').value="Time Sheet Activities Report of "+team1+" Team for JOB No: "+job1;
-				
-				
-					if(job1 != "" ){	
-						
-							$.post(site_url+"/Timesheet/timesheet/timesheet_team_job",{d1:date1,d2:date2,job:job1,team:team1},function(data){							
-										$("#contentData").html("");
-										$("#contentData").append(data);
-								});	
-				}
-	
-			}
-			
-			function team_activity_emp(){
-				var date1 = document.getElementById('date_from').value;
-				var date2 = document.getElementById('date_to').value;
-				document.getElementById('getjob').style.display="none";
-				var job1=document.getElementById('getjob').value;
-	
-				var user1 = document.getElementById('getUser').value;
-					document.getElementById('getDept').value="";
-				document.getElementById('report_option').value="Time Sheet Activities Report of "+user1;
-				
-				
-					if(user1 != "" ){	
-						
-						$.post(site_url+"/Timesheet/timesheet/get_timesheet_userwise",{d1:date1,d2:date2,user:user1},function(data){							
-							$("#contentData").html("");
-							$("#contentData").append(data);
-					});	
-				}
-	
-			}
+		
 
 			
 		
@@ -939,32 +964,7 @@ function timesheet_activity_user(){
 			
 		
 			
-			function timesheet_job_activity_emp(){
-				var date1 = document.getElementById('date_from').value;
-				var date2 = document.getElementById('date_to').value;
-				document.getElementById('getuser2').style.display="";
-				var user2 = document.getElementById('getuser2').value;
-	
-				document.getElementById('getuser1').style.display="none";
-				document.getElementById('getjob').style.display="none";
-				document.getElementById('getjob').value="";
-				document.getElementById('getuser').style.display="none";
-				document.getElementById('getuser').value="";
-				document.getElementById('report_option').value="Time Activities Report of "+user2;
-				
-				//alert(user2);
-					if(user2 != "" ){	
-						
-							$.post(site_url+"/Timesheet/timesheet/timesheet_job_activity_emp",{d1:date1,d2:date2,user:user2},function(data){							
-							//	alert(data);	
-								$("#contentData").html("");
-										$("#contentData").append(data);
-								});	
-				}
-							
-	}
-			
-			
+		
 			
 			function check_job(job1){ 
 				document.getElementById('error1').style.display="none";

@@ -181,12 +181,551 @@ Class timesheet_reports_model extends CI_Model{
 			}
 		}
 	
+function get_team_members()
+	{
+		$uname=$this->session->userdata('fullname');
+
+		return $this->db->query("SELECT Employee_Number AS 'Name' FROM team WHERE LeaveApprover_L1='$uname' ORDER BY Employee_Number ")->result_array();
+	}
+	
+	function team_timesheet_overall($d1,$d2){
+			$Emp_Name=$this->session->userdata('fullname');
+			if($d1!="" && $d2!=""){
+				return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc', COUNT(a.ts_date) AS days,
+																		SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total,
+																		SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'AVG'
+																		 FROM time_sheet_jobs a INNER JOIN jobs b ON (a.job_no=b.job_no AND b.name=a.ts_name)  JOIN team c ON c.Employee_Number=a.ts_name
+																		 WHERE STR_TO_DATE(DATE_FORMAT(a.ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y')  AND c.LeaveApprover_L1='$Emp_Name'     GROUP BY a.job_no ORDER BY b.addedtime desc")->result_array();			
+			}
+			else {
+				return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc', COUNT(a.ts_date) AS days,
+																		SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total,
+																		SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'AVG'
+																		 FROM time_sheet_jobs a INNER JOIN jobs b  ON (a.job_no=b.job_no AND b.name=a.ts_name)  JOIN team c ON c.Employee_Number=a.ts_name
+																		WHERE c.LeaveApprover_L1='$Emp_Name'     
+																		GROUP BY a.job_no ORDER BY b.addedtime desc")->result_array();			
+			}
+				
+				
+		}	
+	function team_timesheet_overall_hrs($d1,$d2){
+			$Emp_Name=$this->session->userdata('fullname');
+
+			if($d1!="" && $d2!=""){
+				return  $this->db->query("SELECT (SELECT COUNT(ts_date) FROM time_sheet WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y')  ) AS days,
+									                         			SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) AS total ,
+																		ROUND(AVG(HOUR(job_time))+HOUR(SEC_TO_TIME(AVG(MINUTE(job_time)*60)))) AS avg 
+																   	   FROM time_sheet_jobs  JOIN team b ON b.Employee_Number=ts_name
+																	 WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y')  AND b.LeaveApprover_L1='$Emp_Name' ")->result_array();		
+			}
+			else {
+				return  $this->db->query("SELECT (SELECT COUNT(ts_date) FROM time_sheet) AS days,
+							                                            				SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) AS total ,
+																						ROUND(AVG(HOUR(job_time))+HOUR(SEC_TO_TIME(AVG(MINUTE(job_time)*60)))) AS avg 
+																      		FROM time_sheet_jobs   JOIN team b ON b.Employee_Number=ts_name
+							                                                WHERE b.LeaveApprover_L1='$Emp_Name'")->result_array();		
+			}
+		}
+
+		function team_timesheet_jobwise($d1,$d2,$num){
+
+			$Emp_Name=$this->session->userdata('fullname');
+
+			if($d1!="" && $d2!=""){
+				return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc', a.ts_name AS name,
+																								 COUNT(a.ts_date) AS days,
+																								  SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total,
+																								  SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'avg' 
+																								FROM time_sheet_jobs a INNER JOIN jobs b ON (a.job_no=b.job_no AND b.name=a.ts_name)   JOIN team c ON c.Employee_Number=a.ts_name
+																	 							WHERE STR_TO_DATE(DATE_FORMAT(a.ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y')  AND a.job_no='$num' AND c.LeaveApprover_L1='$Emp_Name' GROUP BY a.ts_name ORDER BY total")->result_array();			
+					
+			}
+			else {
+				return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc', a.ts_name AS name,
+																		 COUNT(a.ts_date) AS days,
+										                                 SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total, 
+										                                 SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'avg' 
+										                              FROM time_sheet_jobs a INNER JOIN jobs b ON (a.job_no=b.job_no AND b.name=a.ts_name)  JOIN team c ON c.Employee_Number=a.ts_name
+																	 WHERE  a.job_no='$num' AND c.LeaveApprover_L1='$Emp_Name'
+																	 GROUP BY a.ts_name ORDER BY total")->result_array();			
+			}
+
+		}
+
+
+		function team_timesheet_jobwise_hrs($d1,$d2,$num){
+			$Emp_Name=$this->session->userdata('fullname');
+
+			if($d1!="" && $d2!=""){
+				return  $this->db->query("SELECT (SELECT COUNT(ts_date) FROM time_sheet WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y')  ) AS days,
+							                                            				SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) AS total ,
+																						ROUND(AVG(HOUR(job_time))+HOUR(SEC_TO_TIME(AVG(MINUTE(job_time)*60)))) AS avg 
+																				FROM time_sheet_jobs JOIN team b ON b.Employee_Number=ts_name
+																	  WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y')  AND job_no='$num' AND b.LeaveApprover_L1='$Emp_Name'")->result_array();			
+					
+			}
+			else {
+				return  $this->db->query("SELECT (SELECT COUNT(ts_date) FROM time_sheet  ) AS days,
+							                                            				SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) AS total ,
+																						ROUND(AVG(HOUR(job_time))+HOUR(SEC_TO_TIME(AVG(MINUTE(job_time)*60)))) AS avg 
+																	         FROM time_sheet_jobs JOIN team b ON b.Employee_Number=ts_name
+																	 WHERE  job_no='$num' AND b.LeaveApprover_L1='$Emp_Name'")->result_array();			
+			}
+		}
+	
+function get_timesheet_userwise($d1,$d2,$Emp_Name){
+
+		if($d1!='' && $d2!='' ){
+			return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc', a.ts_name AS name, COUNT(a.ts_date) AS days, SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total,SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS avg FROM time_sheet_jobs a INNER JOIN jobs b ON (a.job_no=b.job_no AND b.name=a.ts_name)
+																	 WHERE STR_TO_DATE(DATE_FORMAT(a.ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') AND a.ts_name='$Emp_Name' GROUP BY a.job_no ORDER BY total")->result_array();			
+				
+		}
+		else{
+			return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc', a.ts_name AS name, COUNT(a.ts_date) AS days, SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total,SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS avg FROM time_sheet_jobs a INNER JOIN jobs b ON (a.job_no=b.job_no AND b.name=a.ts_name)
+																	 WHERE  a.ts_name='$Emp_Name' GROUP BY a.job_no ORDER BY total")->result_array();			
+		}
+	}
+
+	function get_timesheet_userwise_hrs($d1,$d2,$Emp_Name){
+		if($d1!='' && $d2!=''){
+			return  $this->db->query("SELECT  COUNT(a.ts_date) AS days,
+																		  SUM(HOUR(a.job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(a.job_time)*60))) AS total ,
+															     		 SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'avg' 
+															     		 FROM time_sheet_jobs a 
+																	 WHERE STR_TO_DATE(DATE_FORMAT(a.ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') AND a.ts_name='$Emp_Name' ")->result_array();			
+		}
+		else {
+			return  $this->db->query("SELECT  COUNT(a.ts_date) AS days,
+																		  SUM(HOUR(a.job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(a.job_time)*60))) AS total ,
+															     			SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'avg' 
+																		FROM time_sheet_jobs a 
+																	 WHERE  a.ts_name='$Emp_Name' ")->result_array();			
+		}
+	}
+	function team_timesheet_ot_hrs($d1,$d2){
+			$Emp_Name=$this->session->userdata('fullname');
+			if($d1 != '' && $d2 != ''){
+				return  $this->db->query("SELECT  COUNT(ts_date) AS days,
+																		 SUM(HOUR(ts_late))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_late)*60))) AS late ,
+																	SUM(HOUR(ts_duty))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_duty)*60))) AS duty ,
+																	 ROUND(AVG(HOUR(ts_duty))+HOUR(SEC_TO_TIME(AVG(MINUTE(ts_duty)*60)))) AS avgduty ,
+																	 SUM(HOUR(ts_ot))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_ot)*60))) AS ot , 
+																	  ROUND(AVG(HOUR(ts_ot))+HOUR(SEC_TO_TIME(AVG(MINUTE(ts_ot)*60)))) AS avgot ,
+																	 SUM(HOUR(ts_lunch))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_lunch)*60))) AS lunch ,
+																	 SUM(HOUR(ts_tot_hrs))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_tot_hrs)*60))) AS total 
+																	FROM time_sheet JOIN team b ON b.Employee_Number=ts_name
+																	 WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y')  AND b.LeaveApprover_L1='$Emp_Name' ")->result_array();			
+			}
+			else{
+				return  $this->db->query("SELECT  COUNT(ts_date) AS days,
+																	 SUM(HOUR(ts_late))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_late)*60))) AS late ,
+																	SUM(HOUR(ts_duty))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_duty)*60))) AS duty ,
+																	 ROUND(AVG(HOUR(ts_duty))+HOUR(SEC_TO_TIME(AVG(MINUTE(ts_duty)*60)))) AS avgduty ,
+																	 SUM(HOUR(ts_ot))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_ot)*60))) AS ot , 
+																	  ROUND(AVG(HOUR(ts_ot))+HOUR(SEC_TO_TIME(AVG(MINUTE(ts_ot)*60)))) AS avgot ,
+																	 SUM(HOUR(ts_lunch))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_lunch)*60))) AS lunch ,
+																	 SUM(HOUR(ts_tot_hrs))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_tot_hrs)*60))) AS total 
+																	FROM time_sheet JOIN team b ON b.Employee_Number=ts_name
+																	 WHERE b.LeaveApprover_L1='$Emp_Name' ")->result_array();			
+			}
+		}
+
+		function team_timesheet_ot($d1,$d2){
+			$Emp_Name=$this->session->userdata('fullname');
+			if($d1!='' && $d2!=''){
+				return  $this->db->query("SELECT  ts_name AS name,COUNT(ts_date) AS days,
+																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_late))) AS late ,
+																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_duty))) AS duty ,
+																	 SEC_TO_TIME(AVG(TIME_TO_SEC(ts_duty))) AS avgduty ,
+																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_ot))) AS ot , 
+																	 SEC_TO_TIME(AVG(TIME_TO_SEC(ts_ot))) AS avgot ,
+																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_lunch))) AS lunch ,
+																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_tot_hrs))) AS total 
+																	FROM time_sheet JOIN team b ON b.Employee_Number=ts_name
+																	 WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y')  AND b.LeaveApprover_L1='$Emp_Name' GROUP BY ts_name")->result_array();			
+			}
+			else {
+				return  $this->db->query("SELECT  ts_name AS name,COUNT(ts_date) AS days,
+																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_late))) AS late ,
+																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_duty))) AS duty ,
+																	 SEC_TO_TIME(AVG(TIME_TO_SEC(ts_duty))) AS avgduty ,
+																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_ot))) AS ot , 
+																	 SEC_TO_TIME(AVG(TIME_TO_SEC(ts_ot))) AS avgot ,
+																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_lunch))) AS lunch ,
+																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_tot_hrs))) AS total 
+																	FROM time_sheet JOIN team b ON b.Employee_Number=ts_name
+																	 WHERE  b.LeaveApprover_L1='$Emp_Name' GROUP BY ts_name")->result_array();			
+
+			}
+		}
+function timesheet_activity_emp($d1,$d2,$Emp_Name){
+			if($d1!='' && $d2!=''){
+				return  $this->db->query("SELECT *, DATE_FORMAT(ts_date,'%d-%m-%Y') as date1
+					     				FROM time_sheet 
+					     				WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') AND ts_name='$Emp_Name'  ORDER BY ts_date DESC")->result_array();			
+					
+			}
+			else{
+				return  $this->db->query("SELECT *, DATE_FORMAT(ts_date,'%d-%m-%Y') as date1
+					     				FROM time_sheet 
+					     				WHERE  ts_name='$Emp_Name'  ORDER BY ts_date DESC")->result_array();			
+					
+			}
+		}
+
+		function timesheet_activity_emp_hrs($d1,$d2,$Emp_Name){
+			if($d1!='' && $d2 != ''){
+				return  $this->db->query("SELECT  COUNT(ts_date) AS days,
+					     													SUM(HOUR(ts_lunch))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_lunch)*60))) AS lunch ,
+																			SUM(HOUR(ts_duty))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_duty)*60))) AS duty ,
+																			SUM(HOUR(ts_ot))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_ot)*60))) AS ot ,
+																			SUM(HOUR(ts_tot_hrs))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_tot_hrs)*60))) AS total
+																			FROM time_sheet 
+					     													WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y')  AND ts_name='$Emp_Name' ")->result_array();			
+					
+			}
+			else {
+				return  $this->db->query("SELECT  COUNT(ts_date) AS days,
+					     													SUM(HOUR(ts_lunch))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_lunch)*60))) AS lunch ,
+																			SUM(HOUR(ts_duty))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_duty)*60))) AS duty ,
+																			SUM(HOUR(ts_ot))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_ot)*60))) AS ot ,
+																			SUM(HOUR(ts_tot_hrs))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_tot_hrs)*60))) AS total
+					     													FROM time_sheet 
+					     													WHERE ts_name='$Emp_Name' ")->result_array();			
+			}
+		}		
+	function showLeaves_emp($d1,$d2,$Emp_Name){
+			if($d1!="" && $d2!=""){
+				return $this->db->query("SELECT date1,days,dayname1
+																	FROM 
+																	(SELECT DATE_FORMAT(From_Date,'%d-%m-%Y') as date1 ,Total_Days as days, DAYNAME(SUBSTRING(From_Date,1,10)) as dayname1 FROM leave_history WHERE Emp_Name='$Emp_Name' AND STR_TO_DATE(DATE_FORMAT(From_Date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') ) a ")->result_array();
+			}
+			else{
+				return $this->db->query("SELECT date1,days,dayname1
+																	FROM 
+																	(SELECT DATE_FORMAT(From_Date,'%d-%m-%Y') as date1 ,Total_Days as days, DAYNAME(SUBSTRING(From_Date,1,10)) as dayname1 FROM leave_history WHERE Emp_Name='$Emp_Name'  ) a ")->result_array();
+
+			}
+		}
+
+	function get_dept()
+	{
+		return $this->db->query("SELECT * FROM departments ")->result_array();
+	}		
+
+	function get_all_members(){
+		return $this->db->query("SELECT DISTINCT Emp_Name AS 'Name' FROM  admin_users WHERE Emp_role NOT IN ('MD') ORDER BY name")->result_array();
+	}	
+
+	function get_timesheet_overall($d1,$d2){
+
+		if($d1!="" && $d2!=""){
+			return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc', COUNT(a.ts_date) AS days, SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total,SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'AVG', COUNT(ts_date) AS Days FROM time_sheet_jobs a INNER JOIN jobs b ON (a.job_no=b.job_no AND b.name=a.ts_name)
+																		 WHERE  STR_TO_DATE(DATE_FORMAT(a.ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') GROUP BY a.job_no ORDER BY b.addedtime desc")->result_array();			
+		}
+		else {
+			return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc', COUNT(a.ts_date) AS days, SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total,SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'AVG', COUNT(ts_date) AS Days FROM time_sheet_jobs a INNER JOIN jobs b ON (a.job_no=b.job_no AND b.name=a.ts_name)
+																		     GROUP BY a.job_no ORDER BY b.addedtime desc")->result_array();			
+		}
+			
+			
+	}
+function get_timesheet_overall_hrs($d1,$d2){
+
+
+		if($d1!="" && $d2!=""){
+			return  $this->db->query("SELECT (SELECT COUNT(ts_date) FROM time_sheet WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') ) AS days,
+									                               		  SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) AS total ,
+															     		  SEC_TO_TIME(AVG(TIME_TO_SEC(job_time))) AS'avg' 
+									                                      FROM time_sheet_jobs  
+																		  WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') ")->result_array();		
+		}
+		else {
+			return  $this->db->query("SELECT (SELECT COUNT(ts_date) FROM time_sheet) AS days,
+							                                           		 SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) AS total ,
+															   			     SEC_TO_TIME(AVG(TIME_TO_SEC(job_time))) AS 'avg' 
+							                                                 FROM time_sheet_jobs  ")->result_array();		
+		}
+	}
+	
+	function get_timesheet_jobwise($d1,$d2,$num){
+
+		if($d1!="" && $d2!=""){
+			return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc', a.ts_name AS name, COUNT(a.ts_date) AS days,
+																	 SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total,
+																	 SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'avg' 
+																	 FROM time_sheet_jobs a INNER JOIN jobs b ON (a.job_no=b.job_no AND b.name=a.ts_name)  
+																	 WHERE STR_TO_DATE(DATE_FORMAT(a.ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') AND a.job_no='$num' GROUP BY a.ts_name ORDER BY total")->result_array();			
+				
+		}
+		else {
+			return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc', a.ts_name AS name, COUNT(a.ts_date) AS days,
+										                                 SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total, SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'avg' 
+										                              FROM time_sheet_jobs a INNER JOIN jobs b ON (a.job_no=b.job_no AND b.name=a.ts_name) 
+																	 WHERE  a.job_no='$num' 
+																	 GROUP BY a.ts_name ORDER BY total")->result_array();			
+		}
+
+	}
+
+
+	function get_timesheet_jobwise_hrs($d1,$d2,$num){
+
+		if($d1!="" && $d2!=""){
+			return  $this->db->query("SELECT (SELECT COUNT(ts_date) FROM time_sheet WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') ) AS days,
+									                              		  SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) AS total ,
+															     	     SEC_TO_TIME(AVG(TIME_TO_SEC(job_time))) AS 'avg' 
+															     	     FROM time_sheet_jobs 
+																	 WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') AND job_no='$num' ")->result_array();			
+				
+		}
+		else {
+			return  $this->db->query("SELECT (SELECT COUNT(ts_date) FROM time_sheet  ) AS days,
+									                             		  SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) AS total ,
+									                             		  SEC_TO_TIME(AVG(TIME_TO_SEC(job_time))) AS 'avg' 
+															     		  FROM time_sheet_jobs 
+																		 WHERE  job_no='$num' ")->result_array();			
+		}
+	}
+
+function get_timesheet_ot_hrs($d1,$d2){
+		if($d1 != '' && $d2 != ''){
+			return  $this->db->query("SELECT  COUNT(ts_date)  AS days,
+																	 SUM(HOUR(ts_late))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_late)*60))) AS late ,
+																	SUM(HOUR(ts_duty))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_duty)*60))) AS duty ,
+																	 ROUND(AVG(HOUR(ts_duty))+HOUR(SEC_TO_TIME(AVG(MINUTE(ts_duty)*60)))) AS avgduty ,
+																	 SUM(HOUR(ts_ot))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_ot)*60))) AS ot , 
+																	  ROUND(AVG(HOUR(ts_ot))+HOUR(SEC_TO_TIME(AVG(MINUTE(ts_ot)*60)))) AS avgot ,
+																	 SUM(HOUR(ts_lunch))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_lunch)*60))) AS lunch ,
+																	 SUM(HOUR(ts_tot_hrs))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_tot_hrs)*60))) AS total 
+																	FROM time_sheet 
+																	 WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') ")->result_array();			
+		}
+		else{
+			return  $this->db->query("SELECT  COUNT(ts_date) AS days,
+																 SUM(HOUR(ts_late))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_late)*60))) AS late ,
+																	SUM(HOUR(ts_duty))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_duty)*60))) AS duty ,
+																	 ROUND(AVG(HOUR(ts_duty))+HOUR(SEC_TO_TIME(AVG(MINUTE(ts_duty)*60)))) AS avgduty ,
+																	 SUM(HOUR(ts_ot))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_ot)*60))) AS ot , 
+																	  ROUND(AVG(HOUR(ts_ot))+HOUR(SEC_TO_TIME(AVG(MINUTE(ts_ot)*60)))) AS avgot ,
+																	 SUM(HOUR(ts_lunch))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_lunch)*60))) AS lunch ,
+																	 SUM(HOUR(ts_tot_hrs))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_tot_hrs)*60))) AS total 
+																FROM time_sheet")->result_array();			
+		}
+	}
+
+	function get_timesheet_ot($d1,$d2){
+		if($d1!='' && $d2!=''){
+			return  $this->db->query("SELECT  ts_name AS name,COUNT(ts_date) AS days,
+																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_late))) AS late ,
+																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_duty))) AS duty ,
+																	 SEC_TO_TIME(AVG(TIME_TO_SEC(ts_duty))) AS avgduty ,
+																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_ot))) AS ot , 
+																	 SEC_TO_TIME(AVG(TIME_TO_SEC(ts_ot))) AS avgot ,
+																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_lunch))) AS lunch ,
+																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_tot_hrs))) AS total 
+																	FROM time_sheet 
+																	 WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') GROUP BY ts_name")->result_array();			
+		}
+		else {
+			return  $this->db->query("SELECT  ts_name AS name,COUNT(ts_date) AS days,
+																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_late))) AS late ,
+																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_duty))) AS duty ,
+																	 SEC_TO_TIME(AVG(TIME_TO_SEC(ts_duty))) AS avgduty ,
+																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_ot))) AS ot , 
+																	 SEC_TO_TIME(AVG(TIME_TO_SEC(ts_ot))) AS avgot ,
+																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_lunch))) AS lunch ,
+																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_tot_hrs))) AS total 
+																	FROM time_sheet 
+																	GROUP BY ts_name")->result_array();			
+
+		}	}
+
+function timesheet_job_activity_emp($d1,$d2,$Emp_Name){
+			if($d1!='' && $d2!=''){
+				return  $this->db->query("SELECT *,a.job_desc,b.desc,DATE_FORMAT(c.ts_date,'%d-%m-%Y') as date1
+					     				FROM time_sheet_jobs c INNER JOIN jobs a ON (a.job_no=c.job_no AND a.name=ts_name) INNER JOIN activity_code b ON b.code=activity
+					     				WHERE STR_TO_DATE(DATE_FORMAT(c.ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y')  AND ts_name='$Emp_Name'  ORDER BY ts_date DESC")->result_array();			
+					
+			}
+			else{
+				return  $this->db->query("SELECT *,a.job_desc,b.desc,DATE_FORMAT(c.ts_date,'%d-%m-%Y') as date1
+					     				FROM time_sheet_jobs c INNER JOIN jobs a ON (a.job_no=c.job_no AND a.name=ts_name) INNER JOIN activity_code b ON b.code=activity
+					     				WHERE  ts_name='$Emp_Name'  ORDER BY ts_date DESC")->result_array();			
+					
+			}
+		}
+
+		function timesheet_job_activity_emp_hrs($d1,$d2,$Emp_Name){
+			if($d1!='' && $d2 != ''){
+				return  $this->db->query("SELECT COUNT(days1) as days,
+																			(SELECT 	SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) as  total
+																			FROM time_sheet_jobs WHERE   STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y')   AND ts_name='$Emp_Name' ) as total
+																	
+																	FROM (SELECT  COUNT(ts_date) AS days1
+																								FROM time_sheet_jobs
+										     													WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y')  AND ts_name='$Emp_Name' GROUP BY ts_date ) a  ")->result_array();	
+			}
+			else {
+				return  $this->db->query("SELECT COUNT(days1) as days,
+																			(SELECT 	SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) as  total
+																			FROM time_sheet_jobs WHERE ts_name='$Emp_Name' ) as total
+																	
+																	FROM (SELECT  COUNT(ts_date) AS days1
+																								FROM time_sheet_jobs
+										     													WHERE  ts_name='$Emp_Name' GROUP BY ts_date ) a  ")->result_array();			
+			}
+		}
+function get_timesheet_Dept($d1,$d2,$dept){
+			if($d1!="" && $d2!=""){
+				return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc',
+																		COUNT(a.ts_date) AS Days,
+																		 SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total,
+																		SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'AVG'
+																		FROM time_sheet_jobs a INNER JOIN jobs b ON (a.job_no=b.job_no AND b.name=a.ts_name) INNER JOIN team c ON c.Employee_Number=a.ts_name
+																		 WHERE STR_TO_DATE(DATE_FORMAT(a.ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') AND c.Department='$dept' GROUP BY a.job_no ORDER BY b.addedtime desc")->result_array();			
+			}
+			else {
+				return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc',
+																			COUNT(a.ts_date) AS Days, 
+																			SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total,
+																			SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'AVG'
+																		FROM time_sheet_jobs a INNER JOIN jobs b ON (a.job_no=b.job_no AND b.name=a.ts_name) INNER JOIN team c ON c.Employee_Number=a.ts_name
+																		 WHERE  c.Department='$dept' GROUP BY a.job_no ORDER BY b.addedtime desc")->result_array();			
+			}
+		}
+			
+		function get_timesheet_Dept_hrs($d1,$d2,$dept){
+			if($d1!="" && $d2!=""){
+				return  $this->db->query("SELECT (SELECT COUNT(ts_date) FROM time_sheet WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') ) AS days,
+							                                            				SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) AS total ,
+																						ROUND(AVG(HOUR(job_time))+HOUR(SEC_TO_TIME(AVG(MINUTE(job_time)*60)))) AS avg 
+																				  FROM time_sheet_jobs  INNER JOIN team c ON c.Employee_Number=ts_name
+																		 WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') AND   c.Department='$dept'")->result_array();		
+			}
+			else {
+				return  $this->db->query("SELECT (SELECT COUNT(ts_date) FROM time_sheet) AS days,
+							                                            				SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) AS total ,
+																						ROUND(AVG(HOUR(job_time))+HOUR(SEC_TO_TIME(AVG(MINUTE(job_time)*60)))) AS avg 
+													                       FROM time_sheet_jobs INNER JOIN team c ON c.Employee_Number=ts_name
+							                                                  WHERE  c.Department='$dept' ")->result_array();		
+			}
+		}
+		
+
+	function get_team()
+	{
+		return $this->db->query("SELECT a.Employee_Number AS Employee_Number FROM team a  WHERE a.Designation='TeamLeader' ORDER BY a.Employee_Number")->result_array();
+	}
+function get_timesheet_Team($d1,$d2,$team){
+			if($d1!="" && $d2!=""){
+				return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc', COUNT(a.ts_date) AS days, SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total,SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'AVG', COUNT(ts_date) AS Days
+																		FROM time_sheet_jobs a INNER JOIN jobs b ON (a.job_no=b.job_no AND b.name=a.ts_name) INNER JOIN team c ON c.Employee_Number=a.ts_name
+																		 WHERE STR_TO_DATE(DATE_FORMAT(a.ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') AND (c.LeaveApprover_L1='$team' OR c.Employee_Number='$team') GROUP BY a.job_no ORDER BY b.addedtime desc")->result_array();			
+			}
+			else {
+				return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc', COUNT(a.ts_date) AS days, SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total,SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'AVG', COUNT(ts_date) AS Days
+																		FROM time_sheet_jobs a INNER JOIN jobs b ON (a.job_no=b.job_no AND b.name=a.ts_name) INNER JOIN team c ON c.Employee_Number=a.ts_name
+																		 WHERE  (c.LeaveApprover_L1='$team' OR c.Employee_Number='$team') GROUP BY a.job_no   ORDER BY b.addedtime desc")->result_array();			
+			}
+		}
+			
+		function get_timesheet_Team_hrs($d1,$d2,$team){
+			if($d1!="" && $d2!=""){
+				return  $this->db->query("SELECT (SELECT COUNT(ts_date) FROM time_sheet WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') ) AS days,
+							                                            				SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) AS total ,
+																						ROUND(AVG(HOUR(job_time))+HOUR(SEC_TO_TIME(AVG(MINUTE(job_time)*60)))) AS avg 
+													                               FROM time_sheet_jobs  INNER JOIN team c ON c.Employee_Number=ts_name
+																			 WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') AND   (c.LeaveApprover_L1='$team' OR c.Employee_Number='$team') ")->result_array();		
+			}
+			else {
+				return  $this->db->query("SELECT (SELECT COUNT(ts_date) FROM time_sheet) AS days,
+							                                            				SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) AS total ,
+																						ROUND(AVG(HOUR(job_time))+HOUR(SEC_TO_TIME(AVG(MINUTE(job_time)*60)))) AS avg 
+											                                    FROM time_sheet_jobs INNER JOIN team c ON c.Employee_Number=ts_name
+							                                           	       WHERE  (c.LeaveApprover_L1='$team'  OR c.Employee_Number='$team' )")->result_array();		
+			}
+		}		
+
+function timesheet_team_job($d1,$d2,$num,$team){
+				
+			if($d1!="" && $d2!=""){
+				return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc', a.ts_name AS name, COUNT(a.ts_date) AS days, SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total,SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'avg'
+																								FROM time_sheet_jobs a INNER JOIN jobs b ON (a.job_no=b.job_no AND b.name=a.ts_name) JOIN team c ON c.Employee_Number=a.ts_name
+																	 							WHERE STR_TO_DATE(DATE_FORMAT(a.ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') AND a.job_no='$num' AND (c.LeaveApprover_L1='$team' OR c.Employee_Number='$team') GROUP BY a.ts_name ORDER BY c.Designation")->result_array();			
+					
+			}
+			else {
+				return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc', a.ts_name AS name, COUNT(a.ts_date) AS days,
+										                                 SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total, SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'avg' 
+										                              FROM time_sheet_jobs a INNER JOIN jobs b ON (a.job_no=b.job_no AND b.name=a.ts_name)  JOIN team c ON c.Employee_Number=a.ts_name
+																	 WHERE  a.job_no='$num' AND (c.LeaveApprover_L1='$team' OR c.Employee_Number='$team')
+																	 GROUP BY a.ts_name ORDER BY c.Designation")->result_array();			
+			}
+
+		}
+
+
+		function timesheet_team_job_hrs($d1,$d2,$num,$team){
+
+			if($d1!="" && $d2!=""){
+				return  $this->db->query("SELECT (SELECT COUNT(ts_date) FROM time_sheet WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') ) AS days,
+							                                            				SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) AS total ,
+																						ROUND(AVG(HOUR(job_time))+HOUR(SEC_TO_TIME(AVG(MINUTE(job_time)*60)))) AS avg 
+															           FROM time_sheet_jobs JOIN team b ON b.Employee_Number=ts_name
+																	  WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') AND job_no='$num' AND (b.LeaveApprover_L1='$team' OR b.Employee_Number='$team')")->result_array();			
+					
+			}
+			else {
+				return  $this->db->query("SELECT (SELECT COUNT(ts_date) FROM time_sheet  ) AS days,
+							                                            				SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) AS total ,
+																						ROUND(AVG(HOUR(job_time))+HOUR(SEC_TO_TIME(AVG(MINUTE(job_time)*60)))) AS avg 
+												                                  FROM time_sheet_jobs JOIN team b ON b.Employee_Number=ts_name
+																				 WHERE  job_no='$num' AND (b.LeaveApprover_L1='$team' OR b.Employee_Number='$team')")->result_array();			
+			}
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 	
 	
 	
 	
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+		
+		
+		
+		
+		
+		
+		
+		
+		
 	
 	
 	
@@ -223,17 +762,8 @@ Class timesheet_reports_model extends CI_Model{
 		
 		
 
-	function get_dept()
-	{
-		return $this->db->query("SELECT * FROM departments ")->result_array();
-	}
 
 
-
-	function get_team()
-	{
-		return $this->db->query("SELECT a.EmployeeName AS EmployeeName FROM team a  WHERE a.Designation='TeamLeader' ORDER BY a.EmployeeName")->result_array();
-	}
 
 	function get_activity_code()
 	{
@@ -287,16 +817,8 @@ Class timesheet_reports_model extends CI_Model{
 	}
 
 
-	function get_team_members()
-	{
-		$uname=$this->session->userdata('fullname');
+	
 
-		return $this->db->query("SELECT EmployeeName AS 'Name' FROM team WHERE LeaveApprover_L1='$uname' ORDER BY EmployeeName ")->result_array();
-	}
-
-	function get_all_members(){
-		return $this->db->query("SELECT DISTINCT Emp_Name AS 'Name' FROM  admin_users WHERE Emp_role NOT IN ('MD') ORDER BY name")->result_array();
-	}
 
 
 	function displayname($name)
@@ -358,200 +880,13 @@ Class timesheet_reports_model extends CI_Model{
 	}
 		
 
-	function get_timesheet_overall_hrs($d1,$d2){
+	
 
 
-		if($d1!="" && $d2!=""){
-			return  $this->db->query("SELECT (SELECT COUNT(ts_date) FROM time_sheet WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') ) AS days,
-									                               		  SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) AS total ,
-															     		  SEC_TO_TIME(AVG(TIME_TO_SEC(job_time))) AS'avg' 
-									                                      FROM time_sheet_jobs  
-																		  WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') ")->result_array();		
-		}
-		else {
-			return  $this->db->query("SELECT (SELECT COUNT(ts_date) FROM time_sheet) AS days,
-							                                           		 SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) AS total ,
-															   			     SEC_TO_TIME(AVG(TIME_TO_SEC(job_time))) AS 'avg' 
-							                                                 FROM time_sheet_jobs  ")->result_array();		
-		}
-	}
 
-	function get_timesheet_overall($d1,$d2){
+	
 
-		if($d1!="" && $d2!=""){
-			return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc', COUNT(a.ts_date) AS days, SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total,SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'AVG', COUNT(ts_date) AS Days FROM time_sheet_jobs a INNER JOIN jobs b ON (a.job_no=b.job_no AND b.name=a.ts_name)
-																		 WHERE  STR_TO_DATE(DATE_FORMAT(a.ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') GROUP BY a.job_no ORDER BY b.addedtime desc")->result_array();			
-		}
-		else {
-			return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc', COUNT(a.ts_date) AS days, SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total,SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'AVG', COUNT(ts_date) AS Days FROM time_sheet_jobs a INNER JOIN jobs b ON (a.job_no=b.job_no AND b.name=a.ts_name)
-																		     GROUP BY a.job_no ORDER BY b.addedtime desc")->result_array();			
-		}
-			
-			
-	}
-
-
-	function get_timesheet_jobwise($d1,$d2,$num){
-
-		if($d1!="" && $d2!=""){
-			return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc', a.ts_name AS name, COUNT(a.ts_date) AS days,
-																	 SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total,
-																	 SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'avg' 
-																	 FROM time_sheet_jobs a INNER JOIN jobs b ON (a.job_no=b.job_no AND b.name=a.ts_name)  
-																	 WHERE STR_TO_DATE(DATE_FORMAT(a.ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') AND a.job_no='$num' GROUP BY a.ts_name ORDER BY total")->result_array();			
-				
-		}
-		else {
-			return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc', a.ts_name AS name, COUNT(a.ts_date) AS days,
-										                                 SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total, SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'avg' 
-										                              FROM time_sheet_jobs a INNER JOIN jobs b ON (a.job_no=b.job_no AND b.name=a.ts_name) 
-																	 WHERE  a.job_no='$num' 
-																	 GROUP BY a.ts_name ORDER BY total")->result_array();			
-		}
-
-	}
-
-
-	function get_timesheet_jobwise_hrs($d1,$d2,$num){
-
-		if($d1!="" && $d2!=""){
-			return  $this->db->query("SELECT (SELECT COUNT(ts_date) FROM time_sheet WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') ) AS days,
-									                              		  SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) AS total ,
-															     	     SEC_TO_TIME(AVG(TIME_TO_SEC(job_time))) AS 'avg' 
-															     	     FROM time_sheet_jobs 
-																	 WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') AND job_no='$num' ")->result_array();			
-				
-		}
-		else {
-			return  $this->db->query("SELECT (SELECT COUNT(ts_date) FROM time_sheet  ) AS days,
-									                             		  SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) AS total ,
-									                             		  SEC_TO_TIME(AVG(TIME_TO_SEC(job_time))) AS 'avg' 
-															     		  FROM time_sheet_jobs 
-																		 WHERE  job_no='$num' ")->result_array();			
-		}
-	}
-
-		
-	function get_timesheet_userwise($d1,$d2,$Emp_Name){
-
-		if($d1!='' && $d2!='' ){
-			return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc', a.ts_name AS name, COUNT(a.ts_date) AS days, SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total,SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS avg FROM time_sheet_jobs a INNER JOIN jobs b ON (a.job_no=b.job_no AND b.name=a.ts_name)
-																	 WHERE STR_TO_DATE(DATE_FORMAT(a.ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') AND a.ts_name='$Emp_Name' GROUP BY a.job_no ORDER BY total")->result_array();			
-				
-		}
-		else{
-			return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc', a.ts_name AS name, COUNT(a.ts_date) AS days, SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total,SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS avg FROM time_sheet_jobs a INNER JOIN jobs b ON (a.job_no=b.job_no AND b.name=a.ts_name)
-																	 WHERE  a.ts_name='$Emp_Name' GROUP BY a.job_no ORDER BY total")->result_array();			
-		}
-	}
-
-	function get_timesheet_userwise_hrs($d1,$d2,$Emp_Name){
-		if($d1!='' && $d2!=''){
-			return  $this->db->query("SELECT  COUNT(a.ts_date) AS days,
-																		  SUM(HOUR(a.job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(a.job_time)*60))) AS total ,
-															     		 SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'avg' 
-															     		 FROM time_sheet_jobs a 
-																	 WHERE STR_TO_DATE(DATE_FORMAT(a.ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') AND a.ts_name='$Emp_Name' ")->result_array();			
-		}
-		else {
-			return  $this->db->query("SELECT  COUNT(a.ts_date) AS days,
-																		  SUM(HOUR(a.job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(a.job_time)*60))) AS total ,
-															     			SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'avg' 
-																		FROM time_sheet_jobs a 
-																	 WHERE  a.ts_name='$Emp_Name' ")->result_array();			
-		}
-	}
-
-	function get_timesheet_ot_hrs($d1,$d2){
-		if($d1 != '' && $d2 != ''){
-			return  $this->db->query("SELECT  COUNT(ts_date)  AS days,
-																	 SUM(HOUR(ts_late))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_late)*60))) AS late ,
-																	SUM(HOUR(ts_duty))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_duty)*60))) AS duty ,
-																	 ROUND(AVG(HOUR(ts_duty))+HOUR(SEC_TO_TIME(AVG(MINUTE(ts_duty)*60)))) AS avgduty ,
-																	 SUM(HOUR(ts_ot))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_ot)*60))) AS ot , 
-																	  ROUND(AVG(HOUR(ts_ot))+HOUR(SEC_TO_TIME(AVG(MINUTE(ts_ot)*60)))) AS avgot ,
-																	 SUM(HOUR(ts_lunch))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_lunch)*60))) AS lunch ,
-																	 SUM(HOUR(ts_tot_hrs))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_tot_hrs)*60))) AS total 
-																	FROM time_sheet 
-																	 WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') ")->result_array();			
-		}
-		else{
-			return  $this->db->query("SELECT  COUNT(ts_date) AS days,
-																 SUM(HOUR(ts_late))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_late)*60))) AS late ,
-																	SUM(HOUR(ts_duty))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_duty)*60))) AS duty ,
-																	 ROUND(AVG(HOUR(ts_duty))+HOUR(SEC_TO_TIME(AVG(MINUTE(ts_duty)*60)))) AS avgduty ,
-																	 SUM(HOUR(ts_ot))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_ot)*60))) AS ot , 
-																	  ROUND(AVG(HOUR(ts_ot))+HOUR(SEC_TO_TIME(AVG(MINUTE(ts_ot)*60)))) AS avgot ,
-																	 SUM(HOUR(ts_lunch))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_lunch)*60))) AS lunch ,
-																	 SUM(HOUR(ts_tot_hrs))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_tot_hrs)*60))) AS total 
-																FROM time_sheet")->result_array();			
-		}
-	}
-
-	function get_timesheet_ot($d1,$d2){
-		if($d1!='' && $d2!=''){
-			return  $this->db->query("SELECT  ts_name AS name,COUNT(ts_date) AS days,
-																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_late))) AS late ,
-																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_duty))) AS duty ,
-																	 SEC_TO_TIME(AVG(TIME_TO_SEC(ts_duty))) AS avgduty ,
-																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_ot))) AS ot , 
-																	 SEC_TO_TIME(AVG(TIME_TO_SEC(ts_ot))) AS avgot ,
-																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_lunch))) AS lunch ,
-																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_tot_hrs))) AS total 
-																	FROM time_sheet 
-																	 WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') GROUP BY ts_name")->result_array();			
-		}
-		else {
-			return  $this->db->query("SELECT  ts_name AS name,COUNT(ts_date) AS days,
-																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_late))) AS late ,
-																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_duty))) AS duty ,
-																	 SEC_TO_TIME(AVG(TIME_TO_SEC(ts_duty))) AS avgduty ,
-																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_ot))) AS ot , 
-																	 SEC_TO_TIME(AVG(TIME_TO_SEC(ts_ot))) AS avgot ,
-																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_lunch))) AS lunch ,
-																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_tot_hrs))) AS total 
-																	FROM time_sheet 
-																	GROUP BY ts_name")->result_array();			
-
-		}	}
-
-
-		function timesheet_activity_emp($d1,$d2,$Emp_Name){
-			if($d1!='' && $d2!=''){
-				return  $this->db->query("SELECT *, DATE_FORMAT(ts_date,'%d-%m-%Y') as date1
-					     				FROM time_sheet 
-					     				WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') AND ts_name='$Emp_Name'  ORDER BY ts_date DESC")->result_array();			
-					
-			}
-			else{
-				return  $this->db->query("SELECT *, DATE_FORMAT(ts_date,'%d-%m-%Y') as date1
-					     				FROM time_sheet 
-					     				WHERE  ts_name='$Emp_Name'  ORDER BY ts_date DESC")->result_array();			
-					
-			}
-		}
-
-		function timesheet_activity_emp_hrs($d1,$d2,$Emp_Name){
-			if($d1!='' && $d2 != ''){
-				return  $this->db->query("SELECT  COUNT(ts_date) AS days,
-					     													SUM(HOUR(ts_lunch))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_lunch)*60))) AS lunch ,
-																			SUM(HOUR(ts_duty))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_duty)*60))) AS duty ,
-																			SUM(HOUR(ts_ot))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_ot)*60))) AS ot ,
-																			SUM(HOUR(ts_tot_hrs))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_tot_hrs)*60))) AS total
-																			FROM time_sheet 
-					     													WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y')  AND ts_name='$Emp_Name' ")->result_array();			
-					
-			}
-			else {
-				return  $this->db->query("SELECT  COUNT(ts_date) AS days,
-					     													SUM(HOUR(ts_lunch))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_lunch)*60))) AS lunch ,
-																			SUM(HOUR(ts_duty))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_duty)*60))) AS duty ,
-																			SUM(HOUR(ts_ot))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_ot)*60))) AS ot ,
-																			SUM(HOUR(ts_tot_hrs))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_tot_hrs)*60))) AS total
-					     													FROM time_sheet 
-					     													WHERE ts_name='$Emp_Name' ")->result_array();			
-			}
-		}
+	
 
 	
 
@@ -567,151 +902,14 @@ Class timesheet_reports_model extends CI_Model{
 			
 			
 			
-		function team_timesheet_overall_hrs($d1,$d2){
-			$Emp_Name=$this->session->userdata('fullname');
+	
 
-			if($d1!="" && $d2!=""){
-				return  $this->db->query("SELECT (SELECT COUNT(ts_date) FROM time_sheet WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y')  ) AS days,
-									                         			SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) AS total ,
-																		ROUND(AVG(HOUR(job_time))+HOUR(SEC_TO_TIME(AVG(MINUTE(job_time)*60)))) AS avg 
-																   	   FROM time_sheet_jobs  JOIN team b ON b.EmployeeName=ts_name
-																	 WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y')  AND b.LeaveApprover_L1='$Emp_Name' ")->result_array();		
-			}
-			else {
-				return  $this->db->query("SELECT (SELECT COUNT(ts_date) FROM time_sheet) AS days,
-							                                            				SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) AS total ,
-																						ROUND(AVG(HOUR(job_time))+HOUR(SEC_TO_TIME(AVG(MINUTE(job_time)*60)))) AS avg 
-																      		FROM time_sheet_jobs   JOIN team b ON b.EmployeeName=ts_name
-							                                                WHERE b.LeaveApprover_L1='$Emp_Name'")->result_array();		
-			}
-		}
-
-		function team_timesheet_overall($d1,$d2){
-			$Emp_Name=$this->session->userdata('fullname');
-			if($d1!="" && $d2!=""){
-				return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc', COUNT(a.ts_date) AS days,
-																		SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total,
-																		SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'AVG'
-																		 FROM time_sheet_jobs a INNER JOIN jobs b ON (a.job_no=b.job_no AND b.name=a.ts_name)  JOIN team c ON c.EmployeeName=a.ts_name
-																		 WHERE STR_TO_DATE(DATE_FORMAT(a.ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y')  AND c.LeaveApprover_L1='$Emp_Name'     GROUP BY a.job_no ORDER BY b.addedtime desc")->result_array();			
-			}
-			else {
-				return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc', COUNT(a.ts_date) AS days,
-																		SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total,
-																		SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'AVG'
-																		 FROM time_sheet_jobs a INNER JOIN jobs b  ON (a.job_no=b.job_no AND b.name=a.ts_name)  JOIN team c ON c.EmployeeName=a.ts_name
-																		WHERE c.LeaveApprover_L1='$Emp_Name'     
-																		GROUP BY a.job_no ORDER BY b.addedtime desc")->result_array();			
-			}
-				
-				
-		}
+	
 
 
-		function team_timesheet_jobwise($d1,$d2,$num){
-
-			$Emp_Name=$this->session->userdata('fullname');
-
-			if($d1!="" && $d2!=""){
-				return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc', a.ts_name AS name,
-																								 COUNT(a.ts_date) AS days,
-																								  SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total,
-																								  SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'avg' 
-																								FROM time_sheet_jobs a INNER JOIN jobs b ON (a.job_no=b.job_no AND b.name=a.ts_name)   JOIN team c ON c.EmployeeName=a.ts_name
-																	 							WHERE STR_TO_DATE(DATE_FORMAT(a.ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y')  AND a.job_no='$num' AND c.LeaveApprover_L1='$Emp_Name' GROUP BY a.ts_name ORDER BY total")->result_array();			
-					
-			}
-			else {
-				return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc', a.ts_name AS name,
-																		 COUNT(a.ts_date) AS days,
-										                                 SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total, 
-										                                 SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'avg' 
-										                              FROM time_sheet_jobs a INNER JOIN jobs b ON (a.job_no=b.job_no AND b.name=a.ts_name)  JOIN team c ON c.EmployeeName=a.ts_name
-																	 WHERE  a.job_no='$num' AND c.LeaveApprover_L1='$Emp_Name'
-																	 GROUP BY a.ts_name ORDER BY total")->result_array();			
-			}
-
-		}
-
-
-		function team_timesheet_jobwise_hrs($d1,$d2,$num){
-			$Emp_Name=$this->session->userdata('fullname');
-
-			if($d1!="" && $d2!=""){
-				return  $this->db->query("SELECT (SELECT COUNT(ts_date) FROM time_sheet WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y')  ) AS days,
-							                                            				SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) AS total ,
-																						ROUND(AVG(HOUR(job_time))+HOUR(SEC_TO_TIME(AVG(MINUTE(job_time)*60)))) AS avg 
-																				FROM time_sheet_jobs JOIN team b ON b.EmployeeName=ts_name
-																	  WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y')  AND job_no='$num' AND b.LeaveApprover_L1='$Emp_Name'")->result_array();			
-					
-			}
-			else {
-				return  $this->db->query("SELECT (SELECT COUNT(ts_date) FROM time_sheet  ) AS days,
-							                                            				SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) AS total ,
-																						ROUND(AVG(HOUR(job_time))+HOUR(SEC_TO_TIME(AVG(MINUTE(job_time)*60)))) AS avg 
-																	         FROM time_sheet_jobs JOIN team b ON b.EmployeeName=ts_name
-																	 WHERE  job_no='$num' AND b.LeaveApprover_L1='$Emp_Name'")->result_array();			
-			}
-		}
 
 			
-		function team_timesheet_ot_hrs($d1,$d2){
-			$Emp_Name=$this->session->userdata('fullname');
-			if($d1 != '' && $d2 != ''){
-				return  $this->db->query("SELECT  COUNT(ts_date) AS days,
-																		 SUM(HOUR(ts_late))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_late)*60))) AS late ,
-																	SUM(HOUR(ts_duty))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_duty)*60))) AS duty ,
-																	 ROUND(AVG(HOUR(ts_duty))+HOUR(SEC_TO_TIME(AVG(MINUTE(ts_duty)*60)))) AS avgduty ,
-																	 SUM(HOUR(ts_ot))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_ot)*60))) AS ot , 
-																	  ROUND(AVG(HOUR(ts_ot))+HOUR(SEC_TO_TIME(AVG(MINUTE(ts_ot)*60)))) AS avgot ,
-																	 SUM(HOUR(ts_lunch))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_lunch)*60))) AS lunch ,
-																	 SUM(HOUR(ts_tot_hrs))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_tot_hrs)*60))) AS total 
-																	FROM time_sheet JOIN team b ON b.EmployeeName=ts_name
-																	 WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y')  AND b.LeaveApprover_L1='$Emp_Name' ")->result_array();			
-			}
-			else{
-				return  $this->db->query("SELECT  COUNT(ts_date) AS days,
-																	 SUM(HOUR(ts_late))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_late)*60))) AS late ,
-																	SUM(HOUR(ts_duty))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_duty)*60))) AS duty ,
-																	 ROUND(AVG(HOUR(ts_duty))+HOUR(SEC_TO_TIME(AVG(MINUTE(ts_duty)*60)))) AS avgduty ,
-																	 SUM(HOUR(ts_ot))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_ot)*60))) AS ot , 
-																	  ROUND(AVG(HOUR(ts_ot))+HOUR(SEC_TO_TIME(AVG(MINUTE(ts_ot)*60)))) AS avgot ,
-																	 SUM(HOUR(ts_lunch))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_lunch)*60))) AS lunch ,
-																	 SUM(HOUR(ts_tot_hrs))+HOUR(SEC_TO_TIME(SUM(MINUTE(ts_tot_hrs)*60))) AS total 
-																	FROM time_sheet JOIN team b ON b.EmployeeName=ts_name
-																	 WHERE b.LeaveApprover_L1='$Emp_Name' ")->result_array();			
-			}
-		}
-
-		function team_timesheet_ot($d1,$d2){
-			$Emp_Name=$this->session->userdata('fullname');
-			if($d1!='' && $d2!=''){
-				return  $this->db->query("SELECT  ts_name AS name,COUNT(ts_date) AS days,
-																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_late))) AS late ,
-																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_duty))) AS duty ,
-																	 SEC_TO_TIME(AVG(TIME_TO_SEC(ts_duty))) AS avgduty ,
-																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_ot))) AS ot , 
-																	 SEC_TO_TIME(AVG(TIME_TO_SEC(ts_ot))) AS avgot ,
-																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_lunch))) AS lunch ,
-																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_tot_hrs))) AS total 
-																	FROM time_sheet JOIN team b ON b.EmployeeName=ts_name
-																	 WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y')  AND b.LeaveApprover_L1='$Emp_Name' GROUP BY ts_name")->result_array();			
-			}
-			else {
-				return  $this->db->query("SELECT  ts_name AS name,COUNT(ts_date) AS days,
-																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_late))) AS late ,
-																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_duty))) AS duty ,
-																	 SEC_TO_TIME(AVG(TIME_TO_SEC(ts_duty))) AS avgduty ,
-																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_ot))) AS ot , 
-																	 SEC_TO_TIME(AVG(TIME_TO_SEC(ts_ot))) AS avgot ,
-																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_lunch))) AS lunch ,
-																	 SEC_TO_TIME(SUM(TIME_TO_SEC(ts_tot_hrs))) AS total 
-																	FROM time_sheet JOIN team b ON b.EmployeeName=ts_name
-																	 WHERE  b.LeaveApprover_L1='$Emp_Name' GROUP BY ts_name")->result_array();			
-
-			}
-		}
-			
+	
 
 
 		function get_timedate($date)
@@ -807,111 +1005,11 @@ Class timesheet_reports_model extends CI_Model{
 
 
 			
-		function get_timesheet_Dept($d1,$d2,$dept){
-			if($d1!="" && $d2!=""){
-				return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc',
-																		COUNT(a.ts_date) AS Days,
-																		 SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total,
-																		SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'AVG'
-																		FROM time_sheet_jobs a INNER JOIN jobs b ON (a.job_no=b.job_no AND b.name=a.ts_name) INNER JOIN team c ON c.EmployeeName=a.ts_name
-																		 WHERE STR_TO_DATE(DATE_FORMAT(a.ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') AND c.Department='$dept' GROUP BY a.job_no ORDER BY b.addedtime desc")->result_array();			
-			}
-			else {
-				return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc',
-																			COUNT(a.ts_date) AS Days, 
-																			SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total,
-																			SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'AVG'
-																		FROM time_sheet_jobs a INNER JOIN jobs b ON (a.job_no=b.job_no AND b.name=a.ts_name) INNER JOIN team c ON c.EmployeeName=a.ts_name
-																		 WHERE  c.Department='$dept' GROUP BY a.job_no ORDER BY b.addedtime desc")->result_array();			
-			}
-		}
-			
-		function get_timesheet_Dept_hrs($d1,$d2,$dept){
-			if($d1!="" && $d2!=""){
-				return  $this->db->query("SELECT (SELECT COUNT(ts_date) FROM time_sheet WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') ) AS days,
-							                                            				SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) AS total ,
-																						ROUND(AVG(HOUR(job_time))+HOUR(SEC_TO_TIME(AVG(MINUTE(job_time)*60)))) AS avg 
-																				  FROM time_sheet_jobs  INNER JOIN team c ON c.EmployeeName=ts_name
-																		 WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') AND   c.Department='$dept'")->result_array();		
-			}
-			else {
-				return  $this->db->query("SELECT (SELECT COUNT(ts_date) FROM time_sheet) AS days,
-							                                            				SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) AS total ,
-																						ROUND(AVG(HOUR(job_time))+HOUR(SEC_TO_TIME(AVG(MINUTE(job_time)*60)))) AS avg 
-													                       FROM time_sheet_jobs INNER JOIN team c ON c.EmployeeName=ts_name
-							                                                  WHERE  c.Department='$dept' ")->result_array();		
-			}
-		}
-
-		function get_timesheet_Team($d1,$d2,$team){
-			if($d1!="" && $d2!=""){
-				return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc', COUNT(a.ts_date) AS days, SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total,SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'AVG', COUNT(ts_date) AS Days
-																		FROM time_sheet_jobs a INNER JOIN jobs b ON (a.job_no=b.job_no AND b.name=a.ts_name) INNER JOIN team c ON c.EmployeeName=a.ts_name
-																		 WHERE STR_TO_DATE(DATE_FORMAT(a.ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') AND (c.LeaveApprover_L1='$team' OR c.EmployeeName='$team') GROUP BY a.job_no ORDER BY b.addedtime desc")->result_array();			
-			}
-			else {
-				return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc', COUNT(a.ts_date) AS days, SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total,SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'AVG', COUNT(ts_date) AS Days
-																		FROM time_sheet_jobs a INNER JOIN jobs b ON (a.job_no=b.job_no AND b.name=a.ts_name) INNER JOIN team c ON c.EmployeeName=a.ts_name
-																		 WHERE  (c.LeaveApprover_L1='$team' OR c.EmployeeName='$team') GROUP BY a.job_no   ORDER BY b.addedtime desc")->result_array();			
-			}
-		}
-			
-		function get_timesheet_Team_hrs($d1,$d2,$team){
-			if($d1!="" && $d2!=""){
-				return  $this->db->query("SELECT (SELECT COUNT(ts_date) FROM time_sheet WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') ) AS days,
-							                                            				SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) AS total ,
-																						ROUND(AVG(HOUR(job_time))+HOUR(SEC_TO_TIME(AVG(MINUTE(job_time)*60)))) AS avg 
-													                               FROM time_sheet_jobs  INNER JOIN team c ON c.EmployeeName=ts_name
-																			 WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') AND   (c.LeaveApprover_L1='$team' OR c.EmployeeName='$team') ")->result_array();		
-			}
-			else {
-				return  $this->db->query("SELECT (SELECT COUNT(ts_date) FROM time_sheet) AS days,
-							                                            				SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) AS total ,
-																						ROUND(AVG(HOUR(job_time))+HOUR(SEC_TO_TIME(AVG(MINUTE(job_time)*60)))) AS avg 
-											                                    FROM time_sheet_jobs INNER JOIN team c ON c.EmployeeName=ts_name
-							                                           	       WHERE  (c.LeaveApprover_L1='$team'  OR c.EmployeeName='$team' )")->result_array();		
-			}
-		}
+		
+		
 
 
-		function timesheet_team_job($d1,$d2,$num,$team){
-				
-			if($d1!="" && $d2!=""){
-				return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc', a.ts_name AS name, COUNT(a.ts_date) AS days, SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total,SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'avg'
-																								FROM time_sheet_jobs a INNER JOIN jobs b ON (a.job_no=b.job_no AND b.name=a.ts_name) JOIN team c ON c.EmployeeName=a.ts_name
-																	 							WHERE STR_TO_DATE(DATE_FORMAT(a.ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') AND a.job_no='$num' AND (c.LeaveApprover_L1='$team' OR c.EmployeeName='$team') GROUP BY a.ts_name ORDER BY c.Designation")->result_array();			
-					
-			}
-			else {
-				return  $this->db->query("SELECT a.job_no AS num, b.job_desc AS 'desc', a.ts_name AS name, COUNT(a.ts_date) AS days,
-										                                 SEC_TO_TIME(SUM(TIME_TO_SEC(a.job_time))) AS total, SEC_TO_TIME(AVG(TIME_TO_SEC(a.job_time))) AS 'avg' 
-										                              FROM time_sheet_jobs a INNER JOIN jobs b ON (a.job_no=b.job_no AND b.name=a.ts_name)  JOIN team c ON c.EmployeeName=a.ts_name
-																	 WHERE  a.job_no='$num' AND (c.LeaveApprover_L1='$team' OR c.EmployeeName='$team')
-																	 GROUP BY a.ts_name ORDER BY c.Designation")->result_array();			
-			}
-
-		}
-
-
-		function timesheet_team_job_hrs($d1,$d2,$num,$team){
-
-			if($d1!="" && $d2!=""){
-				return  $this->db->query("SELECT (SELECT COUNT(ts_date) FROM time_sheet WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') ) AS days,
-							                                            				SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) AS total ,
-																						ROUND(AVG(HOUR(job_time))+HOUR(SEC_TO_TIME(AVG(MINUTE(job_time)*60)))) AS avg 
-															           FROM time_sheet_jobs JOIN team b ON b.EmployeeName=ts_name
-																	  WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') AND job_no='$num' AND (b.LeaveApprover_L1='$team' OR b.EmployeeName='$team')")->result_array();			
-					
-			}
-			else {
-				return  $this->db->query("SELECT (SELECT COUNT(ts_date) FROM time_sheet  ) AS days,
-							                                            				SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) AS total ,
-																						ROUND(AVG(HOUR(job_time))+HOUR(SEC_TO_TIME(AVG(MINUTE(job_time)*60)))) AS avg 
-												                                  FROM time_sheet_jobs JOIN team b ON b.EmployeeName=ts_name
-																				 WHERE  job_no='$num' AND (b.LeaveApprover_L1='$team' OR b.EmployeeName='$team')")->result_array();			
-			}
-		}
-
+		
 			
 
 		function update_timeoffice($id,$date1,$date2,$in,$out){
@@ -930,43 +1028,7 @@ Class timesheet_reports_model extends CI_Model{
 		}
 
 			
-		function timesheet_job_activity_emp($d1,$d2,$Emp_Name){
-			if($d1!='' && $d2!=''){
-				return  $this->db->query("SELECT *,a.job_desc,b.desc,DATE_FORMAT(c.ts_date,'%d-%m-%Y') as date1
-					     				FROM time_sheet_jobs c INNER JOIN jobs a ON (a.job_no=c.job_no AND a.name=ts_name) INNER JOIN activity_code b ON b.code=activity
-					     				WHERE STR_TO_DATE(DATE_FORMAT(c.ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y')  AND ts_name='$Emp_Name'  ORDER BY ts_date DESC")->result_array();			
-					
-			}
-			else{
-				return  $this->db->query("SELECT *,a.job_desc,b.desc,DATE_FORMAT(c.ts_date,'%d-%m-%Y') as date1
-					     				FROM time_sheet_jobs c INNER JOIN jobs a ON (a.job_no=c.job_no AND a.name=ts_name) INNER JOIN activity_code b ON b.code=activity
-					     				WHERE  ts_name='$Emp_Name'  ORDER BY ts_date DESC")->result_array();			
-					
-			}
-		}
-
-		function timesheet_job_activity_emp_hrs($d1,$d2,$Emp_Name){
-			if($d1!='' && $d2 != ''){
-				return  $this->db->query("SELECT COUNT(days1) as days,
-																			(SELECT 	SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) as  total
-																			FROM time_sheet_jobs WHERE   STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y')   AND ts_name='$Emp_Name' ) as total
-																	
-																	FROM (SELECT  COUNT(ts_date) AS days1
-																								FROM time_sheet_jobs
-										     													WHERE STR_TO_DATE(DATE_FORMAT(ts_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y')  AND ts_name='$Emp_Name' GROUP BY ts_date ) a  ")->result_array();	
-			}
-			else {
-				return  $this->db->query("SELECT COUNT(days1) as days,
-																			(SELECT 	SUM(HOUR(job_time))+HOUR(SEC_TO_TIME(SUM(MINUTE(job_time)*60))) as  total
-																			FROM time_sheet_jobs WHERE ts_name='$Emp_Name' ) as total
-																	
-																	FROM (SELECT  COUNT(ts_date) AS days1
-																								FROM time_sheet_jobs
-										     													WHERE  ts_name='$Emp_Name' GROUP BY ts_date ) a  ")->result_array();			
-			}
-		}
-			
-
+		
 			
 			
 		function check_job($job){
@@ -1010,20 +1072,7 @@ Class timesheet_reports_model extends CI_Model{
 		}
 
 
-		function showLeaves_emp($d1,$d2,$Emp_Name){
-			if($d1!="" && $d2!=""){
-				return $this->db->query("SELECT date1,days,dayname1
-																	FROM 
-																	(SELECT DATE_FORMAT(From_Date,'%d-%m-%Y') as date1 ,Total_Days as days, DAYNAME(SUBSTRING(From_Date,1,10)) as dayname1 FROM leave_history WHERE Emp_Name='$Emp_Name' AND STR_TO_DATE(DATE_FORMAT(From_Date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') ) a ")->result_array();
-			}
-			else{
-				return $this->db->query("SELECT date1,days,dayname1
-																	FROM 
-																	(SELECT DATE_FORMAT(From_Date,'%d-%m-%Y') as date1 ,Total_Days as days, DAYNAME(SUBSTRING(From_Date,1,10)) as dayname1 FROM leave_history WHERE Emp_Name='$Emp_Name'  ) a ")->result_array();
-
-			}
-		}
-			
+		
 
 		
 		function fetch_all_users(){

@@ -63,7 +63,7 @@ class timesheet_entry extends CI_Controller
 
 	function intro_admin()
 	{
-		$data["menu"]='e_reports';
+		$data["menu"]='timesheet';
 		$data["submenu"]='tms_intro';
 		$data["activity"]=$this->timesheet_entry_model->get_activity_code();
 		$data["job"]=$this->timesheet_entry_model->get_jobs();

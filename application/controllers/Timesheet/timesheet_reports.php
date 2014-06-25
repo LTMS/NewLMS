@@ -59,12 +59,119 @@ class timesheet_reports extends CI_Controller
 		$this->load->view('Timesheet/Timesheet_Reports/timesheet_job_activity_user',$data);
 	}
 	
-			
+	function teamsheet_leader()
+	{
+		$data["menu"]='timesheet';
+		$data["submenu"]='teamsheet_leader';
+
+		$data["members"]=$this->timesheet_reports_model->get_team_members();
+		$this->template->write('titleText', "My Team Time Sheet");
+		$this->template->write_view('sideLinks', 'general/menu',$data);
+		$this->template->write_view('bodyContent', 'timesheet/Timesheet_Reports/teamsheet_leader',$data);
+		$this->template->render();
+	}
+function team_timesheet_overall(){
+		$result= $this->input->post();
+		$data["history"]=$this->timesheet_reports_model->team_timesheet_overall($result["d1"],$result["d2"]);
+		$data["tothrs"]=$this->timesheet_reports_model->team_timesheet_overall_hrs($result["d1"],$result["d2"]);
+		$this->load->view('timesheet/Timesheet_Reports/teamsheet_overall',$data);
+	}
+function team_timesheet_jobwise(){
+		$result= $this->input->post();
+		$data["history"]=$this->timesheet_reports_model->team_timesheet_jobwise($result["d1"],$result["d2"],$result["num"]);
+		$data["tothrs"]=$this->timesheet_reports_model->team_timesheet_jobwise_hrs($result["d1"],$result["d2"],$result["num"]);
+		$this->load->view('timesheet/Timesheet_Reports/teamsheet_jobwise',$data);
+	}
+function get_timesheet_userwise(){
+		$result= $this->input->post();
+		$data["history"]=$this->timesheet_reports_model->get_timesheet_userwise($result["d1"],$result["d2"],$result["user"]);
+		$data["tothrs"]=$this->timesheet_reports_model->get_timesheet_userwise_hrs($result["d1"],$result["d2"],$result["user"]);
+		$this->load->view('timesheet/Timesheet_Reports/teamsheet_userwise',$data);
+	}
+
+	function team_timesheet_ot(){
+		$result= $this->input->post();
+		$data["history"]=$this->timesheet_reports_model->team_timesheet_ot($result["d1"],$result["d2"]);
+		$data["tothrs"]=$this->timesheet_reports_model->team_timesheet_ot_hrs($result["d1"],$result["d2"]);
+		$this->load->view('timesheet/Timesheet_Reports/teamsheet_ot',$data);
+	}
+		
+	function timesheet_activity_emp(){
+		$result= $this->input->post();
+		$data["history"]=$this->timesheet_reports_model->timesheet_activity_emp($result["d1"],$result["d2"],$result["user"]);
+		$data["tothrs"]=$this->timesheet_reports_model->timesheet_activity_emp_hrs($result["d1"],$result["d2"],$result["user"]);
+		$data["leaves"]=$this->timesheet_reports_model->showLeaves_emp($result["d1"],$result["d2"],$result["user"]);
+		$this->load->view('timesheet/Timesheet_Reports/timesheet_activity_emp',$data);
+	}
+function teamsheet()
+	{
+		$data["menu"]='e_reports';
+		$data["submenu"]='teamsheet';
+		$data["deptlist"]=$this->timesheet_reports_model->get_dept();
+		$data["members"]=$this->timesheet_reports_model->get_all_members();
+
+		$this->template->write('titleText', "Employees Time Sheet Reports");
+		$this->template->write_view('sideLinks', 'general/menu',$data);
+		$this->template->write_view('bodyContent', 'timesheet/Timesheet_Reports/teamsheet',$data);
+		$this->template->render();
+	}	
+function get_timesheet_overall(){
+		$result= $this->input->post();
+		$data["history"]=$this->timesheet_reports_model->get_timesheet_overall($result["d1"],$result["d2"]);
+		$data["tothrs"]=$this->timesheet_reports_model->get_timesheet_overall_hrs($result["d1"],$result["d2"]);
+		$this->load->view('timesheet/Timesheet_Reports/teamsheet_overall',$data);
+	}	
+function get_timesheet_jobwise(){
+		$result= $this->input->post();
+		$data["history"]=$this->timesheet_reports_model->get_timesheet_jobwise($result["d1"],$result["d2"],$result["num"]);
+		$data["tothrs"]=$this->timesheet_reports_model->get_timesheet_jobwise_hrs($result["d1"],$result["d2"],$result["num"]);
+		$this->load->view('timesheet/Timesheet_Reports/teamsheet_jobwise',$data);
+	}
+function get_timesheet_ot(){
+		$result= $this->input->post();
+		$data["history"]=$this->timesheet_reports_model->get_timesheet_ot($result["d1"],$result["d2"]);
+		$data["tothrs"]=$this->timesheet_reports_model->get_timesheet_ot_hrs($result["d1"],$result["d2"]);
+		$this->load->view('timesheet/Timesheet_Reports/teamsheet_ot',$data);
+	}
 	
-	
-	
-	
-	
+function timesheet_job_activity_emp(){
+		$result= $this->input->post();
+		$data["history"]=$this->timesheet_reports_model->timesheet_job_activity_emp($result["d1"],$result["d2"],$result["user"]);
+		$data["tothrs"]=$this->timesheet_reports_model->timesheet_job_activity_emp_hrs($result["d1"],$result["d2"],$result["user"]);
+		$data["leaves"]=$this->timesheet_reports_model->showLeaves_emp($result["d1"],$result["d2"],$result["user"]);
+		$this->load->view('timesheet/Timesheet_Reports/timesheet_job_activity_emp',$data);
+	}
+function get_timesheet_Dept(){
+		$result= $this->input->post();
+		$data["history"]=$this->timesheet_reports_model->get_timesheet_Dept($result["d1"],$result["d2"],$result["dept"]);
+		$data["tothrs"]=$this->timesheet_reports_model->get_timesheet_Dept_hrs($result["d1"],$result["d2"],$result["dept"]);
+		$this->load->view('timesheet/Timesheet_Reports/teamsheet_overall',$data);
+	}			
+function teamsheet_dept()
+	{
+		$data["menu"]='timesheet';
+		$data["submenu"]='teamsheet_dept';
+		$data["deptlist"]=$this->timesheet_reports_model->get_dept();
+		$data["teamlist"]=$this->timesheet_reports_model->get_team();
+		$data["members"]=$this->timesheet_reports_model->get_all_members();
+
+		$this->template->write('titleText', "Extensive Time Sheet Reports");
+		$this->template->write_view('sideLinks', 'general/menu',$data);
+		$this->template->write_view('bodyContent', 'timesheet/Timesheet_Reports/teamsheet_dept',$data);
+		$this->template->render();
+	}
+	function get_timesheet_Team(){
+		$result= $this->input->post();
+		$data["history"]=$this->timesheet_reports_model->get_timesheet_Team($result["d1"],$result["d2"],$result["team"]);
+		$data["tothrs"]=$this->timesheet_reports_model->get_timesheet_Team_hrs($result["d1"],$result["d2"],$result["team"]);
+		$this->load->view('timesheet/Timesheet_Reports/teamsheet_overall',$data);
+	}
+	function timesheet_team_job(){
+		$result= $this->input->post();
+		$data["history"]=$this->timesheet_reports_model->timesheet_team_job($result["d1"],$result["d2"],$result["job"],$result["team"]);
+		$data["tothrs"]=$this->timesheet_reports_model->timesheet_team_job_hrs($result["d1"],$result["d2"],$result["job"],$result["team"]);
+		$this->load->view('timesheet/Timesheet_Reports/teamsheet_jobwise',$data);
+	}	
 	
 	
 	
@@ -122,46 +229,11 @@ class timesheet_reports extends CI_Controller
 		$this->template->render();
 	}
 
-	function teamsheet()
-	{
-		$data["menu"]='e_reports';
-		$data["submenu"]='teamsheet';
-		$data["deptlist"]=$this->timesheet_model->get_dept();
-		$data["members"]=$this->timesheet_model->get_all_members();
+	
+		
+	
+		
 
-		$this->template->write('titleText', "Employees Time Sheet Reports");
-		$this->template->write_view('sideLinks', 'general/menu',$data);
-		$this->template->write_view('bodyContent', 'timesheet/teamsheet',$data);
-		$this->template->render();
-	}
-		
-	function teamsheet_dept()
-	{
-		$data["menu"]='e_reports';
-		$data["submenu"]='teamsheet_dept';
-		$data["deptlist"]=$this->timesheet_model->get_dept();
-		$data["teamlist"]=$this->timesheet_model->get_team();
-		$data["members"]=$this->timesheet_model->get_all_members();
-
-		$this->template->write('titleText', "Extensive Time Sheet Reports");
-		$this->template->write_view('sideLinks', 'general/menu',$data);
-		$this->template->write_view('bodyContent', 'timesheet/teamsheet_dept',$data);
-		$this->template->render();
-	}
-		
-	function teamsheet_leader()
-	{
-		$data["menu"]='timesheet';
-		$data["submenu"]='teamsheet_leader';
-
-		$data["members"]=$this->timesheet_model->get_team_members();
-		$this->template->write('titleText', "My Team Time Sheet");
-		$this->template->write_view('sideLinks', 'general/menu',$data);
-		$this->template->write_view('bodyContent', 'timesheet/teamsheet_leader',$data);
-		$this->template->render();
-	}
-		
-		
 	 
 		
 		
@@ -240,77 +312,6 @@ class timesheet_reports extends CI_Controller
 		$this->timesheet_model->update_jobs($result["num"],$result["desc"],$result["type"],$result["id"]);
 			
 	}
-		
-		
-
-		
-	function get_timesheet_overall(){
-		$result= $this->input->post();
-		$data["history"]=$this->timesheet_model->get_timesheet_overall($result["d1"],$result["d2"]);
-		$data["tothrs"]=$this->timesheet_model->get_timesheet_overall_hrs($result["d1"],$result["d2"]);
-		$this->load->view('timesheet/teamsheet_overall',$data);
-	}
-		
-	function get_timesheet_jobwise(){
-		$result= $this->input->post();
-		$data["history"]=$this->timesheet_model->get_timesheet_jobwise($result["d1"],$result["d2"],$result["num"]);
-		$data["tothrs"]=$this->timesheet_model->get_timesheet_jobwise_hrs($result["d1"],$result["d2"],$result["num"]);
-		$this->load->view('timesheet/teamsheet_jobwise',$data);
-	}
-
-	function get_timesheet_userwise(){
-		$result= $this->input->post();
-		$data["history"]=$this->timesheet_model->get_timesheet_userwise($result["d1"],$result["d2"],$result["user"]);
-		$data["tothrs"]=$this->timesheet_model->get_timesheet_userwise_hrs($result["d1"],$result["d2"],$result["user"]);
-		$this->load->view('timesheet/teamsheet_userwise',$data);
-	}
-
-	function get_timesheet_ot(){
-		$result= $this->input->post();
-		$data["history"]=$this->timesheet_model->get_timesheet_ot($result["d1"],$result["d2"]);
-		$data["tothrs"]=$this->timesheet_model->get_timesheet_ot_hrs($result["d1"],$result["d2"]);
-		$this->load->view('timesheet/teamsheet_ot',$data);
-	}
-
-		
-		
-	function timesheet_activity_emp(){
-		$result= $this->input->post();
-		$data["history"]=$this->timesheet_model->timesheet_activity_emp($result["d1"],$result["d2"],$result["user"]);
-		$data["tothrs"]=$this->timesheet_model->timesheet_activity_emp_hrs($result["d1"],$result["d2"],$result["user"]);
-		$data["leaves"]=$this->timesheet_model->showLeaves_emp($result["d1"],$result["d2"],$result["user"]);
-		$this->load->view('timesheet/timesheet_activity_emp',$data);
-	}
-		
-		
-		
-	
-	
-	
-		
-		
-		
-		
-	function team_timesheet_overall(){
-		$result= $this->input->post();
-		$data["history"]=$this->timesheet_model->team_timesheet_overall($result["d1"],$result["d2"]);
-		$data["tothrs"]=$this->timesheet_model->team_timesheet_overall_hrs($result["d1"],$result["d2"]);
-		$this->load->view('timesheet/teamsheet_overall',$data);
-	}
-		
-	function team_timesheet_jobwise(){
-		$result= $this->input->post();
-		$data["history"]=$this->timesheet_model->team_timesheet_jobwise($result["d1"],$result["d2"],$result["num"]);
-		$data["tothrs"]=$this->timesheet_model->team_timesheet_jobwise_hrs($result["d1"],$result["d2"],$result["num"]);
-		$this->load->view('timesheet/teamsheet_jobwise',$data);
-	}
-
-	function team_timesheet_ot(){
-		$result= $this->input->post();
-		$data["history"]=$this->timesheet_model->team_timesheet_ot($result["d1"],$result["d2"]);
-		$data["tothrs"]=$this->timesheet_model->team_timesheet_ot_hrs($result["d1"],$result["d2"]);
-		$this->load->view('timesheet/teamsheet_ot',$data);
-	}
 
 		
 	function get_timedate(){
@@ -348,26 +349,10 @@ class timesheet_reports extends CI_Controller
 
 		
 
-	function get_timesheet_Dept(){
-		$result= $this->input->post();
-		$data["history"]=$this->timesheet_model->get_timesheet_Dept($result["d1"],$result["d2"],$result["dept"]);
-		$data["tothrs"]=$this->timesheet_model->get_timesheet_Dept_hrs($result["d1"],$result["d2"],$result["dept"]);
-		$this->load->view('timesheet/teamsheet_overall',$data);
-	}
+	
 		
-	function get_timesheet_Team(){
-		$result= $this->input->post();
-		$data["history"]=$this->timesheet_model->get_timesheet_Team($result["d1"],$result["d2"],$result["team"]);
-		$data["tothrs"]=$this->timesheet_model->get_timesheet_Team_hrs($result["d1"],$result["d2"],$result["team"]);
-		$this->load->view('timesheet/teamsheet_overall',$data);
-	}
-		
-	function timesheet_team_job(){
-		$result= $this->input->post();
-		$data["history"]=$this->timesheet_model->timesheet_team_job($result["d1"],$result["d2"],$result["job"],$result["team"]);
-		$data["tothrs"]=$this->timesheet_model->timesheet_team_job_hrs($result["d1"],$result["d2"],$result["job"],$result["team"]);
-		$this->load->view('timesheet/teamsheet_jobwise',$data);
-	}
+	
+	
 		
 		
 		
@@ -389,14 +374,7 @@ class timesheet_reports extends CI_Controller
 
 
 
-	function timesheet_job_activity_emp(){
-		$result= $this->input->post();
-		$data["history"]=$this->timesheet_model->timesheet_job_activity_emp($result["d1"],$result["d2"],$result["user"]);
-		$data["tothrs"]=$this->timesheet_model->timesheet_job_activity_emp_hrs($result["d1"],$result["d2"],$result["user"]);
-		$data["leaves"]=$this->timesheet_model->showLeaves_emp($result["d1"],$result["d2"],$result["user"]);
-		$this->load->view('timesheet/timesheet_job_activity_emp',$data);
-	}
-		
+	
 	function check_job(){
 		$result= $this->input->post();
 		echo  $this->timesheet_model->check_job($result["job"]);

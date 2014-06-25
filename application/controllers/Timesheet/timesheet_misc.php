@@ -24,7 +24,7 @@ class timesheet_misc extends CI_Controller
 
 	function addjobs()
 	{
-		$data["menu"]='misc';
+		$data["menu"]='timesheet';
 		$data["submenu"]='addjobs';
 		$data["jobs"]=$this->timesheet_misc_model->get_all_jobs();
 		$data["npjobs"]=$this->timesheet_misc_model->get_all_npjobs();
@@ -36,30 +36,80 @@ class timesheet_misc extends CI_Controller
 	}
 function check_job(){
 		$result= $this->input->post();
-		echo  $this->timesheet_model->check_job($result["job"]);
+		echo  $this->timesheet_misc_model->check_job($result["job"]);
 	}
 	
 function add_jobs(){
 		$result= $this->input->post();
-		$this->timesheet_model->add_jobs($result["num"],$result["desc"],$result["type"]);
+		$this->timesheet_misc_model->add_jobs($result["num"],$result["desc"],$result["type"]);
 			
 	}
 function update_jobs(){
 		$result= $this->input->post();
-		$this->timesheet_model->update_jobs($result["num"],$result["desc"],$result["type"],$result["id"]);
+		$this->timesheet_misc_model->update_jobs($result["num"],$result["desc"],$result["type"],$result["id"]);
 			
 	}
 
 	function fetch_job(){
 		$result= $this->input->post();
-		echo  $this->timesheet_model->fetch_job($result["job"]);
+		echo  $this->timesheet_misc_model->fetch_job($result["job"]);
 	}
-	
+	function fetch_npjob(){
+		$result= $this->input->post();
+		echo  $this->timesheet_misc_model->fetch_npjob($result["job"]);
+	}
 	function check_npjob(){
 		$result= $this->input->post();
-		echo	$this->timesheet_model->check_npjob($result["job"]);
+		echo	$this->timesheet_misc_model->check_npjob($result["job"]);
 
 	}
+function process_jobs(){
+		$result= $this->input->post();
+		$this->timesheet_misc_model->process_jobs($result["value"],$result["num"]);
+			
+	}
+		
+	function process_npjobs(){
+		$result= $this->input->post();
+		$this->timesheet_misc_model->process_npjobs($result["value"],$result["num"]);
+			
+	}
+	
+
+	function locked_users()
+	{
+		$data["menu"]='misc';
+		$data["submenu"]='locked_users';
+		//	$data["members"]=$this->timesheet_model->get_team_members();
+		$data["members"]=$this->timesheet_misc_model->get_leave_members();
+		$data['years']=$this->timesheet_misc_model->get_lockedyears();
+
+		$this->template->write('titleText', "Time Sheet Locked Users");
+		$this->template->write_view('sideLinks', 'general/menu',$data);
+		$this->template->write_view('bodyContent', 'timesheet/Timesheet_misc/locked_users',$data);
+		$this->template->render();
+	}	
+	
+	function get_locked_users(){
+		$result= $this->input->post();
+		$data["history"]=$this->timesheet_misc_model->get_locked_users($result["year"],$result["month"]);
+		$this->load->view('timesheet/locked_users_page',$data);
+
+	}
+	function get_locked_user(){
+		$result= $this->input->post();
+		$data["history"]=$this->timesheet_misc_model->get_locked_user($result["year"],$result["month"],$result["emp"]);
+		$this->load->view('timesheet/locked_users_page',$data);
+
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -209,18 +259,7 @@ function update_jobs(){
 	}
 		
 		
-	function process_jobs(){
-		$result= $this->input->post();
-		$this->timesheet_model->process_jobs($result["value"],$result["num"]);
-			
-	}
-		
-	function process_npjobs(){
-		$result= $this->input->post();
-		$this->timesheet_model->process_npjobs($result["value"],$result["num"]);
-			
-	}
-
+	
 	
 		
 	
@@ -410,32 +449,8 @@ function update_jobs(){
 		
 	
 	
-	function locked_users()
-	{
-		$data["menu"]='misc';
-		$data["submenu"]='locked_users';
-		//	$data["members"]=$this->timesheet_model->get_team_members();
-		$data["members"]=$this->timesheet_model->get_leave_members();
-		$data['years']=$this->timesheet_model->get_lockedyears();
 
-		$this->template->write('titleText', "Time Sheet Locked Users");
-		$this->template->write_view('sideLinks', 'general/menu',$data);
-		$this->template->write_view('bodyContent', 'timesheet/locked_users',$data);
-		$this->template->render();
-	}
-
-	function get_locked_users(){
-		$result= $this->input->post();
-		$data["history"]=$this->timesheet_model->get_locked_users($result["year"],$result["month"]);
-		$this->load->view('timesheet/locked_users_page',$data);
-
-	}
-	function get_locked_user(){
-		$result= $this->input->post();
-		$data["history"]=$this->timesheet_model->get_locked_user($result["year"],$result["month"],$result["emp"]);
-		$this->load->view('timesheet/locked_users_page',$data);
-
-	}
+	
 		
 	function unlock_timesheet(){
 		$result= $this->input->post();

@@ -155,7 +155,67 @@ function edit_npjobs(no,desc,id){
 	
 }
 
+function edit_jobs(no,desc,id){
+	//document.getElementById('tit1').innerHTML="Edit Job";
+	document.getElementById('job_no').value=no;
+	document.getElementById('job_desc').value=desc;
+	document.getElementById('edit_id1').value=id;
+	document.getElementById('row_job1').style.display="none";
+	document.getElementById('row_job2').style.display="";
+	document.getElementById("job_no").setAttribute("readonly",1);
+							
+}
 
+
+
+
+function process_npjobs(val,no){
+	//alert(val+' : '+no);				
+	
+	$.post(site_url+"/Timesheet/timesheet_misc/process_npjobs/",{value:val,num:no},function(result){
+		window.location.reload();
+	});
+
+}
+
+function process_jobs(val,no){
+	//alert(val+' : '+no);						
+		
+				$.post(site_url+"/Timesheet/timesheet_misc/process_jobs/",{value:val,num:no},function(result){
+					window.location.reload();
+						});
+
+	}		
+function get_locked_users(op){
+	if(op=='1'){
+		//alert("1");
+		document.getElementById('emp').value="";
+		document.getElementById('option').value="1";
+			var yr=document.getElementById('year').value;
+		var mon=document.getElementById('month').value;
+			if(yr!="" && emp1!=""){
+			$.post(site_url+"/Timesheet/timesheet_misc/get_locked_users",{year:yr,month:mon},function(data){										
+				$("#contentData").html("");
+				$("#contentData").append(data);
+			});	
+		}
+	}
+	
+	if(op=='2'){
+		//alert("2");
+		document.getElementById('option').value="2";
+		var emp1=document.getElementById('emp').value;
+		var yr=document.getElementById('year').value;
+		var mon=document.getElementById('month').value;
+		if(yr!="" && emp1!=""){
+			$.post(site_url+"/Timesheet/timesheet_misc/get_locked_user",{year:yr,month:mon,emp:emp1},function(data){										
+		
+				$("#contentData").html("");
+				$("#contentData").append(data);
+			});
+		}
+	}
+}	
 
 
 
@@ -317,38 +377,7 @@ function edit_npjobs(no,desc,id){
 			
 			
 			
-			
-			function edit_jobs(no,desc,id){
-				//document.getElementById('tit1').innerHTML="Edit Job";
-				document.getElementById('job_no').value=no;
-				document.getElementById('job_desc').value=desc;
-				document.getElementById('edit_id1').value=id;
-				document.getElementById('row_job1').style.display="none";
-				document.getElementById('row_job2').style.display="";
-				document.getElementById("job_no").setAttribute("readonly",1);
-										
-			}
-			
 		
-			
-			
-			function process_npjobs(val,no){
-				//alert(val+' : '+no);				
-				
-				$.post(site_url+"/Timesheet/timesheet/process_npjobs/",{value:val,num:no},function(result){
-					window.location.reload();
-				});
-		
-			}
-			
-			function process_jobs(val,no){
-				//alert(val+' : '+no);						
-					
-							$.post(site_url+"/Timesheet/timesheet/process_jobs/",{value:val,num:no},function(result){
-								window.location.reload();
-									});
-			
-				}		
 				
 		
 			
@@ -1051,36 +1080,7 @@ function edit_npjobs(no,desc,id){
 
 			
 			
-			function get_locked_users(op){
-				if(op=='1'){
-					//alert("1");
-					document.getElementById('emp').value="";
-					document.getElementById('option').value="1";
-						var yr=document.getElementById('year').value;
-					var mon=document.getElementById('month').value;
-						if(yr!="" && emp1!=""){
-						$.post(site_url+"/Timesheet/timesheet/get_locked_users",{year:yr,month:mon},function(data){										
-							$("#contentData").html("");
-							$("#contentData").append(data);
-						});	
-					}
-				}
-				
-				if(op=='2'){
-					//alert("2");
-					document.getElementById('option').value="2";
-					var emp1=document.getElementById('emp').value;
-					var yr=document.getElementById('year').value;
-					var mon=document.getElementById('month').value;
-					if(yr!="" && emp1!=""){
-						$.post(site_url+"/Timesheet/timesheet/get_locked_user",{year:yr,month:mon,emp:emp1},function(data){										
-					
-							$("#contentData").html("");
-							$("#contentData").append(data);
-						});
-					}
-				}
-			}	
+			
 					function unlock_timesheet(id1){
 						
 						$.post(site_url+"/Timesheet/timesheet/unlock_timesheet",{id:id1},function(data){		

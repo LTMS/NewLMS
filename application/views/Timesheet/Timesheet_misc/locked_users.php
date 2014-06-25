@@ -75,4 +75,4 @@
 	value="" id="option" />
 <script
 	type="text/javascript"
-	src="<?php echo base_url(); ?>js/Timesheet/timesheet.js"></script>
+	src="<?php echo base_url(); ?>js/Timesheet/timesheet_misc.js"></script>

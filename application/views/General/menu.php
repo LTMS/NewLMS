@@ -45,7 +45,7 @@
     				<li><a href="<?php echo site_url("Timesheet/timesheet_misc/addjobs"); ?>" <?php if ($submenu=='addjobs'){?>class="current"<?php }?> >Manage Jobs</a></li>
     				<?php }?>
 					<?php if( $this->session->userdata('Emp_Role')=='teamleader'){ ?>	
-					<li><a href="<?php echo site_url("Timesheet/timesheet/teamsheet_leader"); ?>" <?php if ($submenu=='teamsheet_leader'){?>class="current"<?php }?> >My Team Time Sheet</a></li> 
+					<li><a href="<?php echo site_url("Timesheet/timesheet_reports/teamsheet_leader"); ?>" <?php if ($submenu=='teamsheet_leader'){?>class="current"<?php }?> >My Team Time Sheet</a></li> 
 					<?php }?>	
 					<?php if( $this->session->userdata('Emp_Role')=='MD'){ ?>
 				
@@ -66,8 +66,8 @@
 			<ul style="display: block;">
 	   				<li><a href="<?php echo site_url("Leave/lms/history_admin"); ?>" <?php if ($submenu=='history_admin'){?>class="current"<?php }?> >Employees Leave History</a></li>
 	     			<li><a href="<?php echo site_url("Leave/lms/leave_summary"); ?>" <?php if ($submenu=='summary'){?>class="current"<?php }?> >Employees Leave Summary</a></li>
-		   			<li><a href="<?php echo site_url("Timesheet/timesheet/teamsheet"); ?>" <?php if ($submenu=='teamsheet'){?>class="current"<?php }?> >Employees Time Sheet</a></li>
-	    			<li><a href="<?php echo site_url("Timesheet/timesheet/teamsheet_dept"); ?>" <?php if ($submenu=='teamsheet_dept'){?>class="current"<?php }?> >Extensive Time Sheet Report</a></li>  
+		   			<li><a href="<?php echo site_url("Timesheet/timesheet_reports/teamsheet"); ?>" <?php if ($submenu=='teamsheet'){?>class="current"<?php }?> >Employees Time Sheet</a></li>
+	    			<li><a href="<?php echo site_url("Timesheet/timesheet_reports/teamsheet_dept"); ?>" <?php if ($submenu=='teamsheet_dept'){?>class="current"<?php }?> >Extensive Time Sheet Report</a></li>  
 	     		 	<li><a href="<?php echo site_url("Timesheet/overtime/admin_ot"); ?>" <?php if ($submenu=='admin_ot'){?>class="current"<?php }?> >Employees O-T Details</a></li>
 	     		 	<li><a href="<?php echo site_url("Timesheet/overtime/admin_otsummary"); ?>" <?php if ($submenu=='admin_otsummary'){?>class="current"<?php }?> >Employees O-T Summary</a></li>
 	    		 	<li><a href="<?php echo site_url("Timesheet/overtime/ack_ot_history"); ?>" <?php if ($submenu=='ack_ot_history'){?>class="current"<?php }?> >Acknowledged OT History</a></li>
@@ -90,11 +90,11 @@
 					<li><a href="<?php echo site_url("Leave/lms/add_dept"); ?>" <?php if ($submenu=='add_dept'){?>class="current"<?php }?> >Manage Departments</a></li>
     				<li><a href="<?php echo site_url("general/holidays");?>" <?php if ($submenu=='holidays'){?>class="current"<?php }?> > Manage Holidays</a></li>
  					<li><a href="<?php echo site_url("general/parameters");?>" <?php if ($submenu=='parameters'){?>class="current"<?php }?> > Manage Office Time</a></li>
-     		 		<li><a href="<?php echo site_url("Timesheet/timesheet/locked_users"); ?>" <?php if ($submenu=='locked_users'){?>class="current"<?php }?> >Time Sheet Locked Users</a></li>
+     		 		<li><a href="<?php echo site_url("Timesheet/timesheet_misc/locked_users"); ?>" <?php if ($submenu=='locked_users'){?>class="current"<?php }?> >Time Sheet Locked Users</a></li>
     				<li><a href="<?php echo site_url("User/users/Users_Info");?>" <?php if ($submenu=='users_info'){?>class="current"<?php }?> > Employees Details</a></li>
 					<?php }?>
 					<?php if($this->session->userdata('Emp_Role')=='admin'){ ?>
-					<li><a href="<?php echo site_url("Timesheet/timesheet/set_inout_time"); ?>" <?php if ($submenu=='set_inout_time'){?>class="current"<?php }?> >Update Time Office IN-OUT</a></li>
+					<li><a href="<?php echo site_url("Timesheet/timesheet_misc/set_inout_time"); ?>" <?php if ($submenu=='set_inout_time'){?>class="current"<?php }?> >Update Time Office IN-OUT</a></li>
 					<?php } ?>
  			</ul>
 </li>
