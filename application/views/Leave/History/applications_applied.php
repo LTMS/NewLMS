@@ -37,7 +37,11 @@
 		$counter=0;$day=0;$type='';$d1=0;$d2=0; $user='';
 		foreach($result as $openrow) {
 			$counter++;
-			$rowid="row".$counter;
+			$rowid="row".$counter;			
+			$app_img="app".$counter;			
+			$rej_img="rej".$counter;			
+			$button_row="button".$counter;			
+			$leave_id=$openrow["Leave_ID"];
 			$type=$openrow["Leave_Type"];
 			$day=$openrow["Total_Days"];
 			$d1=date("d-m-Y", strtotime($openrow["From_Date"]));
@@ -48,7 +52,7 @@
 			$apptime=date("d-m-Y", strtotime($openrow["Applied_On"]));
 			$appby=$openrow["Approved_By"];
 			 
-			print("<tr id='$rowid'  class='small'>");
+			print("<tr id='$rowid'  class='small' style='border:1 solid black;'>");
 			print("<td width='4%' align='left'><input type='button'  style='width:150px;color:green' onclick='select_row(\"$counter\",\"$type\",\"$day\",\"$d1\",\"$d2\",\"$user\",this.value,\"$status\",\"$reason\",\"$apptime\",\"$appby\")' value='".$user."'> </td>");
 			//print("<td width='8%' align='center'>".$openrow["Department"]."</td>");
 			print("<td id='$type' width='8%' align='center'>".$status."</td>");
@@ -57,8 +61,8 @@
 			//print("<td width='10%' align='center' style='color:red'>".$status."</td>");
 			print("<td width='8%' align='center'>".$apptime."</td>");
 			print("<td  align='left'>".$reason."</td>");
-			print("<td  align='center'><img style='width:50px;height:20px;'src='../../../images/Leave/approve.png'/> &nbsp;&nbsp;");
-			print("<img style='width:50px;height:20px;'src='../../../images/Leave/reject.png'/></td>");
+			print("<td  id='$button_row' align='center'><img  valign='bottom' id='$app_img' style='width:50px;height:21px;' src='../../../images/Leave/approve.png' onmouseover='change_OnMouseOver(\"$app_img\",\"approve_over.png\")' onmouseout='change_OnMouseOver(\"$app_img\",\"approve.png\")'  onclick='update_LeaveStatusApprover(\"$leave_id\",2,\"$button_row\")'/> &nbsp;&nbsp;");
+			print("<img valign='bottom' id='$rej_img' style='width:50px;height:21px;'src='../../../images/Leave/reject.png' onmouseover='change_OnMouseOver(\"$rej_img\",\"reject_over.png\")' onmouseout='change_OnMouseOver(\"$rej_img\",\"reject.png\")' onclick='update_LeaveStatusApprover(\"$leave_id\",3,\"$button_row\")'/></td>");
 			print("</tr>");
 		}
 		print("</table>");

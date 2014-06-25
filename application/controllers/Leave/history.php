@@ -140,8 +140,113 @@ class History extends CI_Controller
 	}
 
 
-	function get_leave_status()
+	
+	
+	
+		function update_LeaveStatusReporter(){
+						$form_data = $this->input->post();
+						$this->history_model->update_LeaveStatusReporter($form_data["leave_id"],$form_data["remark"],$form_data["status"]);
+		}
+	
+		
+		function update_LeaveStatusApprover(){
+						$form_data = $this->input->post();
+						$this->history_model->update_LeaveStatusApprover($form_data["leave_id"],$form_data["remark"],$form_data["status"]);
+		}
+		
+		
+	
+	function Send_LeaveMail()
 	{
+		$form_data = $this->input->post();
+		$remark=$form_data["remark"];
+		$mail_title=$form_data["mail_title"];
+		$data["result"]=$this->history_model->get_LeaveDetails($form_data["leave_id"]);
+
+		foreach($leave as $row){
+			$to=$row["Email"];
+			$from=$row["FromMail"];
+			$days=$row["Days"];
+			$date=$row["Date"];
+			$time=$row["Time"];
+			$status1=$row["Status"];
+			$name=$row["User"];
+			$type=$row["Type"];
+		}
+		if($status1=='L1 -  Approved'){
+			$status='Team Leader';
+		}
+		if($status1=='L2 -  Approved'){
+			$status='Managing Director';
+		}
+			
+		$mail = new PHPMailer;
+
+		$mail->isSMTP();
+		$mail->Host = 'mail.preipolar.com';
+		$mail->SMTPAuth = True;
+		$mail->Username = 'irshath@preipolar.com';
+		$mail->Password = 'prei@123';
+
+
+		$mail->From = $from;
+		$mail->FromName = 'Leave Mailer';
+		$mail->addAddress($to);
+		$mail->addAddress('saravanan@preipolar.com');
+
+		$mail->isHTML(true);
+
+		$mail->Subject = $name." Your ".$type." was Approved ";
+
+		$c=	"
+								<html><body>
+									<table border='1' align='center' cellpading='0' cellspacing='0' width='70%' style='color:blue;font-weight:bold;margin: 40px 0px 0px 50px;'>
+												<tr >
+														<td colspan='2' align='center' style='color:green'>Approved Leave Details</td>
+														
+												</tr>
+												<tr>
+														<td align='right'>Leave Type</td>
+														<td>$type</td>
+												</tr>
+												<tr>
+														<td align='right'>From Date</td>
+														<td>$date</td>
+												</tr>
+												<tr>
+														<td align='right'>No of Days</td>
+														<td>$days</td>
+												</tr>
+											<tr>
+														<td align='right'>Applied On</td>
+														<td>$time</td>
+											</tr>
+												<tr>
+														<td align='right'>Approved By</td>
+														<td>$status</td>
+											</tr>
+									</table>
+							 	  </body></html>";
+
+		$mail->Body =$c;
+
+		//	$mail->Body    = $name." Your ".$type." from ".$date." for ".$days." day(s) applied on ".$time." status is ".$status;
+		//	$mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+
+		if(!$mail->send()) {
+			echo 'Message could not be sent.';
+			echo 'Mailer Error: ' . $mail->ErrorInfo;
+			exit;
+		}
+
+		echo 'Message has been sent';
+
+
+		$this->load->view('Leave/History/pending_applications',$data);
+	}
+		
+	
+		function get_leave_status(){
 		$form_data = $this->input->post();
 		$type = $form_data["type"];
 		$data["reminder"]=$this->history_model->get_reminder_limit();
@@ -247,95 +352,6 @@ class History extends CI_Controller
 
 
 																							/*  * * Approving Leave * * */
-	
-	function approve()
-	{
-		$form_data = $this->input->post();
-		$remark=$form_data["reason"];
-		$data["result"]=$this->history_model->approve($form_data["lid"],$form_data["reason"]);
-		$leave=$this->history_model->approve_mail($form_data["lid"]);
-
-		foreach($leave as $row){
-			$to=$row["Email"];
-			$from=$row["FromMail"];
-			$days=$row["Days"];
-			$date=$row["Date"];
-			$time=$row["Time"];
-			$status1=$row["Status"];
-			$name=$row["User"];
-			$type=$row["Type"];
-		}
-		if($status1=='L1 -  Approved'){
-			$status='Team Leader';
-		}
-		if($status1=='L2 -  Approved'){
-			$status='Managing Director';
-		}
-			
-		$mail = new PHPMailer;
-
-		$mail->isSMTP();
-		$mail->Host = 'mail.preipolar.com';
-		$mail->SMTPAuth = True;
-		$mail->Username = 'irshath@preipolar.com';
-		$mail->Password = 'prei@123';
-
-
-		$mail->From = $from;
-		$mail->FromName = 'Leave Mailer';
-		$mail->addAddress($to);
-		$mail->addAddress('saravanan@preipolar.com');
-
-		$mail->isHTML(true);
-
-		$mail->Subject = $name." Your ".$type." was Approved ";
-
-		$c=	"
-								<html><body>
-									<table border='1' align='center' cellpading='0' cellspacing='0' width='70%' style='color:blue;font-weight:bold;margin: 40px 0px 0px 50px;'>
-												<tr >
-														<td colspan='2' align='center' style='color:green'>Approved Leave Details</td>
-														
-												</tr>
-												<tr>
-														<td align='right'>Leave Type</td>
-														<td>$type</td>
-												</tr>
-												<tr>
-														<td align='right'>From Date</td>
-														<td>$date</td>
-												</tr>
-												<tr>
-														<td align='right'>No of Days</td>
-														<td>$days</td>
-												</tr>
-											<tr>
-														<td align='right'>Applied On</td>
-														<td>$time</td>
-											</tr>
-												<tr>
-														<td align='right'>Approved By</td>
-														<td>$status</td>
-											</tr>
-									</table>
-							 	  </body></html>";
-
-		$mail->Body =$c;
-
-		//	$mail->Body    = $name." Your ".$type." from ".$date." for ".$days." day(s) applied on ".$time." status is ".$status;
-		//	$mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
-
-		if(!$mail->send()) {
-			echo 'Message could not be sent.';
-			echo 'Mailer Error: ' . $mail->ErrorInfo;
-			exit;
-		}
-
-		echo 'Message has been sent';
-
-
-		$this->load->view('Leave/History/pending_applications',$data);
-	}
 
 
 	

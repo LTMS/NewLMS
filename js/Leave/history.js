@@ -1,112 +1,71 @@
+											/* * * 	   Action on Leave Status    * * */
 
-	function get_leave_status(id)
-	{		
-		document.getElementById('error').innerHTML="";
-		document.getElementById('errorrow').style.display="none";
-		
-		var date1=document.getElementById('date_from').value;
-		var date2=document.getElementById('date_to').value;
-		if(id=='1' && date1!='' && date2!=''){
-			var l_type=document.getElementById('leave_type').value;			
-			$.post(site_url+"/Leave/history/get_leave_status",{d1:date1,d2:date2,type:l_type},function(data){$("#contentData").html("");
-			$("#contentData").append(data);});
-
-		}
-		if(id=='2'){
-			document.getElementById('date_from').value='';
-			document.getElementById('date_to').value='';
-
-			var l_type='1';		
-			$.post(site_url+"/Leave/history/get_leave_status",{d1:date1,d2:date2,type:l_type},function(data){$("#contentData").html("");
-			$("#contentData").append(data);});
-		}
-		
-	}
-
-	
-	
-	
-	function select_row(counter,type,day,d1,d2,user,id,status,reason,apptime,appby)
-	{ 
-		//alert(status);
-		document.getElementById('buttoncol').innerHTML="Please Wait..! System Sending Mail to "+user+"...!";
-		
-		document.getElementById('type').value=type;
-		document.getElementById('uname').value=user;
-		document.getElementById('days').value=day;
-			var rows=document.getElementById('TotalRows').value; 
-			document.getElementById('date1').innerHTML="";
-			document.getElementById('type').innerHTML="";
-			document.getElementById('days').innerHTML="";
-			document.getElementById('reason').innerHTML="";
-			document.getElementById('applicant').innerHTML="";
-			document.getElementById('apptime').innerHTML="";
-			document.getElementById('appby').innerHTML="---";
-
-		for( i=1; i<=rows;i++){
-			if(i==counter){
-				document.getElementById("row"+i).style.background="#AFEEEE";
-				document.getElementById('selected_leave_id').value=id; 
-			}
-			else if(i%2==0){
-				document.getElementById("row"+i).style.background="WHITE";
-			}
-			else{document.getElementById("row"+i).style.background="#EEEEEE";}
+function update_LeaveStatusReporter(leave_id1,status1,button_row){
+					if(status1==2){
+						innertxt="Leave was Reported..!";
+						mailtxt="Your Leave was Reported by Reporting Authority..!";
+					}
+					else{
+						innertxt="Reporter Cancelled..!";
+						mailtxt="Your Leave was Cancelled by Reporting Authority..!";
+					}
+					var remark1=prompt("Enter Your Remarks for the Employee..!","");
+					var length = remark1.length;
+							if(length>0){
+										if(remark1.replace(/[^A-Z]/gi, "").length>0){
+												document.getElementById('button_row').innerHTML="System is Sending Mail...!";
+												$.post(site_url+"/Leave/history/update_LeaveStatusReporter/",{leave_id:leave_id1,remark:remark1,status:status1},function(data){
+												
+															$.post(site_url+"/Leave/history/Send_LeaveMail/",{leave_id:leave_id1,remark:remark1,mail_title:mailtxt},function(data){
+																		document.getElementById(button_row).innerHTML=innertxt;
+																	});
+													
+												});
+										}
+										else{
+											alert("You should enter the Remarks..!");
+										}
+							}
+						else{
+							alert("You should enter the Remarks..!");
+						}
 		}
 		
-		displayDiv(type,day,d1,d2,user,id,status,reason,apptime,appby);
 		
-		if(type=='Sick Leave' && day>1){ 	
-			$.post(site_url+"/Leave/history/show_document",{lid:id},function(data){
-						
-
-				updatepop=window.open("","","menubar=no, location=no, status=no, titlebar=yes, width=700px, height=500px,toolbar=no,addressbar=no");
-				var generatedContent="<html><head><title>Sick Leave Proof Document</title><script type='text/javascript' src='../../js/jquery-1.js'></script><script type='text/javascript' src='../../js/jquery-ui-1.8.18.custom.min.js'></script><style type='text/css'>div.ui-datepicker{font-size:10px;width:150px;height:150px;}</style><link rel='stylesheet' media='screen,projection' type='text/css' href='../../css/mystyle.css' /><link rel='stylesheet' media='' type='text/css' href='../../css/jquery-ui-1.8.18.custom.css' /></head>"+
-				 "<body background='../../images/bg-radial-gradient.gif' bgcolor='' ><div style='height:auto; background:#CEF6F5;margin:20px 0px 0px 20px;width:700px;border:1px solid black ;border-radius:20px;'><p style='height:10px;padding:0px 0px 0px 20px;' align='center'><span style='font-weight:bolder;font-size:13pt;'>" +id+" - "+user+" Sick Leave Proof Document for "+d1+" - "+d2+" "+ "</span></p>"+
-				 "<hr width='700px'>"+
-				 "<div id='sick_document' style='margin:20px 20px 20px 40px;'><img align='enter' width='600' height='450' id='IMG1' /></div><div align='enter' style='margin-left:100px;margin-bottom:30px;align:center;width:500px'><input align='enter' type=\"button\" id='close' value='Close' class='button' onclick='javascript:self.close()'/></div></p></body></html>";
-				 updatepop.document.write(generatedContent);   
-				updatepop.document.getElementById('sick_document').style.display="";
-				 updatepop.document.getElementById("IMG1").src="/LMS/files/"+data;
-					});
-			
-		}
-		
-	
-		
-	}
-
-	function displayDiv(type,day,d1,d2,user,id,status,reason,apptime,appby){
-		document.getElementById('approved1').style.display="none";
-		document.getElementById('applied1').style.display="none";
-		document.getElementById('rejected1').style.display="none";
-
-			
-		document.getElementById('date1').innerHTML=d1;
-		document.getElementById('type').innerHTML=type;
-		document.getElementById('days').innerHTML=day;
-		document.getElementById('reason').innerHTML=reason;
-		document.getElementById('applicant').innerHTML=user;
-		document.getElementById('apptime').innerHTML=apptime;
-		document.getElementById('appby').innerHTML=appby;
-		document.getElementById('Details').style.display="";
-		//alert(status);
+		function update_LeaveStatusApprover(leave_id1,status1,button_row){
+					if(status1==4){
+						innertxt="Leave was Approved..!";
+						mailtxt="Your Leave was Approved..!";
+					}
+					else{
+						innertxt="Leave was  Rejected..!";
+						mailtxt="Your Leave was Rejected..!";
+					}
+					var remark1=prompt("Enter Your Remarks for the Employee..!","");
+							var length = remark1.length;
+							if(length>0){
+								if(remark1.replace(/[^A-Z]/gi, "").length>0){
+										document.getElementById(button_row).innerHTML="System is Sending Mail...!";
+										$.post(site_url+"/Leave/history/update_LeaveStatusReporter/",{leave_id:leave_id1,remark:remark1,status:status1},function(data){
+													
+											
+															$.post(site_url+"/Leave/history/Send_LeaveMail/",{leave_id:leave_id1,remark:remark1,mail_title:mailtxt},function(data){
+																document.getElementById(button_row).innerHTML=innertxt;
+															});
+															
+										});
+								}
+								else{
+									alert("You should enter the Remarks..!");
+								}
+					}
+				else{
+					alert("You should enter the Remarks..!");
+				}
+}
 
 
-				$.post(site_url+"/Leave/history/leaves_on_sameday/",{date1:d1,date2:d2,id1:id},function(data){
-				$("#leavesDiv").html("");
-				$("#leavesDiv").append(data);
-		     	document.getElementById('leavesDiv').style.display="";
-		
-				});
-				//alert(user);
-				$.post(site_url+"/Leave/history/getRecentLeave/",{user1:user,id1:id},function(data){
-						document.getElementById('recent').innerHTML=data;
-				});
-		
-	}
-	
-	
+													
 	
 	function approve()
 	{ 
@@ -117,7 +76,7 @@
 		var l_reason="Leave Approved..!";
 		if(l_reason != null && l_reason != ""){
 			$.post(site_url+"/Leave/history/approve/",{lid:l_id,reason:l_reason},function(data){
-                                               //alert(data);
+                //alert(data);
 				window.location.reload();
 				});
 			
@@ -428,3 +387,24 @@
 
 
 
+			
+											/* * *   onMOUSE  Functions * * */
+			
+			function change_OnMouseOver(id,over){
+				
+				document.getElementById(id).src='../../../images/Leave/'+over;
+			}
+			
+			
+			function change_OnMouseOut(id,normal){
+				
+				document.getElementById(id).src='../../../images/Leave/'+over;
+			}
+			
+			
+			
+			/*  Replacing script
+			
+			remark1 = remark1.replace(/[^A-Z]/gi, "");
+
+			*/

@@ -74,7 +74,7 @@ Class History_model extends CI_Model{
 	}
 
 
-
+																/* * *   Action on Leave Ststus * * */
 
 		function get_applied_applications()	{
 					$availability =$this->db->query("SELECT a.*, b.* FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status WHERE b.Status IN (1)  ORDER BY a.From_Date");
@@ -86,18 +86,26 @@ Class History_model extends CI_Model{
 					return $availability->result_array();
 		}
 	
+		function update_LeaveStatusReporter($leave_id,$remark,$status){
+					$this->db->query("UPDATE leave_history 
+														SET Leave_Status='$status', Approver_remarks='$remark' 
+														WHERE Leave_ID='$leave_id' ");
+		}
 
+		function update_LeaveStatusApprover($leave_id,$remark,$status){
+					$this->db->query("UPDATE leave_history 
+														SET Leave_Status='$status', Approver_remarks='$remark' 
+														WHERE Leave_ID='$leave_id' ");
+		}
 
-	function get_technicians()
-	{
-		return $this->db->query("SELECT * FROM technicians ")->result_array();
-	}
-
-	function get_technicians_details()
-	{
-		return $this->db->query("SELECT a.tech_id, a.tech_name as name, a.tech_dept as dept, a.tech_email as mail, a.tech_phone as phone,b.EmployeeID AS team_id, b.Designation as desig, b.JoiningDate as doj FROM technicians a JOIN team b ON b.EmployeeName = a.tech_name")->result();
-	}
-
+		
+		function get_LeaveDetails($leave_id){
+				return	$this->db->query("SELECT Emp_Number, Emp_Name, From_Date, 
+																	Total_Days,Reason,Approver_Remarks,b.Email																	
+																	FROM leave_history INNER JOIN employees b ON b.Employee_Number=Emp_Number
+																	WHERE Leave_ID='$leave_id' ")->result_array();
+		}
+		
 	function get_dept()
 	{
 		return $this->db->query("SELECT * FROM departments ")->result_array();
