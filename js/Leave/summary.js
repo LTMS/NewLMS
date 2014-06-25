@@ -35,7 +35,7 @@
 
 				
 			if(year1!=''){	
-				$.post(site_url+"/lms/get_summary",{year:year1,emp:emp1,team:team1,dept:dept1,type:op},function(data){
+				$.post(site_url+"/Leave/Summary/get_summary",{year:year1,emp:emp1,team:team1,dept:dept1,type:op},function(data){
 							//alert(data);
 								$("#contentData").html("");
 								$("#contentData").append(data);
@@ -45,12 +45,13 @@
 			}
 			
 			
-			function get_my_summary(year1){
+			function get_my_summary(){
+				var year1=document.getElementById('year').value;
 				var op1=document.getElementById('report_option1').value;
 				document.getElementById('report_option').value=op1+" for  "+year1;
 				
 				if(year1!=''){	
-					$.post(site_url+"/lms/get_my_summary",{year:year1},function(data){
+					$.post(site_url+"/Leave/Summary/get_my_summary",{year:year1},function(data){
 								//alert(data);
 									$("#contentData").html("");
 									$("#contentData").append(data);
@@ -70,7 +71,7 @@
 					if(l_id!=""){
 						var l_reason=prompt("Remarks for Rejecting the Leave ID: "+l_id);
 						if(l_reason != null && l_reason != ""){
-							$.post(site_url+"/lms/reject/",{lid:l_id,reason:l_reason,type:l_type,user:uname,hrs:hrs2},function(data){
+							$.post(site_url+"/Leave/Summary/reject/",{lid:l_id,reason:l_reason,type:l_type,user:uname,hrs:hrs2},function(data){
 								get_approved_leaves();
 									});
 								}
@@ -84,7 +85,7 @@
 			
 			function remove_leave(l_id){
 				//alert(l_id);
-				$.post(site_url+"/lms/remove_leave/",{id:l_id},function(data){
+				$.post(site_url+"/Leave/Summary/remove_leave/",{id:l_id},function(data){
 					get_leave_status('2');
 				});
 
@@ -97,9 +98,9 @@
 				document.getElementById(colid).style.color='red';
 				document.getElementById(colid).innerHTML='Sending Reminder...';
 				//alert(type+' ,'+date+' ,'+days+' ,'+reason);
-				$.post(site_url+"/lms/getOfficer_L1",{leaveID:id},function(data){
+				$.post(site_url+"/Leave/Summary/getOfficer_L1",{leaveID:id},function(data){
 						var to1=data;
-									$.post(site_url+"/lms/SendRemainder",{date_from:date,reasoning:reason,day:days,l_type:type,to:to1},function(data){
+									$.post(site_url+"/Leave/Summary/SendRemainder",{date_from:date,reasoning:reason,day:days,l_type:type,to:to1},function(data){
 								
 										document.getElementById(colid).style.color='green';
 										document.getElementById(colid).innerHTML=data;
@@ -110,7 +111,7 @@
 			
 			/* refreshing a division
 			var refreshId = setInterval(function () {
-			    $('#lms_intro_div').fadeOut("slow").load('site_url+"/lms/index.php').fadeIn("slow");
+			    $('#lms_intro_div').fadeOut("slow").load('site_url+"/Leave/Summary/index.php').fadeIn("slow");
 			}, 60000);
 			*/
 			
@@ -151,7 +152,7 @@
 							if(check==true){	carry1='YES';	}
 							else{	carry1='NO'; }
 				
-							$.post(site_url+"/lms/update_leave_param",{cm:cas_mon1,ct:cas_tot1,st:sick_tot1,sp:sick_proof1,pt:paid_tot1,pm:paid_min1,pe:paid_exp1,comp:comp1,permis:perm1,carry:carry1,paid_prior:paid_prior1},function(data){
+							$.post(site_url+"/Leave/Summary/update_leave_param",{cm:cas_mon1,ct:cas_tot1,st:sick_tot1,sp:sick_proof1,pt:paid_tot1,pm:paid_min1,pe:paid_exp1,comp:comp1,permis:perm1,carry:carry1,paid_prior:paid_prior1},function(data){
 								window.location.reload();
 							});
 
@@ -165,7 +166,7 @@
 				var filter=document.getElementById("leave_type").value;
 				if(id=='1' && sdate!='' && edate!=''){
 					var params=sdate+"::"+edate+"::"+filter;
-					var downloadurl=site_url+"/lms/export_leave_history/"+params;
+					var downloadurl=site_url+"/Leave/Summary/export_leave_history/"+params;
 					window.location=downloadurl;
 
 				}	else
@@ -199,7 +200,7 @@
 				var user1=document.getElementById('p_user').value;
 				var date1=document.getElementById('p_date').value;
 
-				$.post(site_url+"/lms/grantPermission/",{user:user1,date:date1,remark:remark1,id:id1},function(data){
+				$.post(site_url+"/Leave/Summary/grantPermission/",{user:user1,date:date1,remark:remark1,id:id1},function(data){
 					window.location.reload();
 				});
 

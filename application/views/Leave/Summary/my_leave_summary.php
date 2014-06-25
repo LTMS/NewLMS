@@ -7,7 +7,7 @@
 			<td align='left'
 				style="margin-bottom: 20px; font-size: 21pt; position: inline; color: white; font-weight: bolder">My
 				Leave Summary</td>
-			<td style="color: white; font-size: 15pt" align="right">Hi, <b><?php echo $this->session->userdata('fullname');?>
+			<td style="color: white; font-size: 15pt" align="right">Hi, <b><?php echo $this->session->userdata('Emp_Name');?>
 			</b> ..!</td>
 			<td align="left" style="color: white; font-size: 15pt; width: 50px">
 				<a href="<?php echo site_url("logincheck/logout"); ?>"><img
@@ -25,14 +25,12 @@
 		<tr>
 			<td align="center"><select id="year"
 				style="height: 20px; width: 100px; color: Brown; font-weight: bold; font-size: 12px;"
-				onchange="javascript:get_my_summary(this.value,'<?php echo $this->session->userdata('fullname');?>');">
+				onchange="javascript:get_my_summary();">
 				<?php
 				foreach($years as $row){
 					$y=$row["year"];
 					?>
-					<option selected value="<?php echo $y;?>">
-					<?php echo $y;?>
-					</option>
+					<option selected value="<?php echo $y;?>"><?php echo $y;?>	</option>
 					<?php
 				}
 				?>
@@ -47,13 +45,14 @@
 	<div id="contentData" style="height: 640px; overflow: scroll;">
 	<?php
 	if(!empty($summary)){
-		print('<div><table border="1" align="center" cellpading="0" cellspacing="0" width="100%">');
+		print('<div><table border="1px" align="center" cellpading="0" cellspacing="0" width="100%">');
 		print('<tr style="bgcolor:grey">');
 		print('<td align="center" style="font-size:14px;font-weight:bold;color:Red">Month</td>');
 		print('<td align="center" style="font-size:14px;font-weight:bold;color:red">Casual Leave</td>');
 		print('<td align="center" style="font-size:14px;font-weight:bold;color:red">Paid Leave</td>');
 		print('<td align="center" style="font-size:14px;font-weight:bold;color:red">Sick Leave</td>');
 		print('<td align="center" style="font-size:14px;font-weight:bold;color:red">Comp-Off</td>');
+		print('<td align="center" style="font-size:14px;font-weight:bold;color:red">Total</td>');
 		print('</tr>');
 
 
@@ -63,12 +62,14 @@
 			$pl=$row["PL"];
 			$sl=$row["SL"];
 			$co=$row["CO"];
+			$tot=$row["Total"];
 			print('<tr>');
 			print("<td align='center' style='font-size:12px;font-weight:bold;color:black'>$month</td>");
 			print("<td align='center' style='font-size:12px;font-weight:bold;color:black'>$cl</td>");
 			print("<td align='center' style='font-size:12px;font-weight:bold;color:black'>$pl</td>");
 			print("<td align='center' style='font-size:12px;font-weight:bold;color:black'>$sl</td>");
 			print("<td align='center' style='font-size:12px;font-weight:bold;color:black'>$co</td>");
+			print("<td align='center' style='font-size:12px;font-weight:bold;color:black'>$tot</td>");
 			print("</tr>");
 
 		}
@@ -80,13 +81,15 @@
 				$pl1=$row1["PL"];
 				$sl1=$row1["SL"];
 				$co1=$row1["CO"];
+				$tot1=$row1["Total"];
 			}
-			print('<tr style="background:white">');
+			print('<tr style="background:white;border:1 solid black;">');
 			print("<td align='center' style='font-size:16px;font-weight:bold;color:brown'>Total Days</td>");
 			print("<td align='center' style='font-size:16px;font-weight:bold;color:brown'>$cl1</td>");
 			print("<td align='center' style='font-size:16px;font-weight:bold;color:brown'>$pl1</td>");
 			print("<td align='center' style='font-size:16px;font-weight:bold;color:brown'>$sl1</td>");
 			print("<td align='center' style='font-size:16px;font-weight:bold;color:brown'>$co1</td>");
+			print("<td align='center' style='font-size:24px;font-weight:bolder;color:blue'>$tot1</td>");
 			print("</tr>");
 		}
 
@@ -136,14 +139,7 @@
 	?>
 	</div>
 </div>
-<input
-	type="hidden" id="report_option"
-	value="Leave Summary of <?php echo $this->session->userdata('fullname');?> for <?php echo date('Y');?>" />
-<input
-	type="hidden" id="report_option1"
-	value="Leave Summary of <?php echo $this->session->userdata('fullname');?>" />
-<script
-	type="text/javascript" src="<?php echo base_url(); ?>js/custom/lms.js"></script>
-<script
-	type="text/javascript"
-	src="<?php echo base_url(); ?>js/custom/print.js"></script>
+<input	type="hidden" id="report_option"	value="Leave Summary of <?php echo $this->session->userdata('Emp_Name');?> for <?php echo date('Y');?>" />
+<input	type="hidden" id="report_option1"	value="Leave Summary of <?php echo $this->session->userdata('Emp_Name');?>" />
+<script	type="text/javascript" src="<?php echo base_url(); ?>js/Leave/summary.js"></script>
+<script	type="text/javascript"	src="<?php echo base_url(); ?>js/Leave/lms_print.js"></script>

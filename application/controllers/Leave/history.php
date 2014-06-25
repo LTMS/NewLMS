@@ -8,6 +8,7 @@ class History extends CI_Controller
 		$this->load->library('SimpleLoginSecure');
 		$this->load->library('Export_emp_leave_history');
 		$this->load->model('Leave/history_model');
+		$this->load->model('Leave/summary_model');
 		$this->load->helper('url');
 			
 		$this->load->library('session');
@@ -22,24 +23,24 @@ class History extends CI_Controller
 	function get_applied_applications()
 	{
 		$data["menu"]='LMS';
-		$data["submenu"]='pending_applications';
-		$data["result"]=$this->history_model->get_pending_applications();
+		$data["submenu"]='applied_applications';
+		$data["result"]=$this->history_model->get_applied_applications();
 
 		$this->template->write('titleText', "Pending Leave Applications");
 		$this->template->write_view('sideLinks', 'general/menu',$data);
-		$this->template->write_view('bodyContent', 'Leave/History/pending_applications',$data);
+		$this->template->write_view('bodyContent', 'Leave/History/applications_applied',$data);
 		$this->template->render();
 	}
 
 	function get_reported_applications()
 	{
 		$data["menu"]='LMS';
-		$data["submenu"]='pending_applications_lev1';
-		$data["result"]=$this->history_model->get_pending_applications_lev1();
+		$data["submenu"]='reported_applications';
+		$data["result"]=$this->history_model->get_reported_applications();
 			
 		$this->template->write('titleText', "Pending Leave Applications");
 		$this->template->write_view('sideLinks', 'general/menu',$data);
-		$this->template->write_view('bodyContent', 'Leave/History/pending_applications',$data);
+		$this->template->write_view('bodyContent', 'Leave/History/applications_reported',$data);
 		$this->template->render();
 	}
 
@@ -229,8 +230,8 @@ class History extends CI_Controller
 		
 	function my_leavehistory_approved(){
 			$form_data = $this->input->post();
-			$form_data["emp"]=$this->session->userdata('Emp_Number');
-			$data["result"]=$this->history_model->my_leavehistory_approved($form_data["year"],$form_data["emp"]);
+			$data["result"]=$this->history_model->my_leavehistory_approved($form_data["year"]);
+			$data["total"]=$this->summary_model->get_my_summary_total($form_data["year"]);
 			$this->load->view('Leave/History/my_leavehistory_general',$data);
 			$this->load->view('Leave/History/my_leavehistory_general_print',$data);
 

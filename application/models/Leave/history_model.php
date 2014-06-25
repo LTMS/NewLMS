@@ -75,28 +75,17 @@ Class History_model extends CI_Model{
 
 
 
-	function get_pending_applications()
-	{
-		$uname=$this->session->userdata('fullname');
-		$urole=$this->session->userdata('userrole');
-		if($urole=='MD'){
-			$availability =$this->db->query("SELECT a.*, b.*, c.* FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status JOIN team c ON c.Employee_Number = a.Emp_Number WHERE b.Status IN (1) AND c.Designation NOT IN ('Trainee')  ORDER BY a.Leave_ID");
-			return $availability->result_array();
+
+		function get_applied_applications()	{
+					$availability =$this->db->query("SELECT a.*, b.* FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status WHERE b.Status IN (1)  ORDER BY a.From_Date");
+					return $availability->result_array();
 		}
-		else{
-			$availability =$this->db->query("SELECT a.*, b.*, c.* FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status JOIN team c ON c.Employee_Number = a.Emp_Number WHERE b.Status=1 AND Emp_Number!='$uname'
-			 AND c.Department=(SELECT Department FROM team WHERE Emp_Number='$uname') AND c.Designation NOT IN ('TeamLeader','MD') ORDER BY a.Leave_ID");
-			return $availability->result_array();
+		
+		function get_reported_applications()	{
+					$availability =$this->db->query("SELECT a.*, b.* FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status WHERE b.Status IN (2)   ORDER BY a.From_Date");
+					return $availability->result_array();
 		}
-	}
-
-	function get_pending_applications_lev1()
-	{
-
-		$availability =$this->db->query("SELECT a.*, b.*, c.* FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status JOIN team c ON c.Employee_Number = a.Emp_Number WHERE b.Status IN (1,2,3) AND c.Designation  IN ('Trainee')   ORDER BY a.Leave_ID");
-		return $availability->result_array();
-	}
-
+	
 
 
 	function get_technicians()
@@ -241,7 +230,7 @@ Class History_model extends CI_Model{
 	}
 
 
-	function my_leavehistory_approved($year,$emp){
+	function my_leavehistory_approved($year){
 						$emp=$this->session->userdata('Emp_Number');	
 						return $this->db->query("SELECT a.*, b.* FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status 
 															WHERE 	YEAR(From_Date)='$year' AND a.Emp_Number='$emp' AND a.Leave_Status IN (4)

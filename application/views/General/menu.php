@@ -14,8 +14,8 @@
   					<?php }?>
   					
 					<?php if( $this->session->userdata('Emp_Role')=='MD'){ ?>	
-						<li><a href="<?php echo site_url("Leave/history/pending_applications"); ?>" <?php if ($submenu=='pending_applications'){?>class="current"<?php }?> >Level - 2  Applications</a></li>
-	    				<li><a href="<?php echo site_url("Leave/history/pending_applications_lev1"); ?>" <?php if ($submenu=='pending_applications_lev1'){?>class="current"<?php }?> >Level - 1 Applications</a></li>
+						<li><a href="<?php echo site_url("Leave/history/get_reported_applications"); ?>" <?php if ($submenu=='reported_applications'){?>class="current"<?php }?> >Leaves pending for Approval</a></li>
+	    				<li><a href="<?php echo site_url("Leave/history/get_applied_applications"); ?>" <?php if ($submenu=='applied_applications'){?>class="current"<?php }?> >Applied Leaves</a></li>
 						<li><a href="<?php echo site_url("Leave/history/permissions"); ?>" <?php if ($submenu=='permissions'){?>class="current"<?php }?> >Pending Permissions</a></li>
 						<li><a href="<?php echo site_url("Leave/history/history_md"); ?>" <?php if ($submenu=='history_admin'){?>class="current"<?php }?> >Employees Leave History</a></li>
 	    				<li><a href="<?php echo site_url("Leave/summary/leave_summary_md"); ?>" <?php if ($submenu=='summary'){?>class="current"<?php }?> >Employees Leave Summary</a></li>

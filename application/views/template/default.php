@@ -14,7 +14,7 @@
 		<div id="sidebar-wrapper">
 			<div id="profile-links">
 				<img src="<?php echo base_url(); ?>/images/DEASLogo.jpg"
-					width="170px" height="100px;" />
+					width="170px" height="70px;" />
 
 			</div>
 

@@ -7,9 +7,7 @@ class Summary extends CI_Controller
 		
 			$this->load->library('SimpleLoginSecure');
 			$this->load->library('Export_emp_leave_history');
-		    $this->load->library('My_PHPMailer');
-			$this->load->model('Leave/summary_model');
-			$this->load->model('Timesheet/overtime_model');
+		  	$this->load->model('Leave/summary_model');
 			$this->load->helper('url');
 			
 			$this->load->library('session');
@@ -81,13 +79,13 @@ class Summary extends CI_Controller
 	
 				if($type=='1' && $txt!='All Employees'){
 				
-						$this->load->view('lms/leave_summary_emp',$data);
+						$this->load->view('Leave/Summary/leave_summary_emp',$data);
 				}
 				if($type=='1' && $txt=='All Employees'){
-					$this->load->view('lms/leave_summary_dept',$data);
+					$this->load->view('Leave/Summary/leave_summary_dept',$data);
 				}
 				if($type=='2' || $type=='3'){
-					$this->load->view('lms/leave_summary_dept',$data);
+					$this->load->view('Leave/Summary/leave_summary_dept',$data);
 				}
 				
 		}
@@ -99,7 +97,7 @@ class Summary extends CI_Controller
 			 	$data["perm"]=$this->summary_model->get_my_permission($form_data["year"]);
 				$data["perm_tot"]=$this->summary_model->get_my_permission_total($form_data["year"]);
 			
-				$this->load->view('lms/my_leave_summary_page',$data);
+				$this->load->view('Leave/Summary/my_leave_summary_page',$data);
 							
 		}
 			

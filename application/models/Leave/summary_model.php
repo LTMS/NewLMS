@@ -16,7 +16,7 @@ Class Summary_model extends CI_Model{
 					
 	
 					function get_years(){
-								return $this->db->query("SELECT  DISTINCT YEAR(From_Date) AS 'year' FROM leave_history ORDER BY year ")->result_array();
+								return $this->db->query("SELECT  DISTINCT YEAR(From_Date) AS 'year' FROM leave_history ORDER BY year DESC")->result_array();
 					}
 		
 					function get_leave_members(){
@@ -24,71 +24,75 @@ Class Summary_model extends CI_Model{
 					}
 		
 					function get_team_members(){
-							$uname=$this->session->userdata('Emp_Number');				
-							return $this->db->query("SELECT Employee_Number AS 'Name'  FROM team  WHERE LeaveApprover_L1='$uname' ORDER BY EmployeeName ")->result_array();				
+							$emp_num=$this->session->userdata('Emp_Number');				
+							return $this->db->query("SELECT Employee_Number AS 'Name'  FROM team  WHERE LeaveApprover_L1='$emp_num' ORDER BY EmployeeName ")->result_array();				
 					}
 			
 			
 			
 			
 			
-					function get_summary($year,$emp,$team,$dept){
+					function get_summary($year,$emp){
 			
 								if($emp!='All Employees'){
-											return $this->db->query("SELECT  Emp_Number,monthname(str_to_date(month,'%c')) AS 'MonthName',SUM(CasualLeave) AS 'CL',SUM(PaidLeave) AS 'PL', SUM(SickLeave) AS 'SL',
-																				SUM(Comp_Off) AS 'CO'
-																				FROM(
-																								SELECT Emp_Number,SUBSTRING(From_Date,6,2) AS 'Month',IF(Leave_Type='Casual Leave',Total_Days, 0) as 'CasualLeave',
-																								IF(Leave_Type='Paid Leave',Total_Days, 0) as 'PaidLeave',
-																								IF(Leave_Type='Sick Leave',Total_Days, 0) as 'SickLeave',
-																								IF(Leave_Type='Comp-Off',Total_Days, 0) as 'Comp_Off' 
-																								FROM leave_history INNER JOIN team b ON b.Employee_Number=Emp_Number
-																								WHERE Leave_Status IN ('2','4') AND SUBSTRING(From_Date,1,4)='$year' AND (Emp_Number='$emp' OR b.Department='$dept' OR LeaveApprover_L1='$team')
+											return $this->db->query("SELECT SUM(CL) AS 'CL',SUM(PL) AS 'PL', SUM(SL) AS 'SL',
+																								SUM(CO) AS 'CO', (SUM(CL)+SUM(PL)+SUM(SL)+SUM(CO)) as Total
+																								FROM(
+																												SELECT Emp_Number,	MONTHNAME(From_Date) AS 'MonthName', 
+																														IF(Leave_Type='CL',Total_Days, 0) as 'CL',
+																														IF(Leave_Type='PL',Total_Days, 0) as 'PL',
+																														IF(Leave_Type='SL',Total_Days, 0) as 'SL',
+																														IF(Leave_Type='CO',Total_Days, 0) as 'CO' 
+																												FROM leave_history
+																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' AND Emp_Number='$emp'
 																				) A
 																				Group By Emp_Number,Month")->result_array();
 					
 										}
 										if($emp=='All Employees'){
-													return $this->db->query("SELECT  Emp_Number,monthname(str_to_date(month,'%c')) AS 'MonthName',SUM(CasualLeave) AS 'CL',SUM(PaidLeave) AS 'PL', SUM(SickLeave) AS 'SL',
-																				SUM(Comp_Off) AS 'CO'
-																				FROM(
-																								SELECT Emp_Number,SUBSTRING(From_Date,6,2) AS 'Month',IF(Leave_Type='Casual Leave',Total_Days, 0) as 'CasualLeave',
-																								IF(Leave_Type='Paid Leave',Total_Days, 0) as 'PaidLeave',
-																								IF(Leave_Type='Sick Leave',Total_Days, 0) as 'SickLeave',
-																								IF(Leave_Type='Comp-Off',Total_Days, 0) as 'Comp_Off' 
-																								FROM leave_history INNER JOIN team b ON b.Employee_Number=Emp_Number
-																								WHERE Leave_Status IN ('2','4') AND SUBSTRING(From_Date,1,4)='$year'
+													return $this->db->query("SELECT SUM(CL) AS 'CL',SUM(PL) AS 'PL', SUM(SL) AS 'SL',
+																								SUM(CO) AS 'CO', (SUM(CL)+SUM(PL)+SUM(SL)+SUM(CO)) as Total
+																								FROM(
+																												SELECT Emp_Number,	MONTHNAME(From_Date) AS 'MonthName', 
+																														IF(Leave_Type='CL',Total_Days, 0) as 'CL',
+																														IF(Leave_Type='PL',Total_Days, 0) as 'PL',
+																														IF(Leave_Type='SL',Total_Days, 0) as 'SL',
+																														IF(Leave_Type='CO',Total_Days, 0) as 'CO' 
+																												FROM leave_history
+																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year'
 																				) A
 																				Group By Emp_Number,Month")->result_array();
 										}
 				
 						}
 			
-						function get_summary_total($year,$emp,$team,$dept){
+						function get_summary_total($year,$emp){
 			
 									if($emp!='All Employees'){
-													return $this->db->query("SELECT SUM(CasualLeave) AS 'CL',SUM(PaidLeave) AS 'PL', SUM(SickLeave) AS 'SL',
-																				SUM(Comp_Off) AS 'CO'
-																				FROM(
-																								SELECT Emp_Number,SUBSTRING(From_Date,6,2) AS 'Month',IF(Leave_Type='Casual Leave',Total_Days, 0) as 'CasualLeave',
-																								IF(Leave_Type='Paid Leave',Total_Days, 0) as 'PaidLeave',
-																								IF(Leave_Type='Sick Leave',Total_Days, 0) as 'SickLeave',
-																								IF(Leave_Type='Comp-Off',Total_Days, 0) as 'Comp_Off' 
-																								FROM leave_history INNER JOIN team b ON b.Employee_Number=Emp_Number
-																								WHERE Leave_Status IN ('2','4') AND SUBSTRING(From_Date,1,4)='$year' AND (Emp_Number='$emp' OR b.Department='$dept' OR LeaveApprover_L1='$team')
+													return $this->db->query("SELECT SUM(CL) AS 'CL',SUM(PL) AS 'PL', SUM(SL) AS 'SL',
+																								SUM(CO) AS 'CO', (SUM(CL)+SUM(PL)+SUM(SL)+SUM(CO)) as Total
+																								FROM(
+																												SELECT Emp_Number,	MONTHNAME(From_Date) AS 'MonthName', 
+																														IF(Leave_Type='CL',Total_Days, 0) as 'CL',
+																														IF(Leave_Type='PL',Total_Days, 0) as 'PL',
+																														IF(Leave_Type='SL',Total_Days, 0) as 'SL',
+																														IF(Leave_Type='CO',Total_Days, 0) as 'CO' 
+																												FROM leave_history
+																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year'AND Emp_Number='$emp' 
 																				) A ")->result_array();
 					
 										}
 										if($emp=='All Employees'){
-													return $this->db->query("SELECT  SUM(CasualLeave) AS 'CL',SUM(PaidLeave) AS 'PL', SUM(SickLeave) AS 'SL',
-																				SUM(Comp_Off) AS 'CO'
-																				FROM(
-																								SELECT Emp_Number,SUBSTRING(From_Date,6,2) AS 'Month',IF(Leave_Type='Casual Leave',Total_Days, 0) as 'CasualLeave',
-																								IF(Leave_Type='Paid Leave',Total_Days, 0) as 'PaidLeave',
-																								IF(Leave_Type='Sick Leave',Total_Days, 0) as 'SickLeave',
-																								IF(Leave_Type='Comp-Off',Total_Days, 0) as 'Comp_Off' 
-																								FROM leave_history INNER JOIN team b ON b.Employee_Number=Emp_Number
-																								WHERE Leave_Status IN ('2','4') AND SUBSTRING(From_Date,1,4)='$year'
+													return $this->db->query("SELECT SUM(CL) AS 'CL',SUM(PL) AS 'PL', SUM(SL) AS 'SL',
+																								SUM(CO) AS 'CO', (SUM(CL)+SUM(PL)+SUM(SL)+SUM(CO)) as Total
+																								FROM(
+																												SELECT Emp_Number,	MONTHNAME(From_Date) AS 'MonthName', 
+																														IF(Leave_Type='CL',Total_Days, 0) as 'CL',
+																														IF(Leave_Type='PL',Total_Days, 0) as 'PL',
+																														IF(Leave_Type='SL',Total_Days, 0) as 'SL',
+																														IF(Leave_Type='CO',Total_Days, 0) as 'CO' 
+																												FROM leave_history
+																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year'
 																				) A ")->result_array();
 										}
 				
@@ -96,33 +100,35 @@ Class Summary_model extends CI_Model{
 			
 			
 							function get_my_summary($year){
-											$uname=$this->session->userdata('Emp_Number');
-											return $this->db->query("SELECT  monthname(str_to_date(month,'%c')) AS 'MonthName',SUM(CasualLeave) AS 'CL',SUM(PaidLeave) AS 'PL', SUM(SickLeave) AS 'SL',
-																								SUM(Comp_Off) AS 'CO'
+											$emp_num=$this->session->userdata('Emp_Number');
+											return $this->db->query("SELECT  MonthName, SUM(CL) AS 'CL',SUM(PL) AS 'PL', SUM(SL) AS 'SL',
+																								SUM(CO) AS 'CO', (SUM(CL)+SUM(PL)+SUM(SL)+SUM(CO)) as Total
 																								FROM(
-																												SELECT Emp_Number,SUBSTRING(From_Date,6,2) AS 'Month',IF(Leave_Type='Casual Leave',Total_Days, 0) as 'CasualLeave',
-																												IF(Leave_Type='Paid Leave',Total_Days, 0) as 'PaidLeave',
-																												IF(Leave_Type='Sick Leave',Total_Days, 0) as 'SickLeave',
-																												IF(Leave_Type='Comp-Off',Total_Days, 0) as 'Comp_Off' 
-																												FROM leave_history INNER JOIN team b ON b.Employee_Number=Emp_Number
-																												WHERE Leave_Status IN ('2','4') AND SUBSTRING(From_Date,1,4)='$year' AND Emp_Number='$uname' 
+																												SELECT Emp_Number,	MONTHNAME(From_Date) AS 'MonthName', 
+																														IF(Leave_Type='CL',Total_Days, 0) as 'CL',
+																														IF(Leave_Type='PL',Total_Days, 0) as 'PL',
+																														IF(Leave_Type='SL',Total_Days, 0) as 'SL',
+																														IF(Leave_Type='CO',Total_Days, 0) as 'CO' 
+																												FROM leave_history
+																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' AND Emp_Number='$emp_num' 
 																								) A
-																								Group By Month")->result_array();
+																								Group By MonthName")->result_array();
 					
 							}
 
 							function get_my_summary_total($year){
-											$uname=$this->session->userdata('Emp_Number');
-											return $this->db->query("SELECT  SUM(CasualLeave) AS 'CL',SUM(PaidLeave) AS 'PL', SUM(SickLeave) AS 'SL',
-																								SUM(Comp_Off) AS 'CO'
+											$emp_num=$this->session->userdata('Emp_Number');
+											return $this->db->query("SELECT SUM(CL) AS 'CL',SUM(PL) AS 'PL', SUM(SL) AS 'SL',
+																								SUM(CO) AS 'CO', (SUM(CL)+SUM(PL)+SUM(SL)+SUM(CO)) as Total
 																								FROM(
-																												SELECT Emp_Number,SUBSTRING(From_Date,6,2) AS 'Month',IF(Leave_Type='Casual Leave',Total_Days, 0) as 'CasualLeave',
-																												IF(Leave_Type='Paid Leave',Total_Days, 0) as 'PaidLeave',
-																												IF(Leave_Type='Sick Leave',Total_Days, 0) as 'SickLeave',
-																												IF(Leave_Type='Comp-Off',Total_Days, 0) as 'Comp_Off' 
-																												FROM leave_history INNER JOIN team b ON b.Employee_Number=Emp_Number
-																												WHERE Leave_Status IN ('2','4') AND SUBSTRING(From_Date,1,4)='$year' AND Emp_Number='$uname' 
-																								) A		")->result_array();
+																												SELECT Emp_Number,	MONTHNAME(From_Date) AS 'MonthName', 
+																														IF(Leave_Type='CL',Total_Days, 0) as 'CL',
+																														IF(Leave_Type='PL',Total_Days, 0) as 'PL',
+																														IF(Leave_Type='SL',Total_Days, 0) as 'SL',
+																														IF(Leave_Type='CO',Total_Days, 0) as 'CO' 
+																												FROM leave_history
+																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' AND Emp_Number='$emp_num' 
+																								) A	")->result_array();
 					
 							}
 				
@@ -131,7 +137,7 @@ Class Summary_model extends CI_Model{
 								
 				function get_my_permission($y){
 					$Emp_Number=$this->session->userdata('Emp_Number');	
-					return	$this->db->query("SELECT MONTHName(p_date) as month, Total_Hrs, DAY(p_date) as day,reason,Time_From FROM permissions WHERE  Emp_Number='$Emp_Number' AND YEAR(p_date)='$y'  AND status='Approved' ")->result_array();
+					return	$this->db->query("SELECT MONTHNAME(p_date) as month, Total_Hrs, DAY(p_date) as day,reason,Time_From FROM permissions WHERE  Emp_Number='$Emp_Number' AND YEAR(p_date)='$y'  AND status='Approved' ")->result_array();
 				}
 				
 				function get_my_permission_total($y){
@@ -140,7 +146,7 @@ Class Summary_model extends CI_Model{
 			}
 			
 				function get_admin_permission($y,$Emp_Number){
-					return	$this->db->query("SELECT MONTHName(p_date) as month, Total_Hrs,DAY(p_date) as day,reason,Time_From FROM permissions WHERE  Emp_Number='$Emp_Number' AND YEAR(p_date)='$y'  AND status='Approved' ")->result_array();
+					return	$this->db->query("SELECT MONTHNAME(p_date) as month, Total_Hrs,DAY(p_date) as day,reason,Time_From FROM permissions WHERE  Emp_Number='$Emp_Number' AND YEAR(p_date)='$y'  AND status='Approved' ")->result_array();
 				}
 				
 				function get_admin_permission_total($y,$Emp_Number){
