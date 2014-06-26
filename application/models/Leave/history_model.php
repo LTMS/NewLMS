@@ -11,7 +11,7 @@ Class History_model extends CI_Model{
 	}
 
 	function get_years(){
-		return $this->db->query("SELECT  DISTINCT YEAR(From_Date) AS 'year' FROM leave_history ORDER BY year ")->result_array();
+		return $this->db->query("SELECT  DISTINCT YEAR(From_Date) AS 'year' FROM leave_history ORDER BY year DESC")->result_array();
 	}
 	
 	function get_leaveList(){
@@ -29,15 +29,15 @@ Class History_model extends CI_Model{
 
 	function get_team_members()
 	{
-		$uname=$this->session->userdata('fullname');
+		$Emp_Number=$this->session->userdata('Emp_Number');
 
-		return $this->db->query("SELECT EmployeeName AS 'Name'  FROM team  WHERE LeaveApprover_L1='$uname' ORDER BY EmployeeName ")->result_array();
+		return $this->db->query("SELECT EmployeeName AS 'Name'  FROM team  WHERE LeaveApprover_L1='$Emp_Number' ORDER BY EmployeeName ")->result_array();
 	}
 
 	function checkLeaveAvailability($leave_type)
 	{
-		$uname=$this->session->userdata('fullname');
-		$availability =$this->db->query("SELECT SUM(Total_Days) FROM leave_history WHERE Emp_Number='$uname' AND Leave_Type='$leave_type' ");
+		$Emp_Number=$this->session->userdata('Emp_Number');
+		$availability =$this->db->query("SELECT SUM(Total_Days) FROM leave_history WHERE Emp_Number='$Emp_Number' AND Leave_Type='$leave_type' ");
 		return $availability->result();
 	}
 
@@ -47,28 +47,28 @@ Class History_model extends CI_Model{
 
 		$add_date=date('Y-m-d H:i:s');
 
-		$uname=$this->session->userdata('fullname');
-		$availability =$this->db->query("INSERT INTO leave_history(Emp_Number,Leave_Type,From_Date,To_Date,Total_Days,Leave_Status,Reason,AppliedTime) VALUES('$uname','$leave_type',STR_TO_DATE(STR_TO_DATE('$d1','%d-%m-%Y'),'%Y-%m-%d'),STR_TO_DATE(STR_TO_DATE('$d2','%d-%m-%Y'),'%Y-%m-%d'),'$days',1,\"$reason\",'$add_date');");
+		$Emp_Number=$this->session->userdata('Emp_Number');
+		$availability =$this->db->query("INSERT INTO leave_history(Emp_Number,Leave_Type,From_Date,To_Date,Total_Days,Leave_Status,Reason,AppliedTime) VALUES('$Emp_Number','$leave_type',STR_TO_DATE(STR_TO_DATE('$d1','%d-%m-%Y'),'%Y-%m-%d'),STR_TO_DATE(STR_TO_DATE('$d2','%d-%m-%Y'),'%Y-%m-%d'),'$days',1,\"$reason\",'$add_date');");
 		if($leave_type=='Sick Leave'){
 			return $this->db->insert_id();
 		}
 		if($leave_type=='Comp-Off'){
-			$this->db->query("UPDATE team SET Comp_off=ADDTIME(Comp_off,'$hrs') WHERE EmployeeName='$uname'");
+			$this->db->query("UPDATE team SET Comp_off=ADDTIME(Comp_off,'$hrs') WHERE EmployeeName='$Emp_Number'");
 		}
 	}
 
 
 
-	function insert_other_application($uname,$leave_type,$d1,$d2,$days,$officer,$reason,$hrs)
+	function insert_other_application($Emp_Number,$leave_type,$d1,$d2,$days,$officer,$reason,$hrs)
 	{
 		$add_date=date('Y-m-d H:i:s');
 
-		$availability =$this->db->query("INSERT INTO leave_history(Emp_Number,Leave_Type,From_Date,To_Date,Total_Days,Leave_Status,Reason,AppliedTime) VALUES('$uname','$leave_type','$d1','$d2','$days',1,\"$reason\",'$add_date');");
+		$availability =$this->db->query("INSERT INTO leave_history(Emp_Number,Leave_Type,From_Date,To_Date,Total_Days,Leave_Status,Reason,AppliedTime) VALUES('$Emp_Number','$leave_type','$d1','$d2','$days',1,\"$reason\",'$add_date');");
 		if($leave_type=='Sick Leave'){
 			return $this->db->insert_id();
 		}
 		if($leave_type=='Comp-Off'){
-			$this->db->query("UPDATE team SET Comp_off=ADDTIME(Comp_off,'$hrs') WHERE EmployeeName='$uname'");
+			$this->db->query("UPDATE team SET Comp_off=ADDTIME(Comp_off,'$hrs') WHERE EmployeeName='$Emp_Number'");
 		}
 			
 	}
@@ -77,38 +77,59 @@ Class History_model extends CI_Model{
 																/* * *   Action on Leave Ststus * * */
 
 		function get_applied_applications()	{
-					$availability =$this->db->query("SELECT a.*, b.* FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status WHERE b.Status IN (1)  ORDER BY a.From_Date");
+					$logger_num=$this->session->userdata('Emp_Number');
+					$availability =$this->db->query("SELECT a.*, b.* 
+																					FROM leave_history a
+																							 INNER JOIN leave_status b ON  a.Leave_Status = b.Status 
+																							 INNER JOIN employees c 	 ON c.Employee_Number=a.Emp_Number
+																					WHERE b.Status IN (1) AND c.Reporter='$logger_num'
+																					ORDER BY a.From_Date");
 					return $availability->result_array();
 		}
 		
 		function get_reported_applications()	{
-					$availability =$this->db->query("SELECT a.*, b.* FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status WHERE b.Status IN (2)   ORDER BY a.From_Date");
+			$logger_num=$this->session->userdata('Emp_Number');
+			$availability =$this->db->query("SELECT a.*, b.* 
+																					FROM leave_history a 
+																							INNER JOIN leave_status b ON  a.Leave_Status = b.Status 
+																							INNER JOIN employees c 	ON  c.Employee_Number=a.Emp_Number
+																					WHERE b.Status IN (2)   AND  c.Approver='$logger_num'
+																					ORDER BY a.From_Date");
 					return $availability->result_array();
 		}
 	
 		function update_LeaveStatusReporter($leave_id,$remark,$status){
+					$logger=$this->session->userdata('Emp_Name');
 					$this->db->query("UPDATE leave_history 
-														SET Leave_Status='$status', Approver_remarks='$remark' 
+														SET Leave_Status='$status',
+														 Reporter_remarks='$remark',
+														 Reported_On=CURRENT_TIMESTAMP,
+														 Reported_By='$logger' 
 														WHERE Leave_ID='$leave_id' ");
 		}
 
 		function update_LeaveStatusApprover($leave_id,$remark,$status){
+					$logger=$this->session->userdata('Emp_Name');
 					$this->db->query("UPDATE leave_history 
-														SET Leave_Status='$status', Approver_remarks='$remark' 
+														SET Leave_Status='$status',
+														 Approver_remarks='$remark',
+														 Approved_On=CURRENT_TIMESTAMP,
+														 Approved_By='$logger'  
 														WHERE Leave_ID='$leave_id' ");
 		}
 
 		
-		function get_LeaveDetails($leave_id){
-				return	$this->db->query("SELECT Emp_Number, Emp_Name, From_Date, 
-																	Total_Days,Reason,Approver_Remarks,b.Email																	
-																	FROM leave_history INNER JOIN employees b ON b.Employee_Number=Emp_Number
-																	WHERE Leave_ID='$leave_id' ")->result_array();
+		function get_MailID($emp_num){
+				return	$this->db->query("SELECT Email as Emp_Mail,
+																	(SELECT DISTINCT Email FROM employees WHERE Employee_Number=a.Reporter) as Reporter_Mail, 
+																	(SELECT DISTINCT Email FROM employees WHERE Employee_Number=a.Approver) as Approver_Mail
+																	FROM 
+																	(SELECT Email, Reporter, Approver FROM employees WHERE Employee_Number='$emp_num') a")->result_array();
 		}
 		
-	function get_dept()
+	function get_Departments()
 	{
-		return $this->db->query("SELECT * FROM departments ")->result_array();
+		return $this->db->query("SELECT DISTINCT * FROM departments ")->result_array();
 	}
 
 	function add_dept($id)
@@ -123,43 +144,6 @@ Class History_model extends CI_Model{
 
 
 
-
-	function approve($lid,$reason)
-	{
-		$uname=$this->session->userdata('fullname');
-		$uroll=$this->session->userdata('userrole');
-		$add_date=date('Y-m-d H:i:s');
-		if($uroll=='MD'){
-			return $this->db->query("UPDATE leave_history SET Leave_Status=4, ApprovedBy=IFNULL (CONCAT(ApprovedBy,', ','$uname'),'$uname' ),
-		 ActionTime=IFNULL (CONCAT(ActionTime,'; ','$add_date'),'$add_date'), Remarks=IFNULL (CONCAT(Remarks,'; ','$reason'),'$reason')  WHERE Leave_ID='$lid'");
-		}
-
-		if($uroll=='teamleader'){
-			return $this->db->query("UPDATE leave_history SET Leave_Status=2, ApprovedBy=IFNULL (CONCAT(ApprovedBy,', ','$uname'),'$uname' ),
-		ActionTime=IFNULL (CONCAT(ActionTime,'; ','$add_date'),'$add_date'), Remarks=IFNULL (CONCAT(Remarks,'; ','$reason'),'$reason')  WHERE Leave_ID='$lid'");
-		}
-	}
-
-
-	function reject($lid,$reason,$type,$Emp_Number,$hrs)
-	{
-		$uname=$this->session->userdata('fullname');
-		$urole=$this->session->userdata('userrole');
-		$add_date=date('Y-m-d H:i:s');
-		if($urole=='MD'){
-			$this->db->query("UPDATE leave_history SET Leave_Status=5, ApprovedBy=IFNULL (CONCAT(ApprovedBy,', ','$uname'),'$uname' ),
-		ActionTime=IFNULL (CONCAT(ActionTime,'; ','$add_date'),'$add_date'), Remarks=IFNULL (CONCAT(Remarks,'; ','$reason'),'$reason')  WHERE Leave_ID='$lid'");
-		}
-		if($urole=='teamleader'){
-		 $this->db->query("UPDATE leave_history SET Leave_Status=3, ApprovedBy=IFNULL (CONCAT(ApprovedBy,', ','$uname'),'$uname' ),
-		ActionTime=IFNULL (CONCAT(ActionTime,'; ','$add_date'),'$add_date'), Remarks=IFNULL (CONCAT(Remarks,'; ','$reason'),'$reason')  WHERE Leave_ID='$lid'");
-		}
-		if($type =='Comp-Off'){
-		 $this->db->query("UPDATE team SET Comp_off=SUBTIME(Comp_off,'$hrs') WHERE  EmployeeName='$Emp_Number'");
-		}
-
-	}
-	
 	
 															/* * *         Admin Leave History 		* * */	
 	
@@ -193,7 +177,7 @@ Class History_model extends CI_Model{
 
 	function admin_leavehistory_approved_all($year){
 			
-		return $this->db->query("SELECT a.*, b.* FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status 
+				return $this->db->query("SELECT a.*, b.* FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status 
 															WHERE 	YEAR(From_Date)='$year' AND a.Leave_Status IN (2,4) 
 															 ORDER BY a.Emp_Number,a.From_Date   ")->result_array();
 	}
@@ -201,16 +185,22 @@ Class History_model extends CI_Model{
 
 	function admin_leavehistory_approved_ind($year,$emp){
 			
-		return $this->db->query("SELECT a.*, b.* FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status 
+				return $this->db->query("SELECT a.*, b.* FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status 
 															WHERE 	YEAR(From_Date)='$year' AND a.Emp_Number='$emp' AND a.Leave_Status IN (4) 
 															 ORDER BY a.Emp_Number,a.From_Date   ")->result_array();
 	}
 
 
-
+	function get_DepartmentEmployees($dept){
+				return $this->db->query("SELECT  CONCAT(Employee_Name,'::',Employee_Number) as Dept
+																FROM employees
+																WHERE Department='$dept' AND Employee_Name!=''
+																ORDER BY Dept DESC")->result_array();
+	}
+	
+	
+	
 																/* * *         My  Leave History 		* * */	
-	
-	
 	
 	
 	function my_leavehistory_general_all($year){
@@ -249,81 +239,34 @@ Class History_model extends CI_Model{
 
 	
 	function get_history_teamleader($d1,$d2,$string){
-		$uname=$this->session->userdata('fullname');
+		$Emp_Number=$this->session->userdata('Emp_Number');
 		if($d1!=''&&$d2!=''){
 			if( $string=='null'){
 				return $this->db->query("SELECT a . *, b . *, c . * FROM leave_history a JOIN leave_status b ON a.Leave_Status = b.Status JOIN team c ON c.Employee_Number = a.Employee_Number
 																							WHERE 	STR_TO_DATE(DATE_FORMAT(a.From_Date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y')
-																							 AND  a.Employee_Number NOT IN  ('$uname')  AND a.Leave_Status IN ('2','4')  AND c.Department=(SELECT Department from team where EmployeeName='$uname')
+																							 AND  a.Employee_Number NOT IN  ('$Emp_Number')  AND a.Leave_Status IN ('2','4')  AND c.Department=(SELECT Department from team where EmployeeName='$Emp_Number')
 																						ORDER BY a.AppliedTime Desc")->result_array();
 			}
 			else{
 				return $this->db->query("	SELECT a . *, b . *, c . * FROM leave_history a JOIN leave_status b ON a.Leave_Status = b.Status JOIN team c ON c.Employee_Number = a.Employee_Number
-															WHERE 	STR_TO_DATE(DATE_FORMAT(a.From_Date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') AND a.Employee_Number NOT IN  ('$uname') AND  (a.Employee_Number='$string' OR a.Leave_Status IN ('$string') OR a.Leave_Type='$string')
-															AND c.Department=(SELECT Department from team where EmployeeName='$uname')
+															WHERE 	STR_TO_DATE(DATE_FORMAT(a.From_Date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') AND a.Employee_Number NOT IN  ('$Emp_Number') AND  (a.Employee_Number='$string' OR a.Leave_Status IN ('$string') OR a.Leave_Type='$string')
+															AND c.Department=(SELECT Department from team where EmployeeName='$Emp_Number')
 					                                		ORDER BY a.AppliedTime Desc ")->result_array();
 			}
 		}
 		else{
 			if( $string=='null'){
 				return $this->db->query("SELECT a . *, b . *, c . * FROM leave_history a JOIN leave_status b ON a.Leave_Status = b.Status JOIN team c ON c.Employee_Number = a.Employee_Number
-																			WHERE a.Employee_Number NOT IN  ('$uname')  AND a.Leave_Status IN ('2','4')  AND c.Department=(SELECT Department from team where EmployeeName='$uname')
+																			WHERE a.Employee_Number NOT IN  ('$Emp_Number')  AND a.Leave_Status IN ('2','4')  AND c.Department=(SELECT Department from team where EmployeeName='$Emp_Number')
 																			ORDER BY a.AppliedTime Desc")->result_array();
 			}
 			else{
 				return $this->db->query("	SELECT a . *, b . *, c . * FROM leave_history a JOIN leave_status b ON a.Leave_Status = b.Status JOIN team c ON c.Employee_Number = a.Employee_Number
-												WHERE a.Employee_Number NOT IN  ('$uname')  AND  (a.Employee_Number='$string' OR a.Leave_Status IN ('$string') OR a.Leave_Type='$string')
-												AND c.Department=(SELECT Department from team where EmployeeName='$uname') AND Leave_Status IN (2,4)
+												WHERE a.Employee_Number NOT IN  ('$Emp_Number')  AND  (a.Employee_Number='$string' OR a.Leave_Status IN ('$string') OR a.Leave_Type='$string')
+												AND c.Department=(SELECT Department from team where EmployeeName='$Emp_Number') AND Leave_Status IN (2,4)
 		                                		ORDER BY a.AppliedTime Desc ")->result_array();
 			}
 		}
-	}
-
-
-	function check_leave($d,$type)
-	{
-		$uname=$this->session->userdata('fullname');
-		return $this->db->query("SELECT IFNULL(SUM(Total_Days),0) AS Leaves FROM leave_history  WHERE Emp_Number='$uname' AND DATE_FORMAT(From_Date,'%d-%m-%Y')='$d' AND Leave_Type='$type'
-							AND Leave_Status IN (1,2,4)")->result_array();
-	}
-
-	function check_leavetaken($d)
-	{
-		$uname=$this->session->userdata('fullname');
-		return $this->db->query("SELECT COUNT(Emp_Number) AS avail FROM leave_history  WHERE Emp_Number='$uname' AND  '$d' BETWEEN DATE_FORMAT(From_Date,'%d-%m-%Y') AND DATE_FORMAT(To_Date,'%d-%m-%Y')  AND Leave_Status IN (1,2,4)")->result_array();
-	}
-
-	function check_holidays($d)
-	{
-		return $this->db->query("SELECT COUNT(holi_date) AS avail, holi_desc FROM holidays  WHERE DATE_FORMAT(holi_date,'%d-%m-%Y')='$d' ")->result_array();
-	}
-
-	function check_sunday($d)
-	{
-		return $this->db->query("SELECT if(DAYNAME(STR_TO_DATE(STR_TO_DATE('$d','%d-%m-%Y'),'%Y-%m-%d'))='Sunday',1,0) AS day FROM parameters limit 1")->result_array();
-	}
-
-
-	function validate_casual($d)
-	{
-		$Emp_Number=$this->session->userdata('fullname');
-		return $this->db->query("SELECT SUM(Total_Days) AS day FROM leave_history
-																		WHERE MONTH(STR_TO_DATE(STR_TO_DATE('$d','%d-%m-%Y'),'%Y-%m-%d'))=MONTH(From_Date) AND YEAR(STR_TO_DATE(STR_TO_DATE('$d','%d-%m-%Y'),'%Y-%m-%d'))=YEAR(From_Date)
-																		AND Emp_Number='$Emp_Number' AND Leave_Type='Casual Leave'")->result_array();
-	}
-
-	function validate_permission($d)
-	{
-		$Emp_Number=$this->session->userdata('fullname');
-		return $this->db->query("SELECT COUNT(P_Date) AS Status FROM permissions
-																		WHERE MONTH(STR_TO_DATE(STR_TO_DATE('$d','%d-%m-%Y'),'%Y-%m-%d'))=MONTH(P_Date) AND YEAR(STR_TO_DATE(STR_TO_DATE('$d','%d-%m-%Y'),'%Y-%m-%d'))=YEAR(P_Date)
-																		AND Emp_Number='$Emp_Number' AND ( Status='Approved' OR Status='Applied' ) ")->result_array();
-	}
-
-	function get_approval_officer()
-	{
-		$uname=$this->session->userdata('fullname');
-		return $this->db->query("SELECT IFNULL(LeaveApprover_L1,'MD') as LeaveApprover_L1 FROM team  WHERE EmployeeName='$uname'  ")->result_array();
 	}
 
 
@@ -332,47 +275,32 @@ Class History_model extends CI_Model{
 	{
 		$y=date('Y');
 		$m=date('m');
-		$uname=$this->session->userdata('fullname');
-		return $this->db->query("SELECT SUM(Total_Days) AS Total_Days, Leave_Type FROM leave_history  WHERE Leave_Status IN (2,4) AND Emp_Number='$uname' AND YEAR(From_Date)='$y'  AND MONTH(From_Date)='$m'
+		$Emp_Number=$this->session->userdata('Emp_Number');
+		return $this->db->query("SELECT SUM(Total_Days) AS Total_Days, Leave_Type FROM leave_history  WHERE Leave_Status IN (2,4) AND Emp_Number='$Emp_Number' AND YEAR(From_Date)='$y'  AND MONTH(From_Date)='$m'
 							GROUP BY Leave_Type ")->result_array();
 	}
 
 	function get_leave_summary_year()
 	{
 		$d1=date('Y');
-		$uname=$this->session->userdata('fullname');
-		return $this->db->query("SELECT SUM(Total_Days) AS Total_Days, Leave_Type FROM leave_history  WHERE Leave_Status IN (2,4) AND Emp_Number='$uname' AND YEAR(From_Date)='$d1'
+		$Emp_Number=$this->session->userdata('Emp_Number');
+		return $this->db->query("SELECT SUM(Total_Days) AS Total_Days, Leave_Type FROM leave_history  WHERE Leave_Status IN (2,4) AND Emp_Number='$Emp_Number' AND YEAR(From_Date)='$d1'
 							 GROUP BY Leave_Type ")->result_array();
 	}
 
 	function get_leave_summary_pend()
 	{
 		//	$d1=date('Y');
-		$uname=$this->session->userdata('fullname');
-		return $this->db->query("SELECT SUM(Total_Days) AS Total_Days, Leave_Type FROM leave_history  WHERE Leave_Status IN (1) AND Emp_Number='$uname'   GROUP BY Leave_Type ")->result_array();
+		$Emp_Number=$this->session->userdata('Emp_Number');
+		return $this->db->query("SELECT SUM(Total_Days) AS Total_Days, Leave_Type FROM leave_history  WHERE Leave_Status IN (1) AND Emp_Number='$Emp_Number'   GROUP BY Leave_Type ")->result_array();
 	}
-
-	function carry_forward_on(){
-		$uname=$this->session->userdata('fullname');
-		return $this->db->query("SELECT IF(count>0,12-MONTH(CURDATE()),11-MONTH(CURDATE())) as casual_remain
-																				FROM
-																				(SELECT COUNT(From_Date) as count FROM leave_history WHERE Leave_Type='Casual Leave' AND Leave_Status IN (1,2,4) AND Emp_Number='Gnanajeyam G' AND MONTH(CURDATE())=MONTH(From_Date) AND YEAR(CURDATE())=YEAR(From_Date)) a")->result_array();
-	}
-
+	
 	function get_doj()
 	{
-		$uname=$this->session->userdata('fullname');
-		return $this->db->query("SELECT DATE_FORMAT(JoiningDate,'%d-%m-%Y') as JoiningDate, TIMESTAMPDIFF(MONTH,JoiningDate,CURRENT_TIMESTAMP) as Experience FROM team  WHERE EmployeeName='$uname' ")->result_array();
+		$Emp_Number=$this->session->userdata('Emp_Number');
+		return $this->db->query("SELECT DATE_FORMAT(JoiningDate,'%d-%m-%Y') as JoiningDate, TIMESTAMPDIFF(MONTH,JoiningDate,CURRENT_TIMESTAMP) as Experience FROM team  WHERE EmployeeName='$Emp_Number' ")->result_array();
 	}
 
-
-	function add_team_table($username,$dept,$desig,$doj,$l1,$l2)
-	{
-
-		$this->db->query("INSERT INTO team(EmployeeName,Department,Designation,LeaveApprover_L1,LeaveApprover_L2,JoiningDate)
-						 VALUES('$username','$dept','$desig','$l1','$l2',STR_TO_DATE(STR_TO_DATE('$doj','%d-%m-%Y'),'%Y-%m-%d'));");
-
-	}
 
 
 
@@ -396,7 +324,7 @@ Class History_model extends CI_Model{
 
 
 	function getMailData($date_from,$reasoning,$day,$l_type,$Offr){
-		$Emp_Number=$this->session->userdata('fullname');
+		$Emp_Number=$this->session->userdata('Emp_Number');
 			
 		return $this->db->query("SELECT DISTINCT (SELECT email FROM admin_users WHERE name='$Emp_Number') AS FromMail ,
 					(SELECT email FROM admin_users WHERE name=(SELECT LeaveApprover_L1 FROM team WHERE Emp_Number='$Emp_Number' ) ) AS ToMail1,
@@ -409,7 +337,7 @@ Class History_model extends CI_Model{
 	}
 		
 	function approve_mail($lid){
-		$app=$this->session->userdata('fullname');
+		$app=$this->session->userdata('Emp_Number');
 		return $this->db->query("SELECT Emp_Number,Leave_Type AS Type,From_Date As Date,Total_Days As Days,AppliedTime AS Time,leave_status.Description As Status,
 																	admin_users.email AS Email,(SELECT email FROM admin_users WHERE name='$app' ) AS FromMail
 																	FROM leave_history 
@@ -421,47 +349,19 @@ Class History_model extends CI_Model{
 		
 
 		
-		
-	function remove_tech_info($team,$tech)
-	{
-
-		$this->db->query("DELETE FROM technicians WHERE tech_id='$tech' ");
-		$this->db->query("DELETE FROM team WHERE EmployeeID='$team'");
-
-	}
-		
-	function update_tech_info($tech,$team,$name,$dept,$desig,$phone,$mail,$doj,$option)
-	{
-
-		if($option=='ADD'){
-			$this->db->query("INSERT INTO team (EmployeeName,Department,Designation,LeaveApprover_L1,LeaveApprover_L2,JoiningDate)
-								 VALUES('$name','$dept','$desig','MD','MD',STR_TO_DATE(STR_TO_DATE('$doj','%d-%m-%Y'),'%Y-%m-%d'));");
-				
-			$this->db->query("INSERT INTO technicians(tech_name,tech_dept,tech_phone,tech_email)
-								 VALUES('$name','$dept','$phone','$mail');");
-		}
 			
-		if($option=='EDIT'){
-
-			$this->db->query("UPDATE technicians SET tech_name='$name',tech_dept='$dept', tech_phone='$phone', tech_email='$mail' WHERE tech_id='$tech'");
-
-			$this->db->query("UPDATE team SET EmployeeName='$name',Department='$dept',Designation='$desig',JoiningDate=STR_TO_DATE(STR_TO_DATE('$doj','%d-%m-%Y'),'%Y-%m-%d') WHERE EmployeeID='$team'");
-
-		}
-	}
-		
 		
 		
 
 	function get_OT_hrs(){
-		$uname=$this->session->userdata('fullname');
+		$Emp_Number=$this->session->userdata('Emp_Number');
 			
 		return $this->db->query("SELECT HOUR(used) as used,HOUR(ot) as ot,HOUR(IFNULL(sun,'00:00:00')) as sun, HOUR(ADDTIME(ot,IFNULL(sun,'00:00:00'))) as tot, HOUR(SUBTIME(ADDTIME(ot,IFNULL(sun,'00:00:00')),used)) as remain
 					FROM ( SELECT
-					(SELECT Sec_to_time(SUM(TIME_TO_SEC(ts_duty))) FROM time_sheet WHERE ts_name='$uname' AND (DAYNAME(ts_date)='Sunday' OR ts_date IN (SELECT holi_date FROM holidays)))  as sun, 
-					(SELECT Sec_to_time(SUM(TIME_TO_SEC(ts_ot))) FROM time_sheet WHERE ts_name='$uname' AND (ts_date NOT IN (SELECT holi_date FROM holidays)) AND DAYNAME(ts_date)!='Sunday') as ot, 
-					(SELECT Comp_off FROM team WHERE Emp_Number='$uname') AS used
-					FROM time_sheet WHERE ts_name='$uname') a ")->result_array();
+					(SELECT Sec_to_time(SUM(TIME_TO_SEC(ts_duty))) FROM time_sheet WHERE ts_name='$Emp_Number' AND (DAYNAME(ts_date)='Sunday' OR ts_date IN (SELECT holi_date FROM holidays)))  as sun, 
+					(SELECT Sec_to_time(SUM(TIME_TO_SEC(ts_ot))) FROM time_sheet WHERE ts_name='$Emp_Number' AND (ts_date NOT IN (SELECT holi_date FROM holidays)) AND DAYNAME(ts_date)!='Sunday') as ot, 
+					(SELECT Comp_off FROM team WHERE Emp_Number='$Emp_Number') AS used
+					FROM time_sheet WHERE ts_name='$Emp_Number') a ")->result_array();
 			
 	}
 
@@ -491,20 +391,14 @@ Class History_model extends CI_Model{
 
 	}
 
-	function insert_permission_data($d,$time,$total,$reason){
-		$Emp_Number=$this->session->userdata('fullname');
-		$this->db->query("INSERT INTO permissions(P_Date,Emp_Number,timefrom,Total_Hrs,reason)  VALUES(STR_TO_DATE(STR_TO_DATE('$d','%d-%m-%Y'),'%Y-%m-%d'),'$Emp_Number','$time','$total',\"$reason\") ");
-
-	}
-
 
 	function get_permission($d){
-		$Emp_Number=$this->session->userdata('fullname');
+		$Emp_Number=$this->session->userdata('Emp_Number');
 		$this->db->query("SELECT COUNT(P_Date) as permission FROM permissions WHERE  Emp_Number='$Emp_Number' AND month(STR_TO_DATE(DATE_FORMAT(P_Date,'%d-%m-%Y'),'%d-%m-%Y'))=month('$d') ")->result_array();
 
 	}
 	function get_allpermissions($y,$d){
-		$Emp_Number=$this->session->userdata('fullname');
+		$Emp_Number=$this->session->userdata('Emp_Number');
 		return $this->db->query("SELECT DISTINCT (SELECT COUNT(P_Date) as permission FROM permissions WHERE Emp_Number='$Emp_Number' AND MONTH(P_Date) ='05' AND YEAR(P_Date) ='2014' AND Status='Approved') as month,
 																							(SELECT COUNT(P_Date) as permission FROM permissions WHERE Emp_Number='$Emp_Number' AND YEAR(P_Date) ='2014' AND Status='Approved') as year,
 																							(SELECT COUNT(P_Date) as permission FROM permissions WHERE Emp_Number='$Emp_Number' AND YEAR(P_Date) ='2014' AND Status='Applied') as pending
@@ -514,7 +408,7 @@ Class History_model extends CI_Model{
 
 
 	function check_permission_data($d){
-		$Emp_Number=$this->session->userdata('fullname');
+		$Emp_Number=$this->session->userdata('Emp_Number');
 		$data=$this->db->query("SELECT COUNT(P_Date) as 'count' FROM permissions WHERE  Emp_Number='$Emp_Number' AND MONTH(P_Date)=SUBSTRING('$d',4,2)  AND YEAR(P_Date)=SUBSTRING('$d',7,10)  AND Status!='Applied' ")->result_array();
 		foreach($data as $name){
 			$count1=$name["count"];
@@ -527,16 +421,6 @@ Class History_model extends CI_Model{
 		$availability =$this->db->query("SELECT *  FROM permissions  WHERE Status='Applied' ORDER BY permission_id");
 		return $availability->result_array();
 
-			
-	}
-
-
-	function get_mailID($Emp_Number){
-		return $this->db->query("SELECT (SELECT email FROM admin_users WHERE user_email='MD') as md,
-																							(SELECT email FROM admin_users WHERE name='$Emp_Number') as Emp_Number
-																			FROM admin_users limit 1")->result_array();
-			
-			
 			
 	}
 
@@ -555,7 +439,7 @@ Class History_model extends CI_Model{
 	}
 
 	function SendReminder($id){
-		$Emp_Number=$this->session->userdata('fullname');
+		$Emp_Number=$this->session->userdata('Emp_Number');
 		$this->db->query("UPDATE leave_history SET ReminderCount=ReminderCount+1 WHERE Leave_ID='$id'");
 		return $this->db->query("SELECT email FROM admin_users WHERE name=(SELECT LeaveApprover_L1 FROM team  WHERE EmployeeName='$Emp_Number' ) ")->result_array();
 	}
@@ -567,7 +451,7 @@ Class History_model extends CI_Model{
 	}
 
 	function update_leave_param($cm,$ct,$st,$sp,$pt,$pm,$pe,$comp,$permis,$carry,$pp){
-		$uname=$this->session->userdata('fullname');
+		$Emp_Number=$this->session->userdata('Emp_Number');
 		$this->db->query("UPDATE parameters
 														SET casual_month ='$cm',
 																casual_total = '$ct',
@@ -590,7 +474,7 @@ Class History_model extends CI_Model{
 	}
 
 	function calculate_workingdays($date1,$date2){
-		$Emp_Number=$this->session->userdata('fullname');
+		$Emp_Number=$this->session->userdata('Emp_Number');
 		return $this->db->query("SELECT (leaves+holidays+sundays) as total, leaves,holidays,sundays
 																					FROM (SELECT COUNT(From_Date) as leaves,
 																							(SELECT COUNT(holi_date)  FROM holidays WHERE STR_TO_DATE(DATE_FORMAT(holi_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$date1','%d-%m-%Y') AND STR_TO_DATE('$date2','%d-%m-%Y')) as holidays, 

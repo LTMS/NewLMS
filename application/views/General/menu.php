@@ -17,7 +17,7 @@
 						<li><a href="<?php echo site_url("Leave/history/get_reported_applications"); ?>" <?php if ($submenu=='reported_applications'){?>class="current"<?php }?> >Leaves pending for Approval</a></li>
 	    				<li><a href="<?php echo site_url("Leave/history/get_applied_applications"); ?>" <?php if ($submenu=='applied_applications'){?>class="current"<?php }?> >Applied Leaves</a></li>
 						<li><a href="<?php echo site_url("Leave/history/permissions"); ?>" <?php if ($submenu=='permissions'){?>class="current"<?php }?> >Pending Permissions</a></li>
-						<li><a href="<?php echo site_url("Leave/history/history_md"); ?>" <?php if ($submenu=='history_admin'){?>class="current"<?php }?> >Employees Leave History</a></li>
+						<li><a href="<?php echo site_url("Leave/history/history_admin"); ?>" <?php if ($submenu=='history_admin'){?>class="current"<?php }?> >Employees Leave History</a></li>
 	    				<li><a href="<?php echo site_url("Leave/summary/leave_summary_md"); ?>" <?php if ($submenu=='summary'){?>class="current"<?php }?> >Employees Leave Summary</a></li>
 	    				<li><a href="<?php echo site_url("Leave/leave_misc/leave_reprocess"); ?>" <?php if ($submenu=='reprocess'){?>class="current"<?php }?> >Reprocess Approved Leaves</a></li>
 					

@@ -7,6 +7,7 @@ class History extends CI_Controller
 
 		$this->load->library('SimpleLoginSecure');
 		$this->load->library('Export_emp_leave_history');
+		$this->load->library('My_PHPMailer');
 		$this->load->model('Leave/history_model');
 		$this->load->model('Leave/summary_model');
 		$this->load->helper('url');
@@ -46,29 +47,20 @@ class History extends CI_Controller
 
 
 
-	function status()
+	function leave_reprocess()
 	{
-
 		$data["menu"]='LMS';
-		$data["submenu"]='status';
+		$data["submenu"]='reprocess';
+		$data["members"]=$this->history_model->get_leave_members();
+		$data['years']=$this->history_model->get_years();
 
-		$this->template->write('titleText', "Leave Status");
+		$this->template->write('titleText', "Reprocess Approved Leaves");
 		$this->template->write_view('sideLinks', 'general/menu',$data);
-		$this->template->write_view('bodyContent', 'Leave/History/status',$data);
+		$this->template->write_view('bodyContent', 'Leave/History/reprocess_leave',$data);
 		$this->template->render();
 	}
 
-	function add_dept(){
-		$data["menu"]='misc';
-		$data["submenu"]='add_dept';
-		$data["deptlist"]=$this->history_model->get_dept();
-
-		$this->template->write('titleText', "Manage Departments");
-		$this->template->write_view('sideLinks', 'general/menu',$data);
-		$this->template->write_view('bodyContent', 'Leave/History/add_dept',$data);
-		$this->template->render();
-	}
-
+	
 
 	function my_leave_history()
 	{
@@ -85,27 +77,13 @@ class History extends CI_Controller
 
 
 
-	function leave_reprocess()
-	{
-		$data["menu"]='LMS';
-		$data["submenu"]='reprocess';
-		$data["members"]=$this->history_model->get_leave_members();
-		$data['years']=$this->history_model->get_years();
-
-		$this->template->write('titleText', "Reprocess Approved Leaves");
-		$this->template->write_view('sideLinks', 'general/menu',$data);
-		$this->template->write_view('bodyContent', 'Leave/History/reprocess_leave',$data);
-		$this->template->render();
-	}
-
-
 	function history_admin()
 	{
-		$data["menu"]='e_reports';
+		$data["menu"]='LMS';
 		$data["submenu"]='history_admin';
-		$data["deptlist"]=$this->history_model->get_dept();
-		$data["teamlist"]=$this->history_model->get_team();
-		$data["members"]=$this->history_model->get_leave_members();
+		$data["Years"]=$this->history_model->get_years();
+		$data["LeaveList"]=$this->history_model->get_leaveList();
+		$data["department"]=$this->history_model->get_Departments();
 
 		$this->template->write('titleText', "Employees Leave History");
 		$this->template->write_view('sideLinks', 'general/menu',$data);
@@ -159,29 +137,29 @@ class History extends CI_Controller
 	function Send_LeaveMail()
 	{
 		$form_data = $this->input->post();
+		$emp_name=$form_data["emp_name"];
+		$emp_num=$form_data["emp_num"];
+		$type=$form_data["type"];
+		$date=$form_data["date"];
+		$tot_days=$form_data["tot_days"];
+		$reason=$form_data["reason"];
+		$apptime=$form_data["apptime"];
 		$remark=$form_data["remark"];
-		$mail_title=$form_data["mail_title"];
-		$data["result"]=$this->history_model->get_LeaveDetails($form_data["leave_id"]);
-
-		foreach($leave as $row){
-			$to=$row["Email"];
-			$from=$row["FromMail"];
-			$days=$row["Days"];
-			$date=$row["Date"];
-			$time=$row["Time"];
-			$status1=$row["Status"];
-			$name=$row["User"];
-			$type=$row["Type"];
+		$mail_subject=$form_data["mail_subject"];
+		
+		$data["MailID"]=$this->history_model->get_MailID($emp_num);
+		foreach($MailID as $row){
+			$emp_mail=$row["Emp_Mail"];
+			$reporter_mail=$row["Reporter_Mail"];
 		}
-		if($status1=='L1 -  Approved'){
-			$status='Team Leader';
-		}
-		if($status1=='L2 -  Approved'){
-			$status='Managing Director';
-		}
-			
+		
+		
+		$my_mail=$this->session->userdata('My_Mail');
+		$actionby=$this->session->userdata('Emp_Name');
+		
+		
+		
 		$mail = new PHPMailer;
-
 		$mail->isSMTP();
 		$mail->Host = 'mail.preipolar.com';
 		$mail->SMTPAuth = True;
@@ -189,49 +167,63 @@ class History extends CI_Controller
 		$mail->Password = 'prei@123';
 
 
-		$mail->From = $from;
+		$mail->From = $my_mail;
 		$mail->FromName = 'Leave Mailer';
-		$mail->addAddress($to);
-		$mail->addAddress('saravanan@preipolar.com');
+		$mail->addAddress($emp_mail);
+		$mail->addCC($reporter_mail);
 
 		$mail->isHTML(true);
 
-		$mail->Subject = $name." Your ".$type." was Approved ";
+		$mail->Subject = $mail_subject;
 
 		$c=	"
-								<html><body>
-									<table border='1' align='center' cellpading='0' cellspacing='0' width='70%' style='color:blue;font-weight:bold;margin: 40px 0px 0px 50px;'>
-												<tr >
-														<td colspan='2' align='center' style='color:green'>Approved Leave Details</td>
-														
-												</tr>
-												<tr>
-														<td align='right'>Leave Type</td>
-														<td>$type</td>
-												</tr>
-												<tr>
-														<td align='right'>From Date</td>
-														<td>$date</td>
-												</tr>
-												<tr>
-														<td align='right'>No of Days</td>
-														<td>$days</td>
-												</tr>
+							<html>
+										<body>
+										<h style='font-weight:bold' ><font color='#003366' size='5pt' face='Lucida Handwriting' >Hi, <b>Gnanajeyam G..!</b></font></h>
+										<br>
+										<br>
+										<p style='font-weight:bold;font-size:13px;color:#003366' >&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; 
+											$mail_subject
+										</p>
+										<br>
+										<h3 style='font-weight:bold;font-size:13px;color:#003366' ><u>Leave Details</u></h3>
+										<br>
+										<table style='font-size:13px;color:#006699;'>
 											<tr>
-														<td align='right'>Applied On</td>
-														<td>$time</td>
+												<td width='100px'>Type of Leave</td><td width='10px'>:</td>
+												<td>$type</td>
 											</tr>
-												<tr>
-														<td align='right'>Approved By</td>
-														<td>$status</td>
+											<tr>
+												<td width='100px'>Leave On</td><td width='10px'>:</td>
+												<td>$date</td>
 											</tr>
-									</table>
-							 	  </body></html>";
+											<tr>
+												<td width='100px'>No of Days</td><td width='10px'>:</td>
+												<td>$tot_days</td>
+											</tr>
+											<tr>
+												<td width='100px'>Reason</td><td width='10px'>:</td>
+												<td>$reason</td>
+											</tr>
+											<tr>
+												<td width='100px'>Applied On</td><td width='10px'>:</td>
+												<td>$apptime</td>
+											</tr>
+											<tr>
+												<td width='100px'>Processed By</td><td width='10px'>:</td>
+												<td>$actionby</td>
+											</tr>
+											<tr>
+												<td width='100px'>Remarks</td><td width='10px'>:</td>
+												<td>$remark</td>
+											</tr>
+										</table>
+										</body>					 	  
+							 </html>";
 
+		
 		$mail->Body =$c;
 
-		//	$mail->Body    = $name." Your ".$type." from ".$date." for ".$days." day(s) applied on ".$time." status is ".$status;
-		//	$mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 
 		if(!$mail->send()) {
 			echo 'Message could not be sent.';
@@ -240,9 +232,6 @@ class History extends CI_Controller
 		}
 
 		echo 'Message has been sent';
-
-
-		$this->load->view('Leave/History/pending_applications',$data);
 	}
 		
 	
@@ -304,7 +293,26 @@ class History extends CI_Controller
 		}
 
 	}
-		
+
+	
+	function get_DepartmentEmployees(){
+				$form_data = $this->input->post();
+				$deptartments=$this->history_model->get_DepartmentEmployees($form_data["dept"]);
+				$deptlist="";
+				if(!empty($deptartments)){
+						foreach($deptartments as $row){
+						$depts=$row["Dept"];
+						$deptlist=$deptlist.'::'.$depts;
+						}
+				}
+				else{
+					$deptlist="No Employees";
+				}
+				echo $deptlist;
+				
+	}
+	
+	
 																		/*  * * My Leave History * * */
 
 	function my_leavehistory_general_all(){
@@ -350,101 +358,6 @@ class History extends CI_Controller
 		$this->load->view('Leave/History/history_teamleader_page',$data);
 	}
 
-
-																							/*  * * Approving Leave * * */
-
-
-	
-																								/*  * * Rejecting Leave * * */
-	
-	function reject(){
-		$form_data = $this->input->post();
-		$data["result"]=$this->history_model->reject($form_data["lid"],$form_data["reason"],$form_data["type"],$form_data["user"],$form_data["hrs"]);
-		$leave=$this->history_model->approve_mail($form_data["lid"]);
-
-		foreach($leave as $row){
-
-			$to=$row["Email"];
-			$from=$row["FromMail"];
-			$days=$row["Days"];
-			$date=$row["Date"];
-			$time=$row["Time"];
-			$status1=$row["Status"];
-			$name=$row["User"];
-			$type=$row["Type"];
-		}
-		if($status1=='L1 - Rejected'){
-			$status='Team Leader';
-		}
-		if($status1=='L2 - Rejected'){
-			$status='Managing Director';
-		}
-
-		$mail = new PHPMailer;
-
-		$mail->isSMTP();
-		$mail->Host = 'mail.preipolar.com';
-		$mail->SMTPAuth = True;
-		$mail->Username = 'irshath@preipolar.com';
-		$mail->Password = 'prei@123';
-
-
-		$mail->From =$from;
-		$mail->FromName = 'Leave Mailer';
-		$mail->addAddress($to);
-		$mail->addAddress('saravanan@preipolar.com');
-
-		$mail->isHTML(true);
-
-		$mail->Subject = $name." Your ".$type." was Rejected ";
-
-
-		$c=	"
-								<html><body>
-									<table border='1' align='center' cellpading='0' cellspacing='0' width='70%' style='color:blue;font-weight:bold;margin: 40px 0px 0px 50px;'>
-												<tr >
-														<td colspan='2' align='center' style='color:red'>Rejected Leave Details</td>
-														
-												</tr>
-												<tr>
-														<td align='right'>Leave Type</td>
-														<td>$type</td>
-												</tr>
-												<tr>
-														<td align='right'>From Date</td>
-														<td>$date</td>
-												</tr>
-												<tr>
-														<td align='right'>No of Days</td>
-														<td>$days</td>
-												</tr>
-												<tr>
-														<td align='right'>Applied On</td>
-														<td>$time</td>
-											</tr>
-												<tr>
-														<td align='right'>Rejected By</td>
-														<td>$status</td>
-											</tr>
-									</table>
-							 	  </body></html>";
-
-		$mail->Body =$c;
-
-		//	$mail->Body    = $name." Your ".$type." from ".$date." for ".$days." day(s) applied on ".$time." status is ".$status;
-		//	$mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
-
-		if(!$mail->send()) {
-			echo 'Message could not be sent.';
-			echo 'Mailer Error: ' . $mail->ErrorInfo;
-			exit;
-		}
-
-		echo 'Message has been sent';
-
-
-		$this->load->view('Leave/History/pending_applications',$data);
-	}
 
 	
 	function show_document()

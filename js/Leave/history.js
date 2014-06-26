@@ -1,22 +1,22 @@
 											/* * * 	   Action on Leave Status    * * */
 
-function update_LeaveStatusReporter(leave_id1,status1,button_row){
+function update_LeaveStatusReporter(leave_id1,status1,button_row,emp_name1,emp_num1,type1,date1,tot_days1,reason1,apptime1){
 					if(status1==2){
 						innertxt="Leave was Reported..!";
-						mailtxt="Your Leave was Reported by Reporting Authority..!";
+						mail_subject1="Hi, "+emp_name1+"..!   Your Leave was passed to Approving Authority..!";
 					}
 					else{
 						innertxt="Reporter Cancelled..!";
-						mailtxt="Your Leave was Cancelled by Reporting Authority..!";
+						mail_subject1="Hi, "+emp_name1+"..!   Your Leave was Cancelled by Reporting Authority..!";
 					}
-					var remark1=prompt("Enter Your Remarks for the Employee..!","");
+					var remark1=prompt("Enter Your Remarks..!"," ");
 					var length = remark1.length;
 							if(length>0){
 										if(remark1.replace(/[^A-Z]/gi, "").length>0){
-												document.getElementById('button_row').innerHTML="System is Sending Mail...!";
+												document.getElementById(button_row).innerHTML="Sending Mail...!";
 												$.post(site_url+"/Leave/history/update_LeaveStatusReporter/",{leave_id:leave_id1,remark:remark1,status:status1},function(data){
 												
-															$.post(site_url+"/Leave/history/Send_LeaveMail/",{leave_id:leave_id1,remark:remark1,mail_title:mailtxt},function(data){
+															$.post(site_url+"/Leave/history/Send_LeaveMail/",{leave_id:leave_id1,remark:remark1,mail_subject:mail_subject1,emp_name:emp_name1,emp_num:emp_num1,type:type1,date:date1,tot_days:tot_days1,reason:reason1,apptime:apptime1},function(data){
 																		document.getElementById(button_row).innerHTML=innertxt;
 																	});
 													
@@ -32,24 +32,24 @@ function update_LeaveStatusReporter(leave_id1,status1,button_row){
 		}
 		
 		
-		function update_LeaveStatusApprover(leave_id1,status1,button_row){
+		function update_LeaveStatusApprover(leave_id1,status1,button_row,emp_name1,emp_num1,type1,date1,tot_days1,reason1,apptime1){
 					if(status1==4){
 						innertxt="Leave was Approved..!";
-						mailtxt="Your Leave was Approved..!";
+						mail_subject1="Hi, "+emp_name1+"..!   Your Leave was Approved..!";
 					}
 					else{
 						innertxt="Leave was  Rejected..!";
-						mailtxt="Your Leave was Rejected..!";
+						mail_subject1="Hi, "+emp_name1+"..!   Your Leave was Rejected by Approving Authority..!";
 					}
-					var remark1=prompt("Enter Your Remarks for the Employee..!","");
+					var remark1=prompt("Enter Your Remarks..!"," ");
 							var length = remark1.length;
 							if(length>0){
 								if(remark1.replace(/[^A-Z]/gi, "").length>0){
-										document.getElementById(button_row).innerHTML="System is Sending Mail...!";
-										$.post(site_url+"/Leave/history/update_LeaveStatusReporter/",{leave_id:leave_id1,remark:remark1,status:status1},function(data){
+										document.getElementById(button_row).innerHTML="Sending Mail...!";
+										$.post(site_url+"/Leave/history/update_LeaveStatusApprover/",{leave_id:leave_id1,remark:remark1,status:status1},function(data){
 													
 											
-															$.post(site_url+"/Leave/history/Send_LeaveMail/",{leave_id:leave_id1,remark:remark1,mail_title:mailtxt},function(data){
+															$.post(site_url+"/Leave/history/Send_LeaveMail/",{leave_id:leave_id1,remark:remark1,mail_subject:mail_subject1,emp_name:emp_name1,emp_num:emp_num1,type:type1,date:date1,tot_days:tot_days1,reason:reason1,apptime:apptime1},function(data){
 																document.getElementById(button_row).innerHTML=innertxt;
 															});
 															
@@ -65,60 +65,17 @@ function update_LeaveStatusReporter(leave_id1,status1,button_row){
 }
 
 
-													
-	
-	function approve()
-	{ 
-		document.getElementById('buttonrow').style.display='none';
-		document.getElementById('buttonrow1').style.display='';
-			var l_id=document.getElementById('selected_leave_id').value; 
-		if(l_id!=""){
-		var l_reason="Leave Approved..!";
-		if(l_reason != null && l_reason != ""){
-			$.post(site_url+"/Leave/history/approve/",{lid:l_id,reason:l_reason},function(data){
-                //alert(data);
-				window.location.reload();
-				});
-			
-			}
-			else if(l_reason==""){alert("You Must Enter the Reason to Process.!");}
-		}
-		else {alert("Select a Leave ID to Process.!");}
-	}
+																						/* * *		 Admin Leave History  		* * */ 
 	
 	
-	
-	
-	
-	function reject()
-	{ 
-		document.getElementById('buttonrow').style.display='none';
-		document.getElementById('buttonrow1').style.display='';
-		var l_id=document.getElementById('selected_leave_id').value; 
-		var l_type=document.getElementById('type').value; 
-		var uname=document.getElementById('uname').value; 
-		var days=document.getElementById('days').value; 
-		var hrs1=parseInt(days)*8;
-		var hrs2=hrs1+':00:00';
-		//alert(hrs2);
-			if(l_id!=""){
-		var l_reason="Leave Rejected..!";
-			if(l_reason != null && l_reason != ""){
-				$.post(site_url+"/Leave/history/reject/",{lid:l_id,reason:l_reason,type:l_type,user:uname,hrs:hrs2},function(data){
-						window.location.reload();
-						});
-					}
-					else if(l_reason==""){alert("You Must Enter the Reason to Process.!");}
-				}
-		else {
-				alert("Select a Leave ID to Process.!");
-			}
-	}
+	function admin_leavehistory_general(part){	
 		
-	
-	function admin_leavehistory_general()		{	
-						document.getElementById('year1').value="";
-						document.getElementById('emp_appr').value="All";
+					if(part=='Dept'){
+						var dept=document.getElementById('dept').value;					
+						document.getElementById('emp').value="All";
+							if(dept1!="" && dept!='All'){ get_DepartmentEmployees(dept); }
+					}
+		
 						var leave1=document.getElementById('leave').value; 
 						if(leave1!="All"){
 							document.getElementById('month').value="All";
@@ -142,6 +99,7 @@ function update_LeaveStatusReporter(leave_id1,status1,button_row){
 														$("#contentData").append(data);
 											});
 									}
+									
 	}										
 				
 							
@@ -167,6 +125,30 @@ function update_LeaveStatusReporter(leave_id1,status1,button_row){
 								}
 								
 			}
+		
+		
+		function get_DepartmentEmployees(dept1){
+								$.post(site_url+"/Leave/history/get_DepartmentEmployees",{dept:dept1},function(data){
+													var emp_number="Deas";
+													var list=data.split('::');
+													//	alert(data);
+													for(i=1;i<list.length;i++)
+													{
+															if(i%2!=0){
+																		if(emp_number!=""){
+																			var opt = document.createElement("option");
+																					if(document.getElementById("emp")){
+																								document.getElementById("emp").options.add(opt);
+																								opt.text =list[i].replace(/\s/g, '');
+																							    opt.value = list[i+1].replace(/\s/g, '');
+																					}
+																		}
+															}
+														
+												}
+								}); 
+		}
+		
 		
 
 																		/*  My Leave History  */ 
@@ -408,3 +390,7 @@ function update_LeaveStatusReporter(leave_id1,status1,button_row){
 			remark1 = remark1.replace(/[^A-Z]/gi, "");
 
 			*/
+			
+			
+			
+			

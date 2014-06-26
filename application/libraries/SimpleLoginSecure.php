@@ -129,6 +129,7 @@ class SimpleLoginSecure
 			$user_data['Reporter'] = $reporter;
 			$user_data['Approver'] = $approver;
 			$user_data['Emp_Img']=$image;
+			$user_data['My_Mail']=$email;
 			$this->CI->session->set_userdata($user_data);
 				
 			return true;
