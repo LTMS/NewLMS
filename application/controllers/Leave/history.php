@@ -253,47 +253,121 @@ class History extends CI_Controller
 	
 																		/*  * * Admin Leave History * * */
 
-	function admin_leavehistory_general_all(){
-		$form_data = $this->input->post();
-		$month=$form_data["month"];
-
-		if($month=='All'){
-			$data["result"]=$this->history_model->admin_leavehistory_general_all($form_data["year"],$form_data["month"],$form_data["emp"]);
+	function admin_leavehistory_general(){
+			$form_data = $this->input->post();
+			$data["result"]=$this->history_model->admin_leavehistory_general($form_data["year"]);
 			$this->load->view('Leave/History/admin_leavehistory_page_emp',$data);
 			$this->load->view('Leave/History/admin_leavehistory_general_print',$data);
-		}
-		if($month!='All'){
-			$data["result"]=$this->history_model->admin_leavehistory_general_month($form_data["year"],$form_data["month"],$form_data["emp"]);
-			$this->load->view('Leave/History/admin_leavehistory_page_emp',$data);
-			$this->load->view('Leave/History/admin_leavehistory_general_print',$data);
-		}
-
 	}
 
 	function admin_leavehistory_general_filter(){
 		$form_data = $this->input->post();
-		$data["result"]=$this->history_model->admin_leavehistory_general_filter($form_data["year"],$form_data["emp"],$form_data["leave"]);
+		$data["result"]=$this->history_model->admin_leavehistory_general_filter($form_data["year"],$form_data["month"],$form_data["dept"],$form_data["emp"],$form_data["leave"]);
 		$this->load->view('Leave/History/admin_leavehistory_page_emp',$data);
 		$this->load->view('Leave/History/admin_leavehistory_general_print',$data);
 	}
 		
-		
-	function admin_leavehistory_approved(){
-		$form_data = $this->input->post();
-		$emp=$form_data["emp"];
-		if($emp=='All'){
-			$data["result"]=$this->history_model->admin_leavehistory_approved_all($form_data["year"]);
-			$this->load->view('Leave/History/admin_leavehistory_page_all',$data);
-			$this->load->view('Leave/History/admin_leavehistory_approved_all_print',$data);
-		}
-		else{
-			$data["result"]=$this->history_model->admin_leavehistory_approved_ind($form_data["year"],$form_data["emp"]);
-			$this->load->view('Leave/History/admin_leavehistory_page_all',$data);
-			$this->load->view('Leave/History/admin_leavehistory_approved_ind_print',$data);
-		}
-
-	}
-
+	
+	
+	function admin_leavehistory_different_combination(){
+			$form_data = $this->input->post();
+			$month=$form_data["month"];
+			$dept=$form_data["dept"];
+			$emp=$form_data["emp"];
+			$leave=$form_data["leave"];
+			
+				if($month!='All'){
+							if($dept=='All'){				/* Dept=All   */
+											
+												if($emp=='All'){ 		/* Dept=All, Emp=All   */
+																	
+																	if($leave=='All'){			/* Dept=All, Emp=All, Leave=All   */
+																				$data["result"]=$this->history_model->admin_leavehistory_different_combination_YM($form_data["year"],$form_data["month"]);
+																	}
+																	else{								/* Dept=All, Emp=All, Leave!=All   */
+																				$data["result"]=$this->history_model->admin_leavehistory_different_combination_YML($form_data["year"],$form_data["month"],$form_data["leave"]);
+																	}
+												}
+												else{					/* Dept=All, Emp!=All   */
+																	if($leave=='All'){			/* Dept=All, Emp!=All, Leave=All   */
+																				$data["result"]=$this->history_model->admin_leavehistory_different_combination_YME($form_data["year"],$form_data["month"],$form_data["emp"]);
+																	}
+																	else{								/* Dept=All, Emp!=All, Leave!=All   */
+																				$data["result"]=$this->history_model->admin_leavehistory_different_combination_YMEL($form_data["year"],$form_data["month"],$form_data["emp"],$form_data["leave"]);
+																	}
+													
+												}
+							}
+							else{		/* Dept!=All   */
+																if($emp=='All'){ 		/* Dept!=All, Emp=All   */
+																	
+																	if($leave=='All'){			/* Dept!=All, Emp=All, Leave=All   */
+																				$data["result"]=$this->history_model->admin_leavehistory_different_combination_YMD($form_data["year"],$form_data["month"],$form_data["dept"]);
+																	}
+																	else{								/* Dept!=All, Emp=All, Leave!=All   */
+																				$data["result"]=$this->history_model->admin_leavehistory_different_combination_YMDL($form_data["year"],$form_data["month"],$form_data["dept"],$form_data["leave"]);
+																	}
+												}
+												else{					/* Dept!=All, Emp!=All   */
+																	if($leave=='All'){			/* Dept!=All, Emp!=All, Leave=All   */
+																				$data["result"]=$this->history_model->admin_leavehistory_different_combination_YMDE($form_data["year"],$form_data["month"],$form_data["dept"],$form_data["emp"]);
+																	}
+																	else{								/* Dept!=All, Emp!=All, Leave!=All   */
+																				$data["result"]=$this->history_model->admin_leavehistory_different_combination_YMDEL($form_data["year"],$form_data["month"],$form_data["dept"],$form_data["emp"],$form_data["leave"]);
+																	}
+													
+												}
+								
+							}
+					
+				}
+				else{
+							if($dept=='All'){				/* Dept=All   */
+											
+												if($emp=='All'){ 		/* Dept=All, Emp=All   */
+																	
+																	if($leave=='All'){			/* Dept=All, Emp=All, Leave=All   */
+																				$data["result"]=$this->history_model->admin_leavehistory_different_combination_YM($form_data["year"]);
+																	}
+																	else{								/* Dept=All, Emp=All, Leave!=All   */
+																				$data["result"]=$this->history_model->admin_leavehistory_different_combination_YML($form_data["year"],$form_data["leave"]);
+																	}
+												}
+												else{					/* Dept=All, Emp!=All   */
+																	if($leave=='All'){			/* Dept=All, Emp!=All, Leave=All   */
+																				$data["result"]=$this->history_model->admin_leavehistory_different_combination_YME($form_data["year"],$form_data["emp"]);
+																	}
+																	else{								/* Dept=All, Emp!=All, Leave!=All   */
+																				$data["result"]=$this->history_model->admin_leavehistory_different_combination_YMEL($form_data["year"],$form_data["emp"],$form_data["leave"]);
+																	}
+													
+												}
+							}
+							else{		/* Dept!=All   */
+																if($emp=='All'){ 		/* Dept!=All, Emp=All   */
+																	
+																	if($leave=='All'){			/* Dept!=All, Emp=All, Leave=All   */
+																				$data["result"]=$this->history_model->admin_leavehistory_different_combination_YMD($form_data["year"],$form_data["dept"]);
+																	}
+																	else{								/* Dept!=All, Emp=All, Leave!=All   */
+																				$data["result"]=$this->history_model->admin_leavehistory_different_combination_YMDL($form_data["year"],$form_data["dept"],$form_data["leave"]);
+																	}
+												}
+												else{					/* Dept!=All, Emp!=All   */
+																	if($leave=='All'){			/* Dept!=All, Emp!=All, Leave=All   */
+																				$data["result"]=$this->history_model->admin_leavehistory_different_combination_YMDE($form_data["year"],$form_data["dept"],$form_data["emp"]);
+																	}
+																	else{								/* Dept!=All, Emp!=All, Leave!=All   */
+																				$data["result"]=$this->history_model->admin_leavehistory_different_combination_YMDEL($form_data["year"],$form_data["dept"],$form_data["emp"],$form_data["leave"]);
+																	}
+													
+												}
+								
+							}
+					
+					
+				}
+	}	
 	
 	function get_DepartmentEmployees(){
 				$form_data = $this->input->post();

@@ -150,7 +150,7 @@ Class History_model extends CI_Model{
 	
 	
 	
-	function admin_leavehistory_general_all($year,$month,$emp){
+	function admin_leavehistory_general($year){
 			
 		return $this->db->query("SELECT a.*, b.* FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status JOIN team c ON c.Employee_Number = a.Emp_Number
 															WHERE 	YEAR(From_Date)='$year' AND a.Emp_Number='$emp'
@@ -160,18 +160,22 @@ Class History_model extends CI_Model{
 
 	function admin_leavehistory_general_month($year,$month,$emp){
 			
-		return $this->db->query("SELECT a.*, b.* FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status JOIN team c ON c.Employee_Number = a.Emp_Number
-															WHERE 	YEAR(From_Date)='$year'  AND ( MONTHNAME(From_Date)='$month' OR MONTHNAME(To_Date)='$month'  )
-															 AND a.Emp_Number='$emp'
-															 ORDER BY a.From_Date   ")->result_array();
+		return $this->db->query("SELECT a.*, b.*,c.* 
+															FROM leave_history a INNER JOIN leave_status b ON  a.Leave_Status = b.Status
+																		 INNER JOIN employees c ON c.Employee_Number = a.Emp_Number
+															WHERE 	YEAR(From_Date)='$year' 
+															ORDER BY c.Department,a.Emp_Number,a.From_Date   ")->result_array();
 	}
 
 
-	function admin_leavehistory_general_filter($year,$emp,$leave){
+	function admin_leavehistory_general_filter($year,$month,$dept,$emp,$leave){
 			
-		return $this->db->query("SELECT a.*, b.* FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status 
-															WHERE 	YEAR(From_Date)='$year' AND a.Emp_Number='$emp' AND a.Leave_Type='$leave'
-															 ORDER BY a.From_Date   ")->result_array();
+		return $this->db->query("SELECT a.*, b.*,c.* 
+															FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status 
+																			INNER JOIN employee c ON c.Employee_Number=a.Emp_Num
+															WHERE 	YEAR(a.From_Date)='$year' AND MONTH(a.From_Date)='$month' 
+																			AND a.Emp_Number='$emp' AND a.Leave_Type='$leave' AND c.Department='$dept'
+															 ORDER BY a.Emp_Number,a.From_Date   ")->result_array();
 	}
 
 
