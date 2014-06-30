@@ -36,7 +36,7 @@
 
 			</select> &nbsp;&nbsp; <select id="month"
 				style="height: 20px; width: 100px; color: blue; font-weight: bold; font-size: 12px;"
-				onchange="admin_leavehistory_general('month');">
+				onchange="admin_leavehistory_general('month',this.value);">
 					<option value="All">All Months</option>
 					<option value="January">January</option>
 					<option value="February">February</option>
@@ -53,7 +53,7 @@
 			</select>&nbsp;&nbsp;&nbsp;&nbsp;
 			 <select id='dept'
 				style="height: 20px; width: 150px; color: brown; font-weight: bolder; font-size: 12px;"
-				onchange="admin_leavehistory_general('Dept');">
+				onchange="admin_leavehistory_general('Dept',this.value);">
 					<option selected value="">Select Department</option>
 					<option  value="All">All Departments</option>
 					<?php
@@ -65,21 +65,16 @@
 
 			</select> &nbsp;&nbsp;
 			 <select id='emp'
-				style="height: 20px; width: 150px; color: brown; font-weight: bolder; font-size: 12px;"
-				onchange="admin_leavehistory_general('Emp');">
+				style="height: 20px; width: 150px; color: #330066; font-weight: bolder; font-size: 12px;"
+				onchange="admin_leavehistory_general('Emp',this.value);">
 					<option selected value="">Select Employee</option>
 					<option  value="All">All Employees</option>
-					<?php
-					foreach($members as $row2 ){
-						$emp=$row2["Name"];
-						echo '<option style="font-size:12px" value="'.$emp.'">'.$emp.'</option>';
-					}
-					?>
+					
 
 			</select> &nbsp;&nbsp;
 			 <select id='leave'
 				style="height: 20px; width: 120px; color: #0099CC; font-weight: bolder; font-size: 12px;"
-				onchange="admin_leavehistory_general('Leave');">
+				onchange="admin_leavehistory_general('Leave',this.value);">
 					<option selected value="All">All Leaves</option>
 					<?php
 					foreach($LeaveList as $row3 ){

@@ -24,7 +24,7 @@ Class History_model extends CI_Model{
 	}
 
 	function get_leave_members(){
-		return $this->db->query("SELECT DISTINCT Emp_Number AS 'Name' FROM  admin_users WHERE Emp_Role NOT IN ('MD') ORDER BY name")->result_array();
+		return $this->db->query("SELECT DISTINCT Emp_Number AS 'Number',Emp_Name AS 'Name' FROM  admin_users WHERE Emp_Role NOT IN ('MD') ORDER BY Name DESC")->result_array();
 	}
 
 	function get_team_members()
@@ -132,75 +132,398 @@ Class History_model extends CI_Model{
 		return $this->db->query("SELECT DISTINCT * FROM departments ")->result_array();
 	}
 
-	function add_dept($id)
-	{
-		$this->db->query("INSERT INTO departments(department) VALUES('$id')");
-	}
-
-	function remove_dept($id)
-	{
-		$this->db->query("DELETE FROM departments WHERE id='$id'");
-	}
-
 
 
 	
 															/* * *         Admin Leave History 		* * */	
 	
-	
-	
-	
-	function admin_leavehistory_general($year){
-			
-		return $this->db->query("SELECT a.*, b.* FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status JOIN team c ON c.Employee_Number = a.Emp_Number
-															WHERE 	YEAR(From_Date)='$year' AND a.Emp_Number='$emp'
-															 ORDER BY a.From_Date ")->result_array();
-	}
-
-
-	function admin_leavehistory_general_month($year,$month,$emp){
-			
-		return $this->db->query("SELECT a.*, b.*,c.* 
-															FROM leave_history a INNER JOIN leave_status b ON  a.Leave_Status = b.Status
-																		 INNER JOIN employees c ON c.Employee_Number = a.Emp_Number
-															WHERE 	YEAR(From_Date)='$year' 
-															ORDER BY c.Department,a.Emp_Number,a.From_Date   ")->result_array();
-	}
-
-
-	function admin_leavehistory_general_filter($year,$month,$dept,$emp,$leave){
-			
-		return $this->db->query("SELECT a.*, b.*,c.* 
-															FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status 
-																			INNER JOIN employee c ON c.Employee_Number=a.Emp_Num
-															WHERE 	YEAR(a.From_Date)='$year' AND MONTH(a.From_Date)='$month' 
-																			AND a.Emp_Number='$emp' AND a.Leave_Type='$leave' AND c.Department='$dept'
-															 ORDER BY a.Emp_Number,a.From_Date   ")->result_array();
-	}
-
-
-	function admin_leavehistory_approved_all($year){
-			
-				return $this->db->query("SELECT a.*, b.* FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status 
-															WHERE 	YEAR(From_Date)='$year' AND a.Leave_Status IN (2,4) 
-															 ORDER BY a.Emp_Number,a.From_Date   ")->result_array();
-	}
-
-
-	function admin_leavehistory_approved_ind($year,$emp){
-			
-				return $this->db->query("SELECT a.*, b.* FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status 
-															WHERE 	YEAR(From_Date)='$year' AND a.Emp_Number='$emp' AND a.Leave_Status IN (4) 
-															 ORDER BY a.Emp_Number,a.From_Date   ")->result_array();
-	}
-
-
 	function get_DepartmentEmployees($dept){
 				return $this->db->query("SELECT  CONCAT(Employee_Name,'::',Employee_Number) as Dept
 																FROM employees
 																WHERE Department='$dept' AND Employee_Name!=''
 																ORDER BY Dept DESC")->result_array();
 	}
+//1	
+	function admin_leavehistory_combination_Y($year){
+					return $this->db->query("SELECT a.*, b.*,c.* 
+															FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status 
+																			INNER JOIN employees c ON c.Employee_Number=a.Emp_Number
+															WHERE 	YEAR(a.From_Date)='$year' AND a.Leave_Status IN (4) 
+															ORDER BY a.Emp_Number,a.From_Date   ")->result_array();
+	}
+	function admin_leavehistory_combination_summary_Y($year){
+					return $this->db->query("SELECT SUM(CL) AS 'CL',SUM(PL) AS 'PL', SUM(SL) AS 'SL',
+																								SUM(CO) AS 'CO', (SUM(CL)+SUM(PL)+SUM(SL)+SUM(CO)) as Total
+																								FROM(
+																												SELECT Emp_Number,	MONTHNAME(From_Date) AS 'MonthName', 
+																														IF(Leave_Type='CL',Total_Days, 0) as 'CL',
+																														IF(Leave_Type='PL',Total_Days, 0) as 'PL',
+																														IF(Leave_Type='SL',Total_Days, 0) as 'SL',
+																														IF(Leave_Type='CO',Total_Days, 0) as 'CO' 
+																												FROM leave_history 
+																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' 
+																																
+																				) A
+																				Group By Emp_Number ")->result_array();
+	}
+		//2		
+	function admin_leavehistory_combination_YM($year,$month){
+					return $this->db->query("SELECT a.*, b.*,c.* 
+															FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status 
+																			INNER JOIN employees c ON c.Employee_Number=a.Emp_Number
+															WHERE 	YEAR(a.From_Date)='$year' AND a.Leave_Status IN (4) 
+																			AND MONTHNAME(a.From_Date)='$month' 
+															ORDER BY a.Emp_Number,a.From_Date   ")->result_array();
+	}
+	function admin_leavehistory_combination_summary_YM($year,$month){
+					return $this->db->query("SELECT SUM(CL) AS 'CL',SUM(PL) AS 'PL', SUM(SL) AS 'SL',
+																								SUM(CO) AS 'CO', (SUM(CL)+SUM(PL)+SUM(SL)+SUM(CO)) as Total
+																								FROM(
+																												SELECT Emp_Number,	MONTHNAME(From_Date) AS 'MonthName', 
+																														IF(Leave_Type='CL',Total_Days, 0) as 'CL',
+																														IF(Leave_Type='PL',Total_Days, 0) as 'PL',
+																														IF(Leave_Type='SL',Total_Days, 0) as 'SL',
+																														IF(Leave_Type='CO',Total_Days, 0) as 'CO' 
+																												FROM leave_history 
+																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' AND MONTHNAME(From_Date)='$month' 
+																				) A
+																				Group By Emp_Number ")->result_array();
+	}
+	//3
+			function admin_leavehistory_combination_YD($year,$dept){
+					return $this->db->query("SELECT a.*, b.*,c.* 
+															FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status 
+																			INNER JOIN employees c ON c.Employee_Number=a.Emp_Number
+															WHERE 	YEAR(a.From_Date)='$year' AND a.Leave_Status IN (4)  AND c.Department='$dept'
+															 ORDER BY a.Emp_Number,a.From_Date   ")->result_array();
+	}
+	function admin_leavehistory_combination_summary_YD($year,$dept){
+					return $this->db->query("SELECT SUM(CL) AS 'CL',SUM(PL) AS 'PL', SUM(SL) AS 'SL',
+																								SUM(CO) AS 'CO', (SUM(CL)+SUM(PL)+SUM(SL)+SUM(CO)) as Total
+																								FROM(
+																												SELECT Emp_Number,	MONTHNAME(From_Date) AS 'MonthName', 
+																														IF(Leave_Type='CL',Total_Days, 0) as 'CL',
+																														IF(Leave_Type='PL',Total_Days, 0) as 'PL',
+																														IF(Leave_Type='SL',Total_Days, 0) as 'SL',
+																														IF(Leave_Type='CO',Total_Days, 0) as 'CO' 
+																												FROM leave_history INNER JOIN employees a ON a.Employee_Number=Emp_Number
+																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' 	AND a.Department='$dept' 
+																				) A
+																				Group By Emp_Number ")->result_array();
+	}
+	//4	
+	function admin_leavehistory_combination_YL($year,$leave){
+					return $this->db->query("SELECT a.*, b.*,c.* 
+															FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status 
+																			INNER JOIN employees c ON c.Employee_Number=a.Emp_Number
+															WHERE 	YEAR(a.From_Date)='$year' AND a.Leave_Status IN (4) AND a.Leave_Type='$leave' 
+															 ORDER BY a.Emp_Number,a.From_Date   ")->result_array();
+	}
+	function admin_leavehistory_combination_summary_YL($year,$leave){
+					return $this->db->query("SELECT SUM(CL) AS 'CL',SUM(PL) AS 'PL', SUM(SL) AS 'SL',
+																								SUM(CO) AS 'CO', (SUM(CL)+SUM(PL)+SUM(SL)+SUM(CO)) as Total
+																								FROM(
+																												SELECT Emp_Number,	MONTHNAME(From_Date) AS 'MonthName', 
+																														IF(Leave_Type='CL',Total_Days, 0) as 'CL',
+																														IF(Leave_Type='PL',Total_Days, 0) as 'PL',
+																														IF(Leave_Type='SL',Total_Days, 0) as 'SL',
+																														IF(Leave_Type='CO',Total_Days, 0) as 'CO' 
+																												FROM leave_history 
+																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year'  AND leave_Type='$leave' 
+																				) A
+																				Group By Emp_Number ")->result_array();
+	}
+	//5	
+		function admin_leavehistory_combination_YE($year,$emp){
+					return $this->db->query("SELECT a.*, b.*,c.* 
+															FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status 
+																			INNER JOIN employees c ON c.Employee_Number=a.Emp_Number
+															WHERE 	YEAR(a.From_Date)='$year' AND a.Leave_Status IN (4) AND a.Emp_Number='$emp' 
+															 ORDER BY a.Emp_Number,a.From_Date   ")->result_array();
+	}
+			function admin_leavehistory_combination_summary_YE($year,$emp){
+					return $this->db->query("SELECT SUM(CL) AS 'CL',SUM(PL) AS 'PL', SUM(SL) AS 'SL',
+																								SUM(CO) AS 'CO', (SUM(CL)+SUM(PL)+SUM(SL)+SUM(CO)) as Total
+																								FROM(
+																												SELECT Emp_Number,	MONTHNAME(From_Date) AS 'MonthName', 
+																														IF(Leave_Type='CL',Total_Days, 0) as 'CL',
+																														IF(Leave_Type='PL',Total_Days, 0) as 'PL',
+																														IF(Leave_Type='SL',Total_Days, 0) as 'SL',
+																														IF(Leave_Type='CO',Total_Days, 0) as 'CO' 
+																												FROM leave_history
+																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' AND Emp_Number='$emp'
+																				) A
+																				Group By Emp_Number ")->result_array();
+	}
+	
+//6
+		function admin_leavehistory_combination_YMD($year,$month,$dept){
+					return $this->db->query("SELECT a.*, b.*,c.* 
+															FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status 
+																			INNER JOIN employees c ON c.Employee_Number=a.Emp_Number
+															WHERE 	YEAR(a.From_Date)='$year' AND a.Leave_Status IN (4) 
+																			AND MONTHNAME(a.From_Date)='$month' AND c.Department='$dept'
+															 ORDER BY a.Emp_Number,a.From_Date   ")->result_array();
+	}
+	function admin_leavehistory_combination_summary_YMD($year,$month,$dept){
+					return $this->db->query("SELECT SUM(CL) AS 'CL',SUM(PL) AS 'PL', SUM(SL) AS 'SL',
+																								SUM(CO) AS 'CO', (SUM(CL)+SUM(PL)+SUM(SL)+SUM(CO)) as Total
+																								FROM(
+																												SELECT Emp_Number,	MONTHNAME(From_Date) AS 'MonthName', 
+																														IF(Leave_Type='CL',Total_Days, 0) as 'CL',
+																														IF(Leave_Type='PL',Total_Days, 0) as 'PL',
+																														IF(Leave_Type='SL',Total_Days, 0) as 'SL',
+																														IF(Leave_Type='CO',Total_Days, 0) as 'CO' 
+																												FROM leave_history INNER JOIN employees a ON a.Employee_Number=Emp_Number
+																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' AND MONTHNAME(From_Date)='$month' 
+																																AND a.Department='$dept' 
+																				) A
+																				Group By Emp_Number ")->result_array();
+	}
+	//7	
+		function admin_leavehistory_combination_YME($year,$month,$emp){
+					return $this->db->query("SELECT a.*, b.*,c.* 
+															FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status 
+																			INNER JOIN employees c ON c.Employee_Number=a.Emp_Number
+															WHERE 	YEAR(a.From_Date)='$year' AND a.Leave_Status IN (4) AND MONTHNAME(a.From_Date)='$month' 
+																			AND a.Emp_Number='$emp' AND a.Leave_Type='$leave' AND c.Department='$dept'
+															 ORDER BY a.Emp_Number,a.From_Date   ")->result_array();
+	}
+		function admin_leavehistory_combination_summary_YME($year,$month,$emp){
+					return $this->db->query("SELECT SUM(CL) AS 'CL',SUM(PL) AS 'PL', SUM(SL) AS 'SL',
+																								SUM(CO) AS 'CO', (SUM(CL)+SUM(PL)+SUM(SL)+SUM(CO)) as Total
+																								FROM(
+																												SELECT Emp_Number,	MONTHNAME(From_Date) AS 'MonthName', 
+																														IF(Leave_Type='CL',Total_Days, 0) as 'CL',
+																														IF(Leave_Type='PL',Total_Days, 0) as 'PL',
+																														IF(Leave_Type='SL',Total_Days, 0) as 'SL',
+																														IF(Leave_Type='CO',Total_Days, 0) as 'CO' 
+																												FROM leave_history
+																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' AND MONTHNAME(From_Date)='$month' 
+																																	AND Emp_Number='$emp'
+																				) A
+																				Group By Emp_Number ")->result_array();
+	}
+	//8
+	function admin_leavehistory_combination_YML($year,$month,$leave){
+					return $this->db->query("SELECT a.*, b.*,c.* 
+															FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status 
+																			INNER JOIN employees c ON c.Employee_Number=a.Emp_Number
+															WHERE 	YEAR(a.From_Date)='$year' AND a.Leave_Status IN (4) AND MONTHNAME(a.From_Date)='$month' 
+																			AND a.Leave_Type='$leave' 
+															 ORDER BY a.Emp_Number,a.From_Date   ")->result_array();
+	}
+	function admin_leavehistory_combination_summary_YML($year,$month,$leave){
+					return $this->db->query("SELECT SUM(CL) AS 'CL',SUM(PL) AS 'PL', SUM(SL) AS 'SL',
+																								SUM(CO) AS 'CO', (SUM(CL)+SUM(PL)+SUM(SL)+SUM(CO)) as Total
+																								FROM(
+																												SELECT Emp_Number,	MONTHNAME(From_Date) AS 'MonthName', 
+																														IF(Leave_Type='CL',Total_Days, 0) as 'CL',
+																														IF(Leave_Type='PL',Total_Days, 0) as 'PL',
+																														IF(Leave_Type='SL',Total_Days, 0) as 'SL',
+																														IF(Leave_Type='CO',Total_Days, 0) as 'CO' 
+																												FROM leave_history 
+																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' AND MONTHNAME(From_Date)='$month' 
+																																AND leave_Type='$leave' 
+																				) A
+																				Group By Emp_Number ")->result_array();
+	}
+	//9	
+	function admin_leavehistory_combination_YDE($year,$dept,$emp){
+						
+				return $this->db->query("SELECT a.*, b.*,c.* 
+															FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status 
+																			INNER JOIN employees c ON c.Employee_Number=a.Emp_Number
+															WHERE 	YEAR(a.From_Date)='$year' AND a.Leave_Status IN (4) AND c.Department='$dept'
+																			AND a.Emp_Number='$emp' 
+															 ORDER BY a.Emp_Number,a.From_Date
+															     ")->result_array();
+	}
+	function admin_leavehistory_combination_summary_YDE($year,$dept,$emp){
+					return $this->db->query("SELECT SUM(CL) AS 'CL',SUM(PL) AS 'PL', SUM(SL) AS 'SL',
+																								SUM(CO) AS 'CO', (SUM(CL)+SUM(PL)+SUM(SL)+SUM(CO)) as Total
+																								FROM(
+																												SELECT Emp_Number,	MONTHNAME(From_Date) AS 'MonthName', 
+																														IF(Leave_Type='CL',Total_Days, 0) as 'CL',
+																														IF(Leave_Type='PL',Total_Days, 0) as 'PL',
+																														IF(Leave_Type='SL',Total_Days, 0) as 'SL',
+																														IF(Leave_Type='CO',Total_Days, 0) as 'CO' 
+																												FROM leave_history INNER JOIN employees a ON a.Employee_Number=Emp_Number
+																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' AND a.Department='$dept'
+																																	AND Emp_Number='$emp' 
+																				) A
+																				Group By Emp_Number ")->result_array();
+	}
+	//10
+	function admin_leavehistory_combination_YDL($year,$dept,$leave){
+					return $this->db->query("SELECT a.*, b.*,c.* 
+															FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status 
+																			INNER JOIN employees c ON c.Employee_Number=a.Emp_Number
+															WHERE 	YEAR(a.From_Date)='$year' AND a.Leave_Status IN (4) AND c.Department='$dept'
+																			 AND a.Leave_Type='$leave' 
+															 ORDER BY a.Emp_Number,a.From_Date   ")->result_array();
+	}
+	function admin_leavehistory_combination_summary_YDL($year,$dept,$leave){
+					return $this->db->query("SELECT SUM(CL) AS 'CL',SUM(PL) AS 'PL', SUM(SL) AS 'SL',
+																								SUM(CO) AS 'CO', (SUM(CL)+SUM(PL)+SUM(SL)+SUM(CO)) as Total
+																								FROM(
+																												SELECT Emp_Number,	MONTHNAME(From_Date) AS 'MonthName', 
+																														IF(Leave_Type='CL',Total_Days, 0) as 'CL',
+																														IF(Leave_Type='PL',Total_Days, 0) as 'PL',
+																														IF(Leave_Type='SL',Total_Days, 0) as 'SL',
+																														IF(Leave_Type='CO',Total_Days, 0) as 'CO' 
+																												FROM leave_history INNER JOIN employees a ON a.Employee_Number=Emp_Number
+																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' 
+																																AND a.Department='$dept'  AND leave_Type='$leave' 
+																				) A
+																				Group By Emp_Number ")->result_array();
+	}
+	//11
+		function admin_leavehistory_combination_YEL($year,$emp,$leave){
+					return $this->db->query("SELECT a.*, b.*,c.* 
+															FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status 
+																			INNER JOIN employees c ON c.Employee_Number=a.Emp_Number
+															WHERE 	YEAR(a.From_Date)='$year' AND a.Leave_Status IN (4) 
+																			AND a.Emp_Number='$emp' AND a.Leave_Type='$leave' 
+															 ORDER BY a.Emp_Number,a.From_Date   ")->result_array();
+	}
+	function admin_leavehistory_combination_summary_YEL($year,$emp,$leave){
+					return $this->db->query("SELECT SUM(CL) AS 'CL',SUM(PL) AS 'PL', SUM(SL) AS 'SL',
+																								SUM(CO) AS 'CO', (SUM(CL)+SUM(PL)+SUM(SL)+SUM(CO)) as Total
+																								FROM(
+																												SELECT Emp_Number,	MONTHNAME(From_Date) AS 'MonthName', 
+																														IF(Leave_Type='CL',Total_Days, 0) as 'CL',
+																														IF(Leave_Type='PL',Total_Days, 0) as 'PL',
+																														IF(Leave_Type='SL',Total_Days, 0) as 'SL',
+																														IF(Leave_Type='CO',Total_Days, 0) as 'CO' 
+																												FROM leave_history 
+																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' 	AND Emp_Number='$emp' 
+																																AND Leave_Type='$leave'
+																				) A
+																				Group By Emp_Number ")->result_array();
+	}
+	//12
+		function admin_leavehistory_combination_YMDE($year,$month,$dept,$emp){
+					return $this->db->query("SELECT a.*, b.*,c.* 
+															FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status 
+																			INNER JOIN employees c ON c.Employee_Number=a.Emp_Number
+															WHERE 	YEAR(a.From_Date)='$year' AND a.Leave_Status IN (4) AND MONTHNAME(a.From_Date)='$month' 
+																			AND c.Department='$dept' AND a.Emp_Number='$emp' 
+															 ORDER BY a.Emp_Number,a.From_Date   ")->result_array();
+	}
+	function admin_leavehistory_combination_summary_YMDE($year,$month,$dept,$emp){
+					return $this->db->query("SELECT SUM(CL) AS 'CL',SUM(PL) AS 'PL', SUM(SL) AS 'SL',
+																								SUM(CO) AS 'CO', (SUM(CL)+SUM(PL)+SUM(SL)+SUM(CO)) as Total
+																								FROM(
+																												SELECT Emp_Number,	MONTHNAME(From_Date) AS 'MonthName', 
+																														IF(Leave_Type='CL',Total_Days, 0) as 'CL',
+																														IF(Leave_Type='PL',Total_Days, 0) as 'PL',
+																														IF(Leave_Type='SL',Total_Days, 0) as 'SL',
+																														IF(Leave_Type='CO',Total_Days, 0) as 'CO' 
+																												FROM leave_history INNER JOIN employees a ON a.Employee_Number=Emp_Number
+																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' AND MONTHNAME(From_Date)='$month' 
+																																AND a.Department='$dept' AND Emp_Number='$emp' 
+																				) A
+																				Group By Emp_Number ")->result_array();
+	}
+	//13
+		function admin_leavehistory_combination_YMDL($year,$month,$dept,$leave){
+					return $this->db->query("SELECT a.*, b.*,c.* 
+															FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status 
+																			INNER JOIN employees c ON c.Employee_Number=a.Emp_Number
+															WHERE 	YEAR(a.From_Date)='$year' AND a.Leave_Status IN (4) AND MONTHNAME(a.From_Date)='$month' 
+																			AND c.Department='$dept' AND a.Leave_Type='$leave' 
+															 ORDER BY a.Emp_Number,a.From_Date   ")->result_array();
+	}
+	function admin_leavehistory_combination_summary_YMDL($year,$month,$dept,$leave){
+					return $this->db->query("SELECT SUM(CL) AS 'CL',SUM(PL) AS 'PL', SUM(SL) AS 'SL',
+																								SUM(CO) AS 'CO', (SUM(CL)+SUM(PL)+SUM(SL)+SUM(CO)) as Total
+																								FROM(
+																												SELECT Emp_Number,	MONTHNAME(From_Date) AS 'MonthName', 
+																														IF(Leave_Type='CL',Total_Days, 0) as 'CL',
+																														IF(Leave_Type='PL',Total_Days, 0) as 'PL',
+																														IF(Leave_Type='SL',Total_Days, 0) as 'SL',
+																														IF(Leave_Type='CO',Total_Days, 0) as 'CO' 
+																												FROM leave_history INNER JOIN employees a ON a.Employee_Number=Emp_Number
+																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' AND MONTHNAME(From_Date)='$month' 
+																																AND a.Department='$dept' AND Emp_Number='$emp'  AND leave_Type='$leave' 
+																				) A
+																				Group By Emp_Number ")->result_array();
+	}
+	//14
+		function admin_leavehistory_combination_YMEL($year,$month,$emp,$leave){
+					return $this->db->query("SELECT a.*, b.*,c.* 
+															FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status 
+																			INNER JOIN employees c ON c.Employee_Number=a.Emp_Number
+															WHERE 	YEAR(a.From_Date)='$year' AND a.Leave_Status IN (4) AND MONTHNAME(a.From_Date)='$month' 
+																			AND a.Emp_Number='$emp' AND a.Leave_Type='$leave' 
+															 ORDER BY a.Emp_Number,a.From_Date   ")->result_array();
+	}
+	function admin_leavehistory_combination_summary_YMEL($year,$month,$emp,$leave){
+					return $this->db->query("SELECT SUM(CL) AS 'CL',SUM(PL) AS 'PL', SUM(SL) AS 'SL',
+																								SUM(CO) AS 'CO', (SUM(CL)+SUM(PL)+SUM(SL)+SUM(CO)) as Total
+																								FROM(
+																												SELECT Emp_Number,	MONTHNAME(From_Date) AS 'MonthName', 
+																														IF(Leave_Type='CL',Total_Days, 0) as 'CL',
+																														IF(Leave_Type='PL',Total_Days, 0) as 'PL',
+																														IF(Leave_Type='SL',Total_Days, 0) as 'SL',
+																														IF(Leave_Type='CO',Total_Days, 0) as 'CO' 
+																												FROM leave_history 
+																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' AND MONTHNAME(From_Date)='$month' 
+																																AND Emp_Number='$emp'	 AND leave_Type='$leave' 
+																				) A
+																				Group By Emp_Number ")->result_array();
+	}
+	//15	
+	function admin_leavehistory_combination_YDEL($year,$dept,$emp,$leave){
+					return $this->db->query("SELECT a.*, b.*,c.* 
+															FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status 
+																			INNER JOIN employees c ON c.Employee_Number=a.Emp_Number
+															WHERE 	YEAR(a.From_Date)='$year' AND a.Leave_Status IN (4)  AND c.Department='$dept'
+																			AND a.Emp_Number='$emp' AND a.Leave_Type='$leave' 
+															 ORDER BY a.Emp_Number,a.From_Date   ")->result_array();
+	}
+	function admin_leavehistory_combination_summary_YDEL($year,$dept,$emp,$leave){
+					return $this->db->query("SELECT SUM(CL) AS 'CL',SUM(PL) AS 'PL', SUM(SL) AS 'SL',
+																								SUM(CO) AS 'CO', (SUM(CL)+SUM(PL)+SUM(SL)+SUM(CO)) as Total
+																								FROM(
+																												SELECT Emp_Number,	MONTHNAME(From_Date) AS 'MonthName', 
+																														IF(Leave_Type='CL',Total_Days, 0) as 'CL',
+																														IF(Leave_Type='PL',Total_Days, 0) as 'PL',
+																														IF(Leave_Type='SL',Total_Days, 0) as 'SL',
+																														IF(Leave_Type='CO',Total_Days, 0) as 'CO' 
+																												FROM leave_history INNER JOIN employees a ON a.Employee_Number=Emp_Number
+																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' 	AND a.Department='$dept' 
+																																AND Emp_Number='$emp'  AND leave_Type='$leave' 
+																				) A
+																				Group By Emp_Number ")->result_array();
+	}
+	//	16
+		function admin_leavehistory_combination_YMDEL($year,$month,$dept,$emp,$leave){
+					return $this->db->query("SELECT a.*, b.*,c.* 
+															FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status 
+																			INNER JOIN employees c ON c.Employee_Number=a.Emp_Number
+															WHERE 	YEAR(a.From_Date)='$year' AND a.Leave_Status IN (4) AND MONTHNAME(a.From_Date)='$month' 
+																			AND a.Emp_Number='$emp' AND a.Leave_Type='$leave' AND c.Department='$dept'
+															 ORDER BY a.Emp_Number,a.From_Date   ")->result_array();
+	}
+	function admin_leavehistory_combination_summary_YMDEL($year,$month,$dept,$emp,$leave){
+					return $this->db->query("SELECT SUM(CL) AS 'CL',SUM(PL) AS 'PL', SUM(SL) AS 'SL',
+																								SUM(CO) AS 'CO', (SUM(CL)+SUM(PL)+SUM(SL)+SUM(CO)) as Total
+																								FROM(
+																												SELECT Emp_Number,	MONTHNAME(From_Date) AS 'MonthName', 
+																														IF(Leave_Type='CL',Total_Days, 0) as 'CL',
+																														IF(Leave_Type='PL',Total_Days, 0) as 'PL',
+																														IF(Leave_Type='SL',Total_Days, 0) as 'SL',
+																														IF(Leave_Type='CO',Total_Days, 0) as 'CO' 
+																												FROM leave_history INNER JOIN employees a ON a.Employee_Number=Emp_Number
+																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' AND MONTHNAME(From_Date)='$month' 
+																																AND a.Department='$dept' AND Emp_Number='$emp'  AND leave_Type='$leave' 
+																				) A
+																				Group By Emp_Number ")->result_array();
+	}
+	
+	
 	
 	
 	
@@ -373,12 +696,12 @@ Class History_model extends CI_Model{
 	function get_approved_leaves($year,$month,$emp){
 		if($emp!='All Employees'){
 			return $this->db->query("SELECT a.*, b.*, c.* FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status JOIN team c ON c.Employee_Number = a.Employee_Number
-															WHERE 	YEAR(a.From_Date)='$year' AND  MONTH(a.From_Date)='$month'  AND a.Leave_Status IN ('2','4') AND a.Employee_Number='$emp' 
+															WHERE 	YEAR(a.From_Date)='$year'  AND  MONTHNAME(a.From_Date)='$month'  AND a.Leave_Status IN (4) AND a.Employee_Number='$emp' 
 															 ORDER BY a.AppliedTime Desc ")->result_array();
 		}
 		if($emp=='All Employees'){
 			return $this->db->query("SELECT a.*, b.*, c.* FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status JOIN team c ON c.Employee_Number = a.Employee_Number
-															WHERE 	YEAR(a.From_Date)='$year' AND  MONTH(a.From_Date)='$month'  AND a.Leave_Status IN ('2','4') 
+															WHERE 	YEAR(a.From_Date)='$year'  AND  MONTHNAME(a.From_Date)='$month'  AND a.Leave_Status IN (4) 
 															 ORDER BY a.AppliedTime Desc ")->result_array();
 		}
 	}
@@ -395,18 +718,59 @@ Class History_model extends CI_Model{
 
 	}
 
-
+																		/* * * 			Permissions 			* * */
 	function get_permission($d){
-		$Emp_Number=$this->session->userdata('Emp_Number');
-		$this->db->query("SELECT COUNT(P_Date) as permission FROM permissions WHERE  Emp_Number='$Emp_Number' AND month(STR_TO_DATE(DATE_FORMAT(P_Date,'%d-%m-%Y'),'%d-%m-%Y'))=month('$d') ")->result_array();
+							$Emp_Number=$this->session->userdata('Emp_Number');
+							$this->db->query("SELECT COUNT(P_Date) as permission FROM permissions WHERE  Emp_Number='$Emp_Number' AND month(STR_TO_DATE(DATE_FORMAT(P_Date,'%d-%m-%Y'),'%d-%m-%Y'))=month('$d') ")->result_array();
 
 	}
-	function get_allpermissions($y,$d){
-		$Emp_Number=$this->session->userdata('Emp_Number');
-		return $this->db->query("SELECT DISTINCT (SELECT COUNT(P_Date) as permission FROM permissions WHERE Emp_Number='$Emp_Number' AND MONTH(P_Date) ='05' AND YEAR(P_Date) ='2014' AND Status='Approved') as month,
-																							(SELECT COUNT(P_Date) as permission FROM permissions WHERE Emp_Number='$Emp_Number' AND YEAR(P_Date) ='2014' AND Status='Approved') as year,
-																							(SELECT COUNT(P_Date) as permission FROM permissions WHERE Emp_Number='$Emp_Number' AND YEAR(P_Date) ='2014' AND Status='Applied') as pending
-																							FROM permissions ")->result_array();
+	
+	
+	function get_permission_years($emp_num){
+						return $this->db->query("SELECT DISTINCT YEAR(P_Date) as Year
+																	FROM permissions 
+																	WHERE Emp_Number='$emp_num'  ")->result_array();
+	}
+	
+	
+	function get_permission_history($year,$status,$emp_num){
+				if($status=='All'){
+											return $this->db->query("SELECT *,
+																								(SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(Total_Hrs))) FROM  permissions WHERE YEAR(P_Date)='$year' AND Emp_Number='$emp_num' ) as TotalHours
+																							FROM permissions
+																							WHERE YEAR(P_Date)='$year' AND Emp_Number='$emp_num' ")->result_array();
+					
+				}
+				else if($status=='Applied'){
+											return $this->db->query("SELECT *,
+																								IFNULL((SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(Total_Hrs))) FROM  permissions WHERE YEAR(P_Date)='$year' AND Emp_Number='$emp_num' ),'00:00:00') as TotalHours
+																							FROM permissions
+																							WHERE YEAR(P_Date)='$year' AND Emp_Number='$emp_num'
+																											AND Status='Applied' AND P_Date>=CURDATE() ")->result_array();
+					
+					
+				}
+				else if($status=='NO'){
+											return $this->db->query("SELECT *,
+																								(SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(Total_Hrs))) FROM  permissions WHERE YEAR(P_Date)='$year' AND Emp_Number='$emp_num' ) as TotalHours
+																							FROM permissions
+																							WHERE YEAR(P_Date)='$year' AND Emp_Number='$emp_num'
+																											AND Status='Applied' AND P_Date<CURDATE() ")->result_array();
+					
+					
+				}
+				
+				else{
+											return $this->db->query("SELECT *,
+																									(SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(Total_Hrs))) FROM  permissions WHERE YEAR(P_Date)='$year' AND Emp_Number='$emp_num' AND Status='$status' ) as TotalHours
+																								FROM permissions
+																								WHERE YEAR(P_Date)='$year' AND Emp_Number='$emp_num'
+																										AND Status='$status' ")->result_array();
+					
+					
+				}
+			
+				
 
 	}
 
@@ -422,25 +786,22 @@ Class History_model extends CI_Model{
 	}
 
 	function get_pending_permissions(){
-		$availability =$this->db->query("SELECT *  FROM permissions  WHERE Status='Applied' ORDER BY permission_id");
-		return $availability->result_array();
-
-			
+					return $this->db->query("SELECT *
+																	  FROM permissions  WHERE Status='Applied' ORDER BY P_Date")->result_array();
 	}
 
 
-	function process_permission($id,$str){
-		$this->db->query("UPDATE permissions SET Status='$str' WHERE permission_id='$id' ");
+	function update_Permission($perm_id,$status,$remark){
+		$approver=$this->session->userdata('Emp_Name');
+		$this->db->query("UPDATE permissions 
+											SET Status='$status',
+													Approved_By='$approver',
+													Approved_On=CURRENT_TIMESTAMP,
+													Approver_Remarks='$remark' 
+											WHERE permission_id='$perm_id' ");
 
 	}
 
-	function leaves_on_sameday($d1,$d2,$id){
-		return $this->db->query("SELECT Emp_Number,Total_Days, Reason,Leave_Status FROM leave_history  WHERE  DATE_FORMAT(From_Date,'%d-%m-%Y')='$d1' AND Leave_ID NOT IN ('$id') AND Leave_Status IN ('2','4')")->result();
-	}
-
-	function getRecentLeave($Emp_Number,$id){
-		return $this->db->query("SELECT CONCAT(CONCAT(DATE_FORMAT(From_Date,'%d-%m-%Y'),' : ',Total_Days),' ', 'Day(s)') as date FROM leave_history  WHERE Emp_Number='$Emp_Number' AND Leave_Status IN ('2','4') AND Leave_ID NOT IN ('$id') ORDER BY Leave_ID DESC Limit 1  ")->result_array();
-	}
 
 	function SendReminder($id){
 		$Emp_Number=$this->session->userdata('Emp_Number');

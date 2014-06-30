@@ -16,7 +16,7 @@ Class Summary_model extends CI_Model{
 					
 	
 					function get_years(){
-								return $this->db->query("SELECT  DISTINCT YEAR(From_Date) AS 'year' FROM leave_history ORDER BY year DESC")->result_array();
+								return $this->db->query("SELECT  DISTINCT YEAR(From_Date) AS 'year' FROM leave_history ORDER BY year ")->result_array();
 					}
 		
 					function get_leave_members(){

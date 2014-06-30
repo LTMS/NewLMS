@@ -37,7 +37,7 @@
 				}
 				print("</table>");
 				
-				
+				if(!empty($total)){	
 				$cl1=$pl1=$sl1=$co1='0';
 				foreach($total as $row1){
 
@@ -63,10 +63,7 @@
 					print("<td align='left' style='font-size:22px;font-weight:bold;color:#003366'>$tot1</td></tr>");
 					print("</table>");
 				}
-				
-				 
-				print("<input type='hidden' id='TotalRows' value='$counter'>");
-				print("<input type='hidden' id='selected_leave_id' value=''>");
+				}	
 				
 					if(empty($result))
 					{

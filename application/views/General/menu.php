@@ -6,8 +6,9 @@
 					<?php if($this->session->userdata('Emp_Role')=='Engineer' || $this->session->userdata('Emp_Role')=='teamleader' || $this->session->userdata('Emp_Role')=='admin'){ ?>	
 	 	  				<li><a href="<?php echo site_url("Leave/apply/apply_leave"); ?>" <?php if ($submenu=='apply'){?>class="current"<?php }?> >Apply For Leave</a></li>
 	    				<li><a href="<?php echo site_url("Leave/history/my_leave_history"); ?>" <?php if ($submenu=='history'){?>class="current"<?php }?> >My Leave History</a></li>
-	     	 			<li><a href="<?php echo site_url("Leave/summary/my_leave_summary"); ?>" <?php if ($submenu=='my_summary'){?>class="current"<?php }?> >My Leave Summary</a></li>
-      	 			<?php }?>	
+  	     	 			<li><a href="<?php echo site_url("Leave/summary/my_leave_summary"); ?>" <?php if ($submenu=='my_summary'){?>class="current"<?php }?> >My Leave Summary</a></li>
+     	 				<li><a href="<?php echo site_url("Leave/history/my_permission_history"); ?>" <?php if ($submenu=='my_permission'){?>class="current"<?php }?> >My Permission History</a></li>
+       	 			<?php }?>	
       	 			
 					<?php if( $this->session->userdata('Emp_Role')=='teamleader'){ ?>				
 						<li><a href="<?php echo site_url("Leave/history/pending_applications"); ?>" <?php if ($submenu=='pending_applications'){?>class="current"<?php }?> >Pending Leave Applications</a></li>
@@ -16,10 +17,11 @@
 					<?php if( $this->session->userdata('Emp_Role')=='MD'){ ?>	
 						<li><a href="<?php echo site_url("Leave/history/get_reported_applications"); ?>" <?php if ($submenu=='reported_applications'){?>class="current"<?php }?> >Leaves pending for Approval</a></li>
 	    				<li><a href="<?php echo site_url("Leave/history/get_applied_applications"); ?>" <?php if ($submenu=='applied_applications'){?>class="current"<?php }?> >Applied Leaves</a></li>
-						<li><a href="<?php echo site_url("Leave/history/permissions"); ?>" <?php if ($submenu=='permissions'){?>class="current"<?php }?> >Pending Permissions</a></li>
-						<li><a href="<?php echo site_url("Leave/history/history_admin"); ?>" <?php if ($submenu=='history_admin'){?>class="current"<?php }?> >Employees Leave History</a></li>
-	    				<li><a href="<?php echo site_url("Leave/summary/leave_summary_md"); ?>" <?php if ($submenu=='summary'){?>class="current"<?php }?> >Employees Leave Summary</a></li>
+						<li><a href="<?php echo site_url("Leave/history/get_applied_permissions"); ?>" <?php if ($submenu=='permissions'){?>class="current"<?php }?> >Pending Permissions</a></li>
+						<li><a href="<?php echo site_url("Leave/history/admin_leavehistory"); ?>" <?php if ($submenu=='history_admin'){?>class="current"<?php }?> >Employees Leave History</a></li>
+       	 		    	<li><a href="<?php echo site_url("Leave/summary/leave_summary_md"); ?>" <?php if ($submenu=='summary'){?>class="current"<?php }?> >Employees Leave Summary</a></li>
 	    				<li><a href="<?php echo site_url("Leave/leave_misc/leave_reprocess"); ?>" <?php if ($submenu=='reprocess'){?>class="current"<?php }?> >Reprocess Approved Leaves</a></li>
+						<li><a href="<?php echo site_url("Leave/history/admin_permission_history"); ?>" <?php if ($submenu=='admin_permission'){?>class="current"<?php }?> >Permission History</a></li>
 					
 							<?php if( $this->session->userdata('Emp_Role')=='MD'){ ?>				
 			    				<li><a href="<?php echo site_url("Leave/leave_misc/lms_intro_md"); ?>" <?php if ($submenu=='lms_intro_md'){?>class="current"<?php }?> >Leave Management Criteria</a></li>
