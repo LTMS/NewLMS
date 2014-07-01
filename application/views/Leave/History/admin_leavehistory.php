@@ -27,6 +27,7 @@
 			<td align="center" colspan="10"><select id='year'
 				style="height: 20px; width: 70px; color: green; font-weight: bolder; font-size: 12px;"
 				onchange="admin_leavehistory_general('Year');">
+				<option selected value='' >Year</option>
 					<?php
 					foreach($Years as $row ){
 						$yr=$row["year"];

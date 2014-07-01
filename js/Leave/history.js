@@ -97,7 +97,7 @@ function update_LeaveStatusReporter(leave_id1,status1,button_row,emp_name1,emp_n
 }
 
 	
-	function admin_leavehistory_general(part,value){	
+	function admin_leavehistory_general(part){	
 		//alert(value);
 
 					if(part=='Dept'){
@@ -120,7 +120,7 @@ function update_LeaveStatusReporter(leave_id1,status1,button_row,emp_name1,emp_n
 						var leave1=document.getElementById('leave').value; 
 						var dept1=document.getElementById('dept').value;
 					//	alert("YEAR:"+year1+",  MONTH:"+month1+", DEPT:"+dept1+", EMP:"+emp1+", LEAVE:"+leave1);
-						if(dept1!="" && emp1!=""){
+						if(year1!="" && dept1!="" && emp1!=""){
 							$.post(site_url+"/Leave/history/admin_leavehistory_general",{year:year1,month:month1,dept:dept1,emp:emp1,leave:leave1},function(data){
 										//alert(data);
 										$("#contentData").html("");
@@ -130,30 +130,6 @@ function update_LeaveStatusReporter(leave_id1,status1,button_row,emp_name1,emp_n
 	}
 				
 							
-		function admin_leavehistory_approved()	{	
-						document.getElementById('AllEmp_leave_history_dwnld').style.display="";
-						document.getElementById('year').value="";
-						document.getElementById('emp').value="";
-						document.getElementById('leave').value="All";
-						document.getElementById('month').value="All";
-						var year1=document.getElementById('year1').value;
-						if(year1=="")
-							{
-							document.getElementById('AllEmp_leave_history_dwnld').style.display="none";
-							}
-						var emp_appr=document.getElementById('emp_appr').value; 
-						//alert(year1);		
-							if(year1!=""){
-										$.post(site_url+"/Leave/history/admin_leavehistory_approved",{year:year1,emp:emp_appr},function(data){
-												//alert(data);
-														$("#contentData").html("");
-														$("#contentData").append(data);
-											});
-								}
-								
-			}
-		
-		
 		
 
 																		/*  My Leave History  */ 
@@ -213,62 +189,6 @@ function update_LeaveStatusReporter(leave_id1,status1,button_row,emp_name1,emp_n
 			
 	
 		
-			function get_history_teamleader(str,op)	{
-			
-				var tl=document.getElementById('get_team').value+" Team"; 
-			
-				if(op=='1'){
-					document.getElementById('filter').value="null";
-					document.getElementById('search').value="null"; 
-					document.getElementById('report_option').value="Employees Leave History of "+tl;
-							}
-				if(op=='2'){
-					document.getElementById('filter').value="null";
-					document.getElementById('report_option').value="Leave History of "+str+" - "+tl;
-				}
-				if(op=='3'){
-					document.getElementById('search').value="null";
-					document.getElementById('report_option').value=str+" History of "+tl;
-				}
-
-			var date1=document.getElementById('date_from').value;
-			var date2=document.getElementById('date_to').value;
-			document.getElementById('error').innerHTML="";
-					
-					$.post(site_url+"/Leave/history/get_history_teamleader",{d1:date1,d2:date2,string:str},function(data){
-							$("#contentData").html("");
-							$("#contentData").append(data);
-					});
-			}
-
-			
-		function get_approved_leaves(){
-				var yr=document.getElementById('year').value;
-				var mon=document.getElementById('month').value;
-				var emp1=document.getElementById('emp').value;
-					
-				if(year!='' && mon!='' && emp!=''){
-					$.post(site_url+"/Leave/history/get_approved_leaves",{year:yr,month:mon,emp:emp1},function(data){
-						//alert(data);
-							$("#contentData").html("");
-							$("#contentData").append(data);
-					});
-			}
-				
-			}
-			
-			function remove_leave(l_id){
-				//alert(l_id);
-				$.post(site_url+"/Leave/history/remove_leave/",{id:l_id},function(data){
-					get_leave_status('2');
-				});
-
-			}
-			
-			
-			
-		
-			
 			
 			function export_leave_history(id)
 			{
@@ -347,7 +267,32 @@ function update_LeaveStatusReporter(leave_id1,status1,button_row,emp_name1,emp_n
 			}
 			
 			
+			
+			function admin_permission_history_general(part){	
 
+							if(part=='Dept'){
+								var dept1=document.getElementById('dept').value;								
+								document.getElementById('emp').value="All";
+										get_DepartmentEmployees(dept1); 
+							}
+				
+							var emp1=document.getElementById('emp').value; 
+							var year1=document.getElementById('year').value;
+							var month1=document.getElementById('month').value;
+							var dept1=document.getElementById('dept').value;
+							//	alert("YEAR:"+year1+",  MONTH:"+month1+", DEPT:"+dept1+", EMP:"+emp1+", LEAVE:"+leave1);
+							
+								if(year1!="" && dept1!="" && emp1!=""){
+									$.post(site_url+"/Leave/history/get_admin_permission_history",{year:year1,month:month1,dept:dept1,emp:emp1},function(data){
+												//alert(data);
+												$("#contentData").html("");
+												$("#contentData").append(data);
+										});
+								}		
+			}
+						
+									
+			
 			
 													/* * *    Reminder	* * */
 			

@@ -630,7 +630,7 @@ class History extends CI_Controller
 
 	}
 
-	
+//     Permission History	
 	function my_permission_history(){
 		
 		$data["menu"]='LMS';
@@ -658,9 +658,9 @@ class History extends CI_Controller
 		
 		$data["menu"]='LMS';
 		$data["submenu"]='admin_permission';
-		
-		$emp_num=$this->session->userdata("Emp_Number");
-		$data["Years"]=$this->history_model->get_permission_years($emp_num);
+		$data["department"]=$this->history_model->get_Departments();
+		$data["members"]=$this->history_model->get_leave_members();
+		$data["Years"]=$this->history_model->get_permission_years('All');
 		
 		$this->template->write('titleText', "Pending Permissions");
 		$this->template->write_view('sideLinks', 'general/menu',$data);
@@ -672,9 +672,76 @@ class History extends CI_Controller
 	
 	function get_admin_permission_history(){
 				$form_data = $this->input->post();
-				$data["result"]=$this->history_model->get_permission_history($form_data["year"],$form_data["status"],$form_data["emp_num"]);
-				$this->load->view('Leave/History/my_permissionhistory_general',$data);
-		}
+				$month=$form_data["month"];
+				$dept=$form_data["dept"];
+				$emp=$form_data["emp"];
+		
+
+		
+									if($dept=='All'){				/* Dept=All   */
+											
+												if($emp=='All'){ 		
+																	
+																	if($month=='All'){			/* Dept=All, Emp=All, Month=All   */
+																				$data["result"]=$this->history_model->admin_permission_history_Y($form_data["year"]);
+																				$data["total"]=$this->history_model->admin_permission_history_summary_Y($form_data["year"]);
+																				$this->load->view('Leave/History/admin_permission_history_general',$data);
+																	}
+																	else{								/* Dept=All, Emp=All, Month!=All   */
+																				$data["result"]=$this->history_model->admin_permission_history_YM($form_data["year"],$form_data["month"]);
+																				$data["total"]=$this->history_model->admin_permission_history_summary_YM($form_data["year"],$form_data["month"]);
+																				$this->load->view('Leave/History/admin_permission_history_general',$data);
+																	}
+												}
+												else{					
+																	if($month=='All'){			/* Dept=All, Emp!=All, Month=All   */
+																				$data["result"]=$this->history_model->admin_permission_history_YE($form_data["year"],$form_data["emp"]);
+																				$data["total"]=$this->history_model->admin_permission_history_summary_YE($form_data["year"],$form_data["emp"]);
+																				$this->load->view('Leave/History/admin_permission_history_general',$data);
+																	}
+																	else{								/* Dept=All, Emp!=All, Month!=All   */
+																				$data["result"]=$this->history_model->admin_permission_history_YME($form_data["year"],$form_data["month"],$form_data["emp"]);
+																				$data["total"]=$this->history_model->admin_permission_history_summary_YME($form_data["year"],$form_data["month"],$form_data["emp"]);
+																				$this->load->view('Leave/History/admin_permission_history_general',$data);
+																	}
+													
+												}
+							}
+							else{		/* Dept!=All   */
+																if($emp=='All'){ 		
+																	
+																	if($month=='All'){			/* Dept!=All, Emp=All, Month=All   */
+																				$data["result"]=$this->history_model->admin_permission_history_YD($form_data["year"],$form_data["dept"]);
+																				$data["total"]=$this->history_model->admin_permission_history_summary_YD($form_data["year"],$form_data["dept"]);
+																				$this->load->view('Leave/History/admin_permission_history_general',$data);
+																	}
+																	else{								/* Dept!=All, Emp=All, Month!=All   */
+																				$data["result"]=$this->history_model->admin_permission_history_YMD($form_data["year"],$form_data["month"],$form_data["dept"]);
+																				$data["total"]=$this->history_model->admin_permission_history_summary_YMD($form_data["year"],$form_data["month"],$form_data["dept"]);
+																				$this->load->view('Leave/History/admin_permission_history_general',$data);
+																	}
+												}
+												else{					
+																	if($month=='All'){			/* Dept!=All, Emp!=All, Month=All   */
+																				$data["result"]=$this->history_model->admin_permission_history_YDE($form_data["year"],$form_data["dept"],$form_data["emp"]);
+																				$data["total"]=$this->history_model->admin_permission_history_summary_YDE($form_data["year"],$form_data["dept"],$form_data["emp"]);
+																				$this->load->view('Leave/History/admin_permission_history_general',$data);
+																	}
+																	else{								/* Dept!=All, Emp!=All, Month!=All   */
+																				$data["result"]=$this->history_model->admin_permission_history_YMDE($form_data["year"],$form_data["month"],$form_data["dept"],$form_data["emp"]);
+																				$data["total"]=$this->history_model->admin_permission_history_summary_YMDE($form_data["year"],$form_data["month"],$form_data["dept"],$form_data["emp"]);
+																				$this->load->view('Leave/History/admin_permission_history_general',$data);
+																	}
+													
+												}
+								
+							}
+	}
+		
+		
+		
+		
+		
 		
 }
 ?>

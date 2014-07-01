@@ -564,40 +564,6 @@ Class History_model extends CI_Model{
 
 
 
-	
-	function get_history_teamleader($d1,$d2,$string){
-		$Emp_Number=$this->session->userdata('Emp_Number');
-		if($d1!=''&&$d2!=''){
-			if( $string=='null'){
-				return $this->db->query("SELECT a . *, b . *, c . * FROM leave_history a JOIN leave_status b ON a.Leave_Status = b.Status JOIN team c ON c.Employee_Number = a.Employee_Number
-																							WHERE 	STR_TO_DATE(DATE_FORMAT(a.From_Date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y')
-																							 AND  a.Employee_Number NOT IN  ('$Emp_Number')  AND a.Leave_Status IN ('2','4')  AND c.Department=(SELECT Department from team where EmployeeName='$Emp_Number')
-																						ORDER BY a.AppliedTime Desc")->result_array();
-			}
-			else{
-				return $this->db->query("	SELECT a . *, b . *, c . * FROM leave_history a JOIN leave_status b ON a.Leave_Status = b.Status JOIN team c ON c.Employee_Number = a.Employee_Number
-															WHERE 	STR_TO_DATE(DATE_FORMAT(a.From_Date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$d1','%d-%m-%Y') AND STR_TO_DATE('$d2','%d-%m-%Y') AND a.Employee_Number NOT IN  ('$Emp_Number') AND  (a.Employee_Number='$string' OR a.Leave_Status IN ('$string') OR a.Leave_Type='$string')
-															AND c.Department=(SELECT Department from team where EmployeeName='$Emp_Number')
-					                                		ORDER BY a.AppliedTime Desc ")->result_array();
-			}
-		}
-		else{
-			if( $string=='null'){
-				return $this->db->query("SELECT a . *, b . *, c . * FROM leave_history a JOIN leave_status b ON a.Leave_Status = b.Status JOIN team c ON c.Employee_Number = a.Employee_Number
-																			WHERE a.Employee_Number NOT IN  ('$Emp_Number')  AND a.Leave_Status IN ('2','4')  AND c.Department=(SELECT Department from team where EmployeeName='$Emp_Number')
-																			ORDER BY a.AppliedTime Desc")->result_array();
-			}
-			else{
-				return $this->db->query("	SELECT a . *, b . *, c . * FROM leave_history a JOIN leave_status b ON a.Leave_Status = b.Status JOIN team c ON c.Employee_Number = a.Employee_Number
-												WHERE a.Employee_Number NOT IN  ('$Emp_Number')  AND  (a.Employee_Number='$string' OR a.Leave_Status IN ('$string') OR a.Leave_Type='$string')
-												AND c.Department=(SELECT Department from team where EmployeeName='$Emp_Number') AND Leave_Status IN (2,4)
-		                                		ORDER BY a.AppliedTime Desc ")->result_array();
-			}
-		}
-	}
-
-
-
 	function get_leave_summary()
 	{
 		$y=date('Y');
@@ -718,21 +684,48 @@ Class History_model extends CI_Model{
 
 	}
 
+	
+	
+	
+	
+	
 																		/* * * 			Permissions 			* * */
-	function get_permission($d){
-							$Emp_Number=$this->session->userdata('Emp_Number');
-							$this->db->query("SELECT COUNT(P_Date) as permission FROM permissions WHERE  Emp_Number='$Emp_Number' AND month(STR_TO_DATE(DATE_FORMAT(P_Date,'%d-%m-%Y'),'%d-%m-%Y'))=month('$d') ")->result_array();
+	function get_pending_permissions(){
+					return $this->db->query("SELECT *
+																	  FROM permissions 
+																	  WHERE Status='Applied' ORDER BY P_Date")->result_array();
+	}
+	
+	
+	function update_Permission($perm_id,$status,$remark){
+		$approver=$this->session->userdata('Emp_Name');
+		$this->db->query("UPDATE permissions 
+											SET Status='$status',
+													Approved_By='$approver',
+													Approved_On=CURRENT_TIMESTAMP,
+													Approver_Remarks='$remark' 
+											WHERE permission_id='$perm_id' ");
 
 	}
-	
+
+
 	
 	function get_permission_years($emp_num){
+			if($emp_num=='All'){
+						return $this->db->query("SELECT DISTINCT YEAR(P_Date) as Year
+																	FROM permissions ORDER BY Year DESC")->result_array();
+			}
+			else{
 						return $this->db->query("SELECT DISTINCT YEAR(P_Date) as Year
 																	FROM permissions 
-																	WHERE Emp_Number='$emp_num'  ")->result_array();
+																	WHERE Emp_Number='$emp_num'  ORDER BY Year DESC")->result_array();
+			}
+			
 	}
+
 	
 	
+//		 Permission History	
 	function get_permission_history($year,$status,$emp_num){
 				if($status=='All'){
 											return $this->db->query("SELECT *,
@@ -773,106 +766,148 @@ Class History_model extends CI_Model{
 				
 
 	}
+	
+																			/* * * 		 Admin Permission History		* * */
+	
 
-
-	function check_permission_data($d){
-		$Emp_Number=$this->session->userdata('Emp_Number');
-		$data=$this->db->query("SELECT COUNT(P_Date) as 'count' FROM permissions WHERE  Emp_Number='$Emp_Number' AND MONTH(P_Date)=SUBSTRING('$d',4,2)  AND YEAR(P_Date)=SUBSTRING('$d',7,10)  AND Status!='Applied' ")->result_array();
-		foreach($data as $name){
-			$count1=$name["count"];
+//1
+	function admin_permission_history_Y($year){
+								return $this->db->query("SELECT a.*, b.Department
+																					FROM permissions a INNER JOIN employees b ON b.Employee_Number=a.Emp_Number
+																					WHERE a.Status='Allowed' AND YEAR(a.P_Date)='$year'
+																					ORDER BY b.Department,a.Emp_Number,a.P_Date    ")->result_array();
 		}
-		return $count1;
 
-	}
+		function admin_permission_history_summary_Y($year){
+								return $this->db->query("SELECT SUM(HOUR(Total_Hrs))+HOUR(SEC_TO_TIME(SUM(MINUTE(Total_Hrs)*60))) as TotalHours
+																					FROM permissions a INNER JOIN employees b ON b.Employee_Number=a.Emp_Number
+																					WHERE a.Status='Allowed' AND YEAR(a.P_Date)='$year'  ")->result_array();
+		}
 
-	function get_pending_permissions(){
-					return $this->db->query("SELECT *
-																	  FROM permissions  WHERE Status='Applied' ORDER BY P_Date")->result_array();
-	}
+//2
+	function admin_permission_history_YM($year,$month){
+								return $this->db->query("SELECT a.*, b.Department
+																					FROM permissions a INNER JOIN employees b ON b.Employee_Number=a.Emp_Number
+																					WHERE a.Status='Allowed' AND YEAR(a.P_Date)='$year' AND MONTHNAME(a.P_Date)='$month'
+																					ORDER BY b.Department,a.Emp_Number,a.P_Date    ")->result_array();
+		}
 
+		function admin_permission_history_summary_YM($year,$month){
+								return $this->db->query("SELECT SUM(HOUR(Total_Hrs))+HOUR(SEC_TO_TIME(SUM(MINUTE(Total_Hrs)*60))) as TotalHours
+																					FROM permissions a
+																					WHERE a.Status='Allowed' AND YEAR(a.P_Date)='$year' AND MONTHNAME(a.P_Date)='$month' ")->result_array();
+		}
 
-	function update_Permission($perm_id,$status,$remark){
-		$approver=$this->session->userdata('Emp_Name');
-		$this->db->query("UPDATE permissions 
-											SET Status='$status',
-													Approved_By='$approver',
-													Approved_On=CURRENT_TIMESTAMP,
-													Approver_Remarks='$remark' 
-											WHERE permission_id='$perm_id' ");
+		//3
+	function admin_permission_history_YD($year,$dept){
+								return $this->db->query("SELECT a.*, b.Department
+																					FROM permissions a INNER JOIN employees b ON b.Employee_Number=a.Emp_Number
+																					WHERE a.Status='Allowed' AND YEAR(a.P_Date)='$year' AND b.Department='$dept'
+																					ORDER BY b.Department,a.Emp_Number,a.P_Date    ")->result_array();
+		}
 
-	}
+		function admin_permission_history_summary_YD($year,$dept){
+								return $this->db->query("SELECT SUM(HOUR(Total_Hrs))+HOUR(SEC_TO_TIME(SUM(MINUTE(Total_Hrs)*60))) as TotalHours
+																					FROM permissions a INNER JOIN employees b ON b.Employee_Number=a.Emp_Number 
+																					WHERE a.Status='Allowed' AND YEAR(a.P_Date)='$year' 	AND b.Department='$dept' ")->result_array();
+		}
 
+		//4
+	function admin_permission_history_YE($year,$emp){
+								return $this->db->query("SELECT a.*, b.Department
+																					FROM permissions a 
+																					WHERE a.Status='Allowed' AND YEAR(a.P_Date)='$year'  AND a.Emp_Number='$emp'
+																					ORDER BY a.Emp_Number,a.P_Date    ")->result_array();
+		}
 
+		function admin_permission_history_summary_YE($year,$emp){
+								return $this->db->query("SELECT SUM(HOUR(Total_Hrs))+HOUR(SEC_TO_TIME(SUM(MINUTE(Total_Hrs)*60))) as TotalHours
+																					FROM permissions a
+																					WHERE a.Status='Allowed' AND YEAR(a.P_Date)='$year' AND a.Emp_Number='$emp' ")->result_array();
+		}
+
+		//5
+	function admin_permission_history_YMD($year,$month,$dept){
+								return $this->db->query("SELECT a.*, b.Department
+																					FROM permissions a INNER JOIN employees b ON b.Employee_Number=a.Emp_Number
+																					WHERE a.Status='Allowed' AND YEAR(a.P_Date)='$year' AND MONTHNAME(a.P_Date)='$month'
+																									AND b.Department='$dept' 
+																					ORDER BY b.Department,a.Emp_Number,a.P_Date    ")->result_array();
+		}
+
+		function admin_permission_history_summary_YMD($year,$month,$dept){
+								return $this->db->query("SELECT SUM(HOUR(Total_Hrs))+HOUR(SEC_TO_TIME(SUM(MINUTE(Total_Hrs)*60))) as TotalHours
+																					FROM permissions a INNER JOIN employees b ON b.Employee_Number=a.Emp_Number 
+																					WHERE a.Status='Allowed' AND YEAR(a.P_Date)='$year' AND MONTHNAME(a.P_Date)='$month'
+																									AND b.Department='$dept'  ")->result_array();
+		}
+
+		//6
+	function admin_permission_history_YME($year,$month,$emp){
+								return $this->db->query("SELECT a.*,b.Department
+																					FROM permissions a
+																					WHERE a.Status='Allowed' AND YEAR(a.P_Date)='$year' AND MONTHNAME(a.P_Date)='$month'
+																									 AND a.Emp_Number='$emp'
+																					ORDER BY a.Emp_Number,a.P_Date    ")->result_array();
+		}
+
+		function admin_permission_history_summary_YME($year,$month,$emp){
+								return $this->db->query("SELECT SUM(HOUR(Total_Hrs))+HOUR(SEC_TO_TIME(SUM(MINUTE(Total_Hrs)*60))) as TotalHours
+																					FROM permissions a
+																					WHERE a.Status='Allowed' AND YEAR(a.P_Date)='$year' AND MONTHNAME(a.P_Date)='$month'
+																									 AND a.Emp_Number='$emp' ")->result_array();
+		}
+
+		//7
+	function admin_permission_history_YDE($year,$dept,$emp){
+								return $this->db->query("SELECT a.*, b.Department
+																					FROM permissions a INNER JOIN employees b ON b.Employee_Number=a.Emp_Number
+																					WHERE a.Status='Allowed' AND YEAR(a.P_Date)='$year' 
+																									AND b.Department='$dept' AND a.Emp_Number='$emp'
+																					ORDER BY b.Department,a.Emp_Number,a.P_Date    ")->result_array();
+		}
+
+		function admin_permission_history_summary_YDE($year,$dept,$emp){
+								return $this->db->query("SELECT SUM(HOUR(Total_Hrs))+HOUR(SEC_TO_TIME(SUM(MINUTE(Total_Hrs)*60))) as TotalHours
+																					FROM permissions a INNER JOIN employees b ON b.Employee_Number=a.Emp_Number
+																					WHERE a.Status='Allowed' AND YEAR(a.P_Date)='$year' 
+																									AND b.Department='$dept' AND a.Emp_Number='$emp' ")->result_array();
+		}
+
+		//8
+	function admin_permission_history_YMDE($year,$month,$dept,$emp){
+								return $this->db->query("SELECT a.*, b.Department
+																					FROM permissions a INNER JOIN employees b ON b.Employee_Number=a.Emp_Number
+																					WHERE a.Status='Allowed' AND YEAR(a.P_Date)='$year' AND MONTHNAME(a.P_Date)='$month'
+																									AND b.Department='$dept' AND a.Emp_Number='$emp'
+																					ORDER BY b.Department,a.Emp_Number,a.P_Date    ")->result_array();
+		}
+
+		function admin_permission_history_summary_YMDE($year,$month,$dept,$emp){
+								return $this->db->query("SELECT SUM(HOUR(Total_Hrs))+HOUR(SEC_TO_TIME(SUM(MINUTE(Total_Hrs)*60))) as TotalHours
+																					FROM permissions a INNER JOIN employees b ON b.Employee_Number=a.Emp_Number
+																					WHERE a.Status='Allowed' AND YEAR(a.P_Date)='$year' AND MONTHNAME(a.P_Date)='$month'
+																									AND b.Department='$dept' AND a.Emp_Number='$emp' ")->result_array();
+		}
+
+		
+		
 	function SendReminder($id){
 		$Emp_Number=$this->session->userdata('Emp_Number');
 		$this->db->query("UPDATE leave_history SET ReminderCount=ReminderCount+1 WHERE Leave_ID='$id'");
 		return $this->db->query("SELECT email FROM admin_users WHERE name=(SELECT LeaveApprover_L1 FROM team  WHERE EmployeeName='$Emp_Number' ) ")->result_array();
 	}
 
-
-	function add_employee_details($name){
-		$this->db->query("INSERT INTO employee_details(EmployeeName) VALUES('$name')  ");
-
-	}
-
-	function update_leave_param($cm,$ct,$st,$sp,$pt,$pm,$pe,$comp,$permis,$carry,$pp){
-		$Emp_Number=$this->session->userdata('Emp_Number');
-		$this->db->query("UPDATE parameters
-														SET casual_month ='$cm',
-																casual_total = '$ct',
-																sick_limit = '$sp',
-																sick_total = '$st',
-																paid_exp = '$pe',
-																paid_total = '$pt',
-																paid_min = '$pm',
-																paid_prior = '$pp',
-																comp_off_reduct = '$comp',
-																permission_hrs = '$permis',
-																carry_forward = '$carry'
-																WHERE id_param ='1' ");
-	}
-
-
-	function get_holidays_calendar($year1,$year2){
-		return $this->db->query("SELECT COUNT(holi_date) as count, holi_date,CONCAT('[',Month(holi_date),',',DAY(holi_date),']') as date FROM holidays WHERE YEAR(holi_date) IN ('$year1','$year2' ) ")->result_array();
-			
-	}
-
-	function calculate_workingdays($date1,$date2){
-		$Emp_Number=$this->session->userdata('Emp_Number');
-		return $this->db->query("SELECT (leaves+holidays+sundays) as total, leaves,holidays,sundays
-																					FROM (SELECT COUNT(From_Date) as leaves,
-																							(SELECT COUNT(holi_date)  FROM holidays WHERE STR_TO_DATE(DATE_FORMAT(holi_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$date1','%d-%m-%Y') AND STR_TO_DATE('$date2','%d-%m-%Y')) as holidays, 
-																							(select COUNT(DATE_ADD(STR_TO_DATE('$date1','%d-%m-%Y'), INTERVAL ROW DAY))
-																		  			 FROM
-																						(SELECT @row := @row + 1 as row FROM 	(select 0 union all select 1 union all select 3 	union all select 4 union all select 5 union all select 6) t1,
-																								(select 0 union all select 1 union all select 3 union all select 4 union all select 5 union all select 6) t2,
-																								(SELECT @row:=-1) t3 limit 31
-																							) b
-																						WHERE		DATE_ADD(STR_TO_DATE('$date1','%d-%m-%Y'), INTERVAL ROW DAY)
-																						BETWEEN STR_TO_DATE('$date1','%d-%m-%Y') and STR_TO_DATE('$date2','%d-%m-%Y') AND DAYOFWEEK(DATE_ADD(STR_TO_DATE('$date1','%d-%m-%Y'), INTERVAL ROW DAY))=1) as sundays
-																							FROM leave_history
-																							WHERE ((STR_TO_DATE(DATE_FORMAT(From_Date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$date1','%d-%m-%Y') AND STR_TO_DATE('$date2','%d-%m-%Y')) OR (STR_TO_DATE(DATE_FORMAT(To_Date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$date1','%d-%m-%Y') AND STR_TO_DATE('$date2','%d-%m-%Y')))
-																							AND Emp_Number='$Emp_Number') a  ")->result_array();
-			
-	}
-
-
-
-	function getFilePath($leaveID){
-		return $this->db->query("SELECT filename 	FROM files
-																			WHERE leave_id = '$leaveID' Limit 1")->result_array();
-			
-	}
-
-
-	function get_reminder_limit(){
-		return $this->db->query("SELECT reminder_limit FROM parameters limit 1")->result_array();
-	}
-
-
-		
-}
-
-
-?>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+}?>
