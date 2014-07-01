@@ -47,21 +47,6 @@ class History extends CI_Controller
 
 
 
-	function leave_reprocess()
-	{
-		$data["menu"]='LMS';
-		$data["submenu"]='reprocess';
-		$data["members"]=$this->history_model->get_leave_members();
-		$data['years']=$this->history_model->get_years();
-
-		$this->template->write('titleText', "Reprocess Approved Leaves");
-		$this->template->write_view('sideLinks', 'general/menu',$data);
-		$this->template->write_view('bodyContent', 'Leave/History/reprocess_leave',$data);
-		$this->template->render();
-	}
-
-	
-
 	function my_leave_history()
 	{
 		$data["menu"]='LMS';
@@ -77,7 +62,7 @@ class History extends CI_Controller
 
 
 
-	function admin_leavehistory()
+	function admin_leave_history()
 	{
 		$data["menu"]='LMS';
 		$data["submenu"]='history_admin';
@@ -87,38 +72,25 @@ class History extends CI_Controller
 		$data["members"]=$this->history_model->get_leave_members();
 		$this->template->write('titleText', "Employees Leave History");
 		$this->template->write_view('sideLinks', 'general/menu',$data);
-		$this->template->write_view('bodyContent', 'Leave/History/admin_leavehistory',$data);
+		$this->template->write_view('bodyContent', 'Leave/History/admin_leave_history',$data);
 		$this->template->render();
 	}
 
-	function history_md()
+
+	function leave_reprocess()
 	{
 		$data["menu"]='LMS';
-		$data["submenu"]='history_admin';
-		$data["deptlist"]=$this->history_model->get_dept();
-		$data["teamlist"]=$this->history_model->get_team();
+		$data["submenu"]='reprocess';
 		$data["members"]=$this->history_model->get_leave_members();
+		$data['years']=$this->history_model->get_years();
 
-		$this->template->write('titleText', "Employees Leave History");
+		$this->template->write('titleText', "Reprocess Approved Leaves");
 		$this->template->write_view('sideLinks', 'general/menu',$data);
-		$this->template->write_view('bodyContent', 'Leave/History/history_admin',$data);
+		$this->template->write_view('bodyContent', 'Leave/History/reprocess_leave',$data);
 		$this->template->render();
 	}
-
-	function history_teamleader()
-	{
-		$data["menu"]='LMS';
-		$data["submenu"]='history_teamleader';
-		$data["members"]=$this->history_model->get_team_members();
-
-		$this->template->write('titleText', "Department Leave History");
-		$this->template->write_view('sideLinks', 'general/menu',$data);
-		$this->template->write_view('bodyContent', 'Leave/History/history_teamleader',$data);
-		$this->template->render();
-	}
-
-
 	
+															/* * * 			Action on Leaves 			* * */
 	
 	
 		function update_LeaveStatusReporter(){
@@ -235,21 +207,6 @@ class History extends CI_Controller
 	}
 		
 	
-		function get_leave_status(){
-		$form_data = $this->input->post();
-		$type = $form_data["type"];
-		$data["reminder"]=$this->history_model->get_reminder_limit();
-		$data["result"]=$this->history_model->get_leave_status($form_data["d1"],$form_data["d2"],$form_data["type"]);
-		if($type=='1'){
-			$this->load->view('Leave/History/leave_status_noaction',$data);
-		}
-		else{
-			$this->load->view('Leave/History/history_left',$data);
-			$this->load->view('Leave/History/leave_status',$data);
-		}
-	}
-	
-	
 	
 																		/*  * * Admin Leave History * * */
 
@@ -268,24 +225,24 @@ class History extends CI_Controller
 																	if($leave=='All'){			/* Dept=All, Emp=All, Leave=All   */
 																				$data["result"]=$this->history_model->admin_leavehistory_combination_YM($form_data["year"],$form_data["month"]);
 																				$data["total"]=$this->history_model->admin_leavehistory_combination_summary_YM($form_data["year"],$form_data["month"]);
-																				$this->load->view('Leave/History/admin_leavehistory_general',$data);
+																				$this->load->view('Leave/History/admin_leave_history_general',$data);
 																	}
 																	else{								/* Dept=All, Emp=All, Leave!=All   */
 																				$data["result"]=$this->history_model->admin_leavehistory_combination_YML($form_data["year"],$form_data["month"],$form_data["leave"]);
 																				$data["total"]=$this->history_model->admin_leavehistory_combination_summary_YML($form_data["year"],$form_data["month"],$form_data["leave"]);
-																				$this->load->view('Leave/History/admin_leavehistory_general_leave',$data);
+																				$this->load->view('Leave/History/admin_leave_history_general_leave',$data);
 																	}
 												}
 												else{					/* Dept=All, Emp!=All   */
 																	if($leave=='All'){			/* Dept=All, Emp!=All, Leave=All   */
 																				$data["result"]=$this->history_model->admin_leavehistory_combination_YME($form_data["year"],$form_data["month"],$form_data["emp"]);
 																				$data["total"]=$this->history_model->admin_leavehistory_combination_summary_YME($form_data["year"],$form_data["month"],$form_data["emp"]);
-																				$this->load->view('Leave/History/admin_leavehistory_general',$data);
+																				$this->load->view('Leave/History/admin_leave_history_general',$data);
 																	}
 																	else{								/* Dept=All, Emp!=All, Leave!=All   */
 																				$data["result"]=$this->history_model->admin_leavehistory_combination_YMEL($form_data["year"],$form_data["month"],$form_data["emp"],$form_data["leave"]);
 																				$data["total"]=$this->history_model->admin_leavehistory_combination_summary_YMEL($form_data["year"],$form_data["month"],$form_data["emp"],$form_data["leave"]);
-																				$this->load->view('Leave/History/admin_leavehistory_general',$data);
+																				$this->load->view('Leave/History/admin_leave_history_general',$data);
 																	}
 													
 												}
@@ -296,24 +253,24 @@ class History extends CI_Controller
 																	if($leave=='All'){			/* Dept!=All, Emp=All, Leave=All   */
 																				$data["result"]=$this->history_model->admin_leavehistory_combination_YMD($form_data["year"],$form_data["month"],$form_data["dept"]);
 																				$data["total"]=$this->history_model->admin_leavehistory_combination_summary_YMD($form_data["year"],$form_data["month"],$form_data["dept"]);
-																				$this->load->view('Leave/History/admin_leavehistory_general',$data);
+																				$this->load->view('Leave/History/admin_leave_history_general',$data);
 																	}
 																	else{								/* Dept!=All, Emp=All, Leave!=All   */
 																				$data["result"]=$this->history_model->admin_leavehistory_combination_YMDL($form_data["year"],$form_data["month"],$form_data["dept"],$form_data["leave"]);
 																				$data["total"]=$this->history_model->admin_leavehistory_combination_summary_YMDL($form_data["year"],$form_data["month"],$form_data["dept"],$form_data["leave"]);
-																				$this->load->view('Leave/History/admin_leavehistory_general_leave',$data);
+																				$this->load->view('Leave/History/admin_leave_history_general_leave',$data);
 																	}
 												}
 												else{					/* Dept!=All, Emp!=All   */
 																	if($leave=='All'){			/* Dept!=All, Emp!=All, Leave=All   */
 																				$data["result"]=$this->history_model->admin_leavehistory_combination_YMDE($form_data["year"],$form_data["month"],$form_data["dept"],$form_data["emp"]);
 																				$data["total"]=$this->history_model->admin_leavehistory_combination_summary_YMDE($form_data["year"],$form_data["month"],$form_data["dept"],$form_data["emp"]);
-																				$this->load->view('Leave/History/admin_leavehistory_general',$data);
+																				$this->load->view('Leave/History/admin_leave_history_general',$data);
 																	}
 																	else{								/* Dept!=All, Emp!=All, Leave!=All   */
 																				$data["result"]=$this->history_model->admin_leavehistory_combination_YMDEL($form_data["year"],$form_data["month"],$form_data["dept"],$form_data["emp"],$form_data["leave"]);
 																				$data["total"]=$this->history_model->admin_leavehistory_combination_summary_YMDEL($form_data["year"],$form_data["month"],$form_data["dept"],$form_data["emp"],$form_data["leave"]);
-																				$this->load->view('Leave/History/admin_leavehistory_general_leave',$data);
+																				$this->load->view('Leave/History/admin_leave_history_general_leave',$data);
 																	}
 													
 												}
@@ -329,24 +286,24 @@ class History extends CI_Controller
 																	if($leave=='All'){			/* Dept=All, Emp=All, Leave=All   */
 																				$data["result"]=$this->history_model->admin_leavehistory_combination_Y($form_data["year"]);
 																				$data["total"]=$this->history_model->admin_leavehistory_combination_summary_Y($form_data["year"]);
-																				$this->load->view('Leave/History/admin_leavehistory_general',$data);
+																				$this->load->view('Leave/History/admin_leave_history_general',$data);
 																	}
 																	else{								/* Dept=All, Emp=All, Leave!=All   */
 																				$data["result"]=$this->history_model->admin_leavehistory_combination_YL($form_data["year"],$form_data["leave"]);
 																				$data["total"]=$this->history_model->admin_leavehistory_combination_summary_YL($form_data["year"],$form_data["leave"]);
-																				$this->load->view('Leave/History/admin_leavehistory_general_leave',$data);
+																				$this->load->view('Leave/History/admin_leave_history_general_leave',$data);
 																	}
 												}
 												else{					/* Dept=All, Emp!=All   */
 																	if($leave=='All'){			/* Dept=All, Emp!=All, Leave=All   */
 																				$data["result"]=$this->history_model->admin_leavehistory_combination_YE($form_data["year"],$form_data["emp"]);
 																				$data["total"]=$this->history_model->admin_leavehistory_combination_summary_YE($form_data["year"],$form_data["emp"]);
-																				$this->load->view('Leave/History/admin_leavehistory_general',$data);
+																				$this->load->view('Leave/History/admin_leave_history_general',$data);
 																	}
 																	else{								/* Dept=All, Emp!=All, Leave!=All   */
 																				$data["result"]=$this->history_model->admin_leavehistory_combination_YEL($form_data["year"],$form_data["emp"],$form_data["leave"]);
 																				$data["total"]=$this->history_model->admin_leavehistory_combination_summary_YEL($form_data["year"],$form_data["emp"],$form_data["leave"]);
-																				$this->load->view('Leave/History/admin_leavehistory_general_leave',$data);
+																				$this->load->view('Leave/History/admin_leave_history_general_leave',$data);
 																	}
 													
 												}
@@ -357,24 +314,24 @@ class History extends CI_Controller
 																	if($leave=='All'){			/* Dept!=All, Emp=All, Leave=All   */
 																				$data["result"]=$this->history_model->admin_leavehistory_combination_YD($form_data["year"],$form_data["dept"]);
 																				$data["total"]=$this->history_model->admin_leavehistory_combination_summary_YD($form_data["year"],$form_data["dept"]);
-																				$this->load->view('Leave/History/admin_leavehistory_general',$data);
+																				$this->load->view('Leave/History/admin_leave_history_general',$data);
 																	}
 																	else{								/* Dept!=All, Emp=All, Leave!=All   */
 																				$data["result"]=$this->history_model->admin_leavehistory_combination_YDL($form_data["year"],$form_data["dept"],$form_data["leave"]);
 																				$data["total"]=$this->history_model->admin_leavehistory_combination_summary_YDL($form_data["year"],$form_data["dept"],$form_data["leave"]);
-																				$this->load->view('Leave/History/admin_leavehistory_general_leave',$data);
+																				$this->load->view('Leave/History/admin_leave_history_general_leave',$data);
 																	}
 												}
 												else{					/* Dept!=All, Emp!=All   */
 																	if($leave=='All'){			/* Dept!=All, Emp!=All, Leave=All   */
 																				 $data["result"]=$this->history_model->admin_leavehistory_combination_YDE($form_data["year"],$form_data["dept"],$form_data["emp"]);
 																				 $data["total"]=$this->history_model->admin_leavehistory_combination_summary_YDE($form_data["year"],$form_data["dept"],$form_data["emp"]);
-																				$this->load->view('Leave/History/admin_leavehistory_general',$data);
+																				$this->load->view('Leave/History/admin_leave_history_general',$data);
 																	}
 																	else{								/* Dept!=All, Emp!=All, Leave!=All   */
 																				$data["result"]=$this->history_model->admin_leavehistory_combination_YDEL($form_data["year"],$form_data["dept"],$form_data["emp"],$form_data["leave"]);
 																				$data["total"]=$this->history_model->admin_leavehistory_combination_summary_YDEL($form_data["year"],$form_data["dept"],$form_data["emp"],$form_data["leave"]);
-																				$this->load->view('Leave/History/admin_leavehistory_general_leave',$data);
+																				$this->load->view('Leave/History/admin_leave_history_general_leave',$data);
 																	}
 													
 												}
@@ -650,7 +607,7 @@ class History extends CI_Controller
 	function get_permission_history(){
 				$form_data = $this->input->post();
 				$data["result"]=$this->history_model->get_permission_history($form_data["year"],$form_data["status"],$form_data["emp_num"]);
-				$this->load->view('Leave/History/my_permissionhistory_general',$data);
+				$this->load->view('Leave/History/my_permission_history_general',$data);
 		}
 
 		

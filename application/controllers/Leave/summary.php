@@ -6,7 +6,7 @@ class Summary extends CI_Controller
 			parent::__construct();
 		
 			$this->load->library('SimpleLoginSecure');
-			$this->load->library('Export_emp_leave_history');
+			//$this->load->library('Export_emp_leave_summary');
 		  	$this->load->model('Leave/summary_model');
 			$this->load->helper('url');
 			
@@ -18,16 +18,14 @@ class Summary extends CI_Controller
 	
 		}
 		
-	
+		
 	function my_leave_summary()
 	{	
 		$data["menu"]='LMS';
 		$data["submenu"]='my_summary';
-		$data['years']=$this->summary_model->get_years();
-		$data['summary']=$this->summary_model->get_my_summary(date('Y'));
-		$data['total']=$this->summary_model->get_my_summary_total(date('Y'));
-		$data["perm"]=$this->summary_model->get_my_permission(date('Y'));
-		$data["perm_tot"]=$this->summary_model->get_my_permission_total(date('Y'));
+		$data['years']=$this->summary_model->get_leave_years();
+		$data["summary"]=$this->summary_model->get_my_summary(date('Y'));
+		$data["total"]=$this->summary_model->get_my_summary_total(date('Y'));
 		
 		
 		$this->template->write('titleText', "My Leave Summary");
@@ -36,35 +34,20 @@ class Summary extends CI_Controller
         $this->template->render();					
 	}
 	
-	function leave_summary()
+	function admin_leave_summary()
 	{	
-		$data["menu"]='e_reports';
-		$data["submenu"]='summary';
-		$data["deptlist"]=$this->summary_model->get_dept();	
-		$data["members"]=$this->summary_model->get_leave_members();	
-		
-		$data['years']=$this->summary_model->get_years();
+		$data["menu"]='LMS';
+		$data["submenu"]='summary_admin';
+		$data['Years']=$this->summary_model->get_leave_years();
+		$data["department"]=$this->summary_model->get_Departments();
+		$data["members"]=$this->summary_model->get_leave_members();
+				
 		$this->template->write('titleText', "Employees Leave Summary");
 		$this->template->write_view('sideLinks', 'general/menu',$data);
-        $this->template->write_view('bodyContent', 'Leave/Summary/leave_summary',$data);
+        $this->template->write_view('bodyContent', 'Leave/Summary/admin_leave_summary',$data);
         $this->template->render();					
 	}
 	
-	function leave_summary_md()
-	{	
-		$data["menu"]='LMS';
-		$data["submenu"]='summary';
-		$data["deptlist"]=$this->summary_model->get_dept();	
-		$data["teamlist"]=$this->summary_model->get_team();	
-		$data["members"]=$this->summary_model->get_leave_members();	
-		
-		$data['years']=$this->summary_model->get_years();
-		$this->template->write('titleText', "Employees Leave Summary");
-		$this->template->write_view('sideLinks', 'general/menu',$data);
-        $this->template->write_view('bodyContent', 'Leave/Summary/leave_summary',$data);
-        $this->template->render();					
-	}
-		
 				
 	
 					
@@ -100,8 +83,78 @@ class Summary extends CI_Controller
 				$this->load->view('Leave/Summary/my_leave_summary_page',$data);
 							
 		}
-			
-	
+
+		
+														/* * * 			Admin Leave Summary 		* * */
+		
+		
+		function get_admin_leave_summary_general(){
+				$form_data = $this->input->post();
+				$month=$form_data["month"];
+				$dept=$form_data["dept"];
+				$emp=$form_data["emp"];
+		
+									if($dept=='All'){				/* Dept=All   */
+											
+												if($emp=='All'){ 		
+																	
+																	if($month=='All'){			/* Dept=All, Emp=All, Month=All   */
+																				$data["result"]=$this->summary_model->admin_leave_summary_Y($form_data["year"]);
+																				$data["total"]=$this->summary_model->admin_leave_summary_total_Y($form_data["year"]);
+																				$this->load->view('Leave/Summary/admin_leave_summary_general',$data);
+																	}
+																	else{								/* Dept=All, Emp=All, Month!=All   */
+																				$data["result"]=$this->summary_model->admin_leave_summary_YM($form_data["year"],$form_data["month"]);
+																				$data["total"]=$this->summary_model->admin_leave_summary_total_YM($form_data["year"],$form_data["month"]);
+																				$this->load->view('Leave/Summary/admin_leave_summary_general',$data);
+																	}
+												}
+												else{					
+																	if($month=='All'){			/* Dept=All, Emp!=All, Month=All   */
+																				$data["result"]=$this->summary_model->admin_leave_summary_YE($form_data["year"],$form_data["emp"]);
+																				$data["total"]=$this->summary_model->admin_leave_summary_total_YE($form_data["year"],$form_data["emp"]);
+																				$this->load->view('Leave/Summary/admin_leave_summary_general',$data);
+																	}
+																	else{								/* Dept=All, Emp!=All, Month!=All   */
+																				$data["result"]=$this->summary_model->admin_leave_summary_YME($form_data["year"],$form_data["month"],$form_data["emp"]);
+																				$data["total"]=$this->summary_model->admin_leave_summary_total_YME($form_data["year"],$form_data["month"],$form_data["emp"]);
+																				$this->load->view('Leave/Summary/admin_leave_summary_general',$data);
+																	}
+													
+												}
+							}
+							else{		/* Dept!=All   */
+																if($emp=='All'){ 		
+																	
+																	if($month=='All'){			/* Dept!=All, Emp=All, Month=All   */
+																				$data["result"]=$this->summary_model->admin_leave_summary_YD($form_data["year"],$form_data["dept"]);
+																				$data["total"]=$this->summary_model->admin_leave_summary_total_YD($form_data["year"],$form_data["dept"]);
+																				$this->load->view('Leave/Summary/admin_leave_summary_general',$data);
+																	}
+																	else{								/* Dept!=All, Emp=All, Month!=All   */
+																				$data["result"]=$this->summary_model->admin_leave_summary_YMD($form_data["year"],$form_data["month"],$form_data["dept"]);
+																				$data["total"]=$this->summary_model->admin_leave_summary_total_YMD($form_data["year"],$form_data["month"],$form_data["dept"]);
+																				$this->load->view('Leave/Summary/admin_leave_summary_general',$data);
+																	}
+												}
+												else{					
+																	if($month=='All'){			/* Dept!=All, Emp!=All, Month=All   */
+																				$data["result"]=$this->summary_model->admin_leave_summary_YDE($form_data["year"],$form_data["dept"],$form_data["emp"]);
+																				$data["total"]=$this->summary_model->admin_leave_summary_total_YDE($form_data["year"],$form_data["dept"],$form_data["emp"]);
+																				$this->load->view('Leave/Summary/admin_leave_summary_general',$data);
+																	}
+																	else{								/* Dept!=All, Emp!=All, Month!=All   */
+																				$data["result"]=$this->summary_model->admin_leave_summary_YMDE($form_data["year"],$form_data["month"],$form_data["dept"],$form_data["emp"]);
+																				$data["total"]=$this->summary_model->admin_leave_summary_total_YMDE($form_data["year"],$form_data["month"],$form_data["dept"],$form_data["emp"]);
+																				$this->load->view('Leave/Summary/admin_leave_summary_general',$data);
+																	}
+													
+												}
+								
+							}
+	}
+		
+		
 	
 		}
 	?>

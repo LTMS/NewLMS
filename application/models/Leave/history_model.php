@@ -4,11 +4,6 @@ Class History_model extends CI_Model{
 	{
 		parent::_construct();
 	}
-	
-	function get_parameters()
-	{
-		return $this->db->query("SELECT *, HOUR(comp_off_reduct) as hour, MINUTE(comp_off_reduct) as min,ROUND(TIME_TO_SEC(comp_off_reduct)/60) as comp_minutes FROM parameters ")->result_array();
-	}
 
 	function get_years(){
 		return $this->db->query("SELECT  DISTINCT YEAR(From_Date) AS 'year' FROM leave_history ORDER BY year DESC")->result_array();
@@ -17,22 +12,16 @@ Class History_model extends CI_Model{
 	function get_leaveList(){
 		return $this->db->query("SELECT  DISTINCT LeaveDesc , LeaveType FROM leave_list ORDER BY LeaveDesc ")->result_array();
 	}
-	
-	function get_team()
-	{
-		return $this->db->query("SELECT a.Employee_Number AS EmployeeName FROM team a  WHERE a.Designation IN ('TeamLeader') ORDER BY a.Employee_Number")->result_array();
-	}
 
 	function get_leave_members(){
 		return $this->db->query("SELECT DISTINCT Emp_Number AS 'Number',Emp_Name AS 'Name' FROM  admin_users WHERE Emp_Role NOT IN ('MD') ORDER BY Name DESC")->result_array();
 	}
-
-	function get_team_members()
+	
+	function get_Departments()
 	{
-		$Emp_Number=$this->session->userdata('Emp_Number');
-
-		return $this->db->query("SELECT EmployeeName AS 'Name'  FROM team  WHERE LeaveApprover_L1='$Emp_Number' ORDER BY EmployeeName ")->result_array();
+		return $this->db->query("SELECT DISTINCT * FROM departments ")->result_array();
 	}
+	
 
 	function checkLeaveAvailability($leave_type)
 	{
@@ -127,10 +116,6 @@ Class History_model extends CI_Model{
 																	(SELECT Email, Reporter, Approver FROM employees WHERE Employee_Number='$emp_num') a")->result_array();
 		}
 		
-	function get_Departments()
-	{
-		return $this->db->query("SELECT DISTINCT * FROM departments ")->result_array();
-	}
 
 
 
