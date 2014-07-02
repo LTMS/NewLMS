@@ -16,7 +16,7 @@
   					
 					<?php if( $this->session->userdata('Emp_Role')=='MD'){ ?>	
 						<li><a href="<?php echo site_url("Leave/history/get_reported_applications"); ?>" <?php if ($submenu=='reported_applications'){?>class="current"<?php }?> >Leaves pending for Approval</a></li>
-	    				<li><a href="<?php echo site_url("Leave/history/cancel_approved_leaves"); ?>" <?php if ($submenu=='cencel_leave'){?>class="current"<?php }?> >Reprocess Approved Leaves</a></li>
+	    				<li><a href="<?php echo site_url("Leave/history/cancel_approved_leaves"); ?>" <?php if ($submenu=='cencel_leave'){?>class="current"<?php }?> >Cancel Approved Leaves</a></li>
 	    				<li><a href="<?php echo site_url("Leave/history/get_applied_applications"); ?>" <?php if ($submenu=='applied_applications'){?>class="current"<?php }?> >Applied Leaves</a></li>
 						<li><a href="<?php echo site_url("Leave/history/get_applied_permissions"); ?>" <?php if ($submenu=='permissions'){?>class="current"<?php }?> >Pending Permissions</a></li>
 						<li><a href="<?php echo site_url("Leave/history/admin_leave_history"); ?>" <?php if ($submenu=='history_admin'){?>class="current"<?php }?> >Employees Leave History</a></li>

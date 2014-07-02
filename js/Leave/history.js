@@ -317,17 +317,14 @@ function update_LeaveStatusReporter(leave_id1,status1,button_row,emp_name1,emp_n
 			
 											/* * *   onMOUSE  Functions * * */
 			
-			function change_OnMouseOver(id,over){
+			function change_OnMouseOver(id,img){
+				if(id!="" && img!="" && img!=null){
+					document.getElementById(id).src='../../../images/Leave/'+img;
+				}
 				
-				document.getElementById(id).src='../../../images/Leave/'+over;
 			}
 			
-			
-			function change_OnMouseOut(id,normal){
-				
-				document.getElementById(id).src='../../../images/Leave/'+over;
-			}
-			
+		
 			
 			
 			/*  Replacing script

@@ -1,4 +1,4 @@
-
+														/* * * 			Date Functions			* * */
 		$("#date_from1").datepicker({ 
 								dateFormat: 'dd-mm-yy',
 								beforeShowDay: function(dt)    {
@@ -27,9 +27,15 @@
 		}) ; 
 
 
+// Showing Divsion for Leave
+		
+		
+		function show_LeaveDiv(leave){
+			
+			
+		}
 
-	function check_leave_status(datevalue)
-	{
+	function check_leave_status(datevalue){
 		document.getElementById('Table2').style.display="";
 		document.getElementById('Table3').style.display="none";
 		document.getElementById("error").innerHTML="";
@@ -546,30 +552,16 @@
 				defaultDate: new Date()		
 			});
 		
-			function process_permission(id,date1,user1){
-				document.getElementById(id).style.background='grey';
-				document.getElementById(id).style.color='white';
-				document.getElementById('p_id').value=id;
-				document.getElementById('p_user').value=user1;
-				document.getElementById('p_date').value=date1;
-				document.getElementById('buttons').style.display="";
-				document.getElementById('col_1').innerHTML="Wait..! System is Sending Mail to "+user1;
-				
-				
-			}
 
-			function grantPermission(remark1){
-				document.getElementById('button1').style.display="";
-				document.getElementById('buttons').style.display="none";
-					
-				var id1 =document.getElementById('p_id').value;
-				var user1=document.getElementById('p_user').value;
-				var date1=document.getElementById('p_date').value;
+			
+			
+			/* * *   onMOUSE  Functions * * */
 
-				$.post(site_url+"/Leave/apply/grantPermission/",{user:user1,date:date1,remark:remark1,id:id1},function(data){
-					window.location.reload();
-				});
-
-			}
-
-
+		function change_OnMouseOver(id,img){
+			//alert(id);
+			if(id!="" && img!="" && img!=null){
+						document.getElementById(id).src='../../../images/Leave/'+img;
+				}
+		
+		}
+		
