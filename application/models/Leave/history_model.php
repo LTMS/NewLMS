@@ -115,12 +115,22 @@ Class History_model extends CI_Model{
 																	FROM 
 																	(SELECT Email, Reporter, Approver FROM employees WHERE Employee_Number='$emp_num') a")->result_array();
 		}
+
 		
 
-
+																					/* * * 			Cancelling Approved Leaves 			* * */
+	function get_approved_leaves_for_cancel(){
+	
+			return $this->db->query("SELECT *,b.Department
+																FROM leave_history INNER JOIN employees b ON b.Employee_Number=Emp_Number
+																WHERE Leave_Status IN (4) AND CURDATE()<=From_Date
+																ORDER BY b.Department,Emp_Number")->result_array();
+		
+	}
+		
 
 	
-															/* * *         Admin Leave History 		* * */	
+																			/* * *         Admin Leave History 		* * */	
 	
 	function get_DepartmentEmployees($dept){
 				return $this->db->query("SELECT  CONCAT(Employee_Name,'::',Employee_Number) as Dept
@@ -148,8 +158,7 @@ Class History_model extends CI_Model{
 																												FROM leave_history 
 																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' 
 																																
-																				) A
-																				Group By Emp_Number ")->result_array();
+																				) A	 ")->result_array();
 	}
 		//2		
 	function admin_leavehistory_combination_YM($year,$month){
@@ -171,8 +180,7 @@ Class History_model extends CI_Model{
 																														IF(Leave_Type='CO',Total_Days, 0) as 'CO' 
 																												FROM leave_history 
 																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' AND MONTHNAME(From_Date)='$month' 
-																				) A
-																				Group By Emp_Number ")->result_array();
+																				) A ")->result_array();
 	}
 	//3
 			function admin_leavehistory_combination_YD($year,$dept){
@@ -193,8 +201,7 @@ Class History_model extends CI_Model{
 																														IF(Leave_Type='CO',Total_Days, 0) as 'CO' 
 																												FROM leave_history INNER JOIN employees a ON a.Employee_Number=Emp_Number
 																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' 	AND a.Department='$dept' 
-																				) A
-																				Group By Emp_Number ")->result_array();
+																				) A ")->result_array();
 	}
 	//4	
 	function admin_leavehistory_combination_YL($year,$leave){
@@ -215,8 +222,7 @@ Class History_model extends CI_Model{
 																														IF(Leave_Type='CO',Total_Days, 0) as 'CO' 
 																												FROM leave_history 
 																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year'  AND leave_Type='$leave' 
-																				) A
-																				Group By Emp_Number ")->result_array();
+																				) A ")->result_array();
 	}
 	//5	
 		function admin_leavehistory_combination_YE($year,$emp){
@@ -237,8 +243,7 @@ Class History_model extends CI_Model{
 																														IF(Leave_Type='CO',Total_Days, 0) as 'CO' 
 																												FROM leave_history
 																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' AND Emp_Number='$emp'
-																				) A
-																				Group By Emp_Number ")->result_array();
+																				) A ")->result_array();
 	}
 	
 //6
@@ -262,8 +267,7 @@ Class History_model extends CI_Model{
 																												FROM leave_history INNER JOIN employees a ON a.Employee_Number=Emp_Number
 																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' AND MONTHNAME(From_Date)='$month' 
 																																AND a.Department='$dept' 
-																				) A
-																				Group By Emp_Number ")->result_array();
+																				) A ")->result_array();
 	}
 	//7	
 		function admin_leavehistory_combination_YME($year,$month,$emp){
@@ -286,8 +290,7 @@ Class History_model extends CI_Model{
 																												FROM leave_history
 																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' AND MONTHNAME(From_Date)='$month' 
 																																	AND Emp_Number='$emp'
-																				) A
-																				Group By Emp_Number ")->result_array();
+																				) A ")->result_array();
 	}
 	//8
 	function admin_leavehistory_combination_YML($year,$month,$leave){
@@ -310,8 +313,7 @@ Class History_model extends CI_Model{
 																												FROM leave_history 
 																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' AND MONTHNAME(From_Date)='$month' 
 																																AND leave_Type='$leave' 
-																				) A
-																				Group By Emp_Number ")->result_array();
+																				) A ")->result_array();
 	}
 	//9	
 	function admin_leavehistory_combination_YDE($year,$dept,$emp){
@@ -336,8 +338,7 @@ Class History_model extends CI_Model{
 																												FROM leave_history INNER JOIN employees a ON a.Employee_Number=Emp_Number
 																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' AND a.Department='$dept'
 																																	AND Emp_Number='$emp' 
-																				) A
-																				Group By Emp_Number ")->result_array();
+																				) A ")->result_array();
 	}
 	//10
 	function admin_leavehistory_combination_YDL($year,$dept,$leave){
@@ -360,8 +361,7 @@ Class History_model extends CI_Model{
 																												FROM leave_history INNER JOIN employees a ON a.Employee_Number=Emp_Number
 																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' 
 																																AND a.Department='$dept'  AND leave_Type='$leave' 
-																				) A
-																				Group By Emp_Number ")->result_array();
+																				) A ")->result_array();
 	}
 	//11
 		function admin_leavehistory_combination_YEL($year,$emp,$leave){
@@ -384,8 +384,7 @@ Class History_model extends CI_Model{
 																												FROM leave_history 
 																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' 	AND Emp_Number='$emp' 
 																																AND Leave_Type='$leave'
-																				) A
-																				Group By Emp_Number ")->result_array();
+																				) A ")->result_array();
 	}
 	//12
 		function admin_leavehistory_combination_YMDE($year,$month,$dept,$emp){
@@ -408,8 +407,7 @@ Class History_model extends CI_Model{
 																												FROM leave_history INNER JOIN employees a ON a.Employee_Number=Emp_Number
 																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' AND MONTHNAME(From_Date)='$month' 
 																																AND a.Department='$dept' AND Emp_Number='$emp' 
-																				) A
-																				Group By Emp_Number ")->result_array();
+																				) A ")->result_array();
 	}
 	//13
 		function admin_leavehistory_combination_YMDL($year,$month,$dept,$leave){
@@ -432,8 +430,7 @@ Class History_model extends CI_Model{
 																												FROM leave_history INNER JOIN employees a ON a.Employee_Number=Emp_Number
 																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' AND MONTHNAME(From_Date)='$month' 
 																																AND a.Department='$dept' AND Emp_Number='$emp'  AND leave_Type='$leave' 
-																				) A
-																				Group By Emp_Number ")->result_array();
+																				) A ")->result_array();
 	}
 	//14
 		function admin_leavehistory_combination_YMEL($year,$month,$emp,$leave){
@@ -456,8 +453,7 @@ Class History_model extends CI_Model{
 																												FROM leave_history 
 																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' AND MONTHNAME(From_Date)='$month' 
 																																AND Emp_Number='$emp'	 AND leave_Type='$leave' 
-																				) A
-																				Group By Emp_Number ")->result_array();
+																				) A ")->result_array();
 	}
 	//15	
 	function admin_leavehistory_combination_YDEL($year,$dept,$emp,$leave){
@@ -480,8 +476,7 @@ Class History_model extends CI_Model{
 																												FROM leave_history INNER JOIN employees a ON a.Employee_Number=Emp_Number
 																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' 	AND a.Department='$dept' 
 																																AND Emp_Number='$emp'  AND leave_Type='$leave' 
-																				) A
-																				Group By Emp_Number ")->result_array();
+																				) A ")->result_array();
 	}
 	//	16
 		function admin_leavehistory_combination_YMDEL($year,$month,$dept,$emp,$leave){
@@ -504,12 +499,11 @@ Class History_model extends CI_Model{
 																												FROM leave_history INNER JOIN employees a ON a.Employee_Number=Emp_Number
 																												WHERE Leave_Status IN (4) AND YEAR(From_Date)='$year' AND MONTHNAME(From_Date)='$month' 
 																																AND a.Department='$dept' AND Emp_Number='$emp'  AND leave_Type='$leave' 
-																				) A
-																				Group By Emp_Number ")->result_array();
+																				) A ")->result_array();
 	}
 	
 	
-	
+
 	
 	
 																/* * *         My  Leave History 		* * */	
@@ -547,131 +541,7 @@ Class History_model extends CI_Model{
 															 ORDER BY a.Emp_Number,a.From_Date   ")->result_array();
 	}
 
-
-
-	function get_leave_summary()
-	{
-		$y=date('Y');
-		$m=date('m');
-		$Emp_Number=$this->session->userdata('Emp_Number');
-		return $this->db->query("SELECT SUM(Total_Days) AS Total_Days, Leave_Type FROM leave_history  WHERE Leave_Status IN (2,4) AND Emp_Number='$Emp_Number' AND YEAR(From_Date)='$y'  AND MONTH(From_Date)='$m'
-							GROUP BY Leave_Type ")->result_array();
-	}
-
-	function get_leave_summary_year()
-	{
-		$d1=date('Y');
-		$Emp_Number=$this->session->userdata('Emp_Number');
-		return $this->db->query("SELECT SUM(Total_Days) AS Total_Days, Leave_Type FROM leave_history  WHERE Leave_Status IN (2,4) AND Emp_Number='$Emp_Number' AND YEAR(From_Date)='$d1'
-							 GROUP BY Leave_Type ")->result_array();
-	}
-
-	function get_leave_summary_pend()
-	{
-		//	$d1=date('Y');
-		$Emp_Number=$this->session->userdata('Emp_Number');
-		return $this->db->query("SELECT SUM(Total_Days) AS Total_Days, Leave_Type FROM leave_history  WHERE Leave_Status IN (1) AND Emp_Number='$Emp_Number'   GROUP BY Leave_Type ")->result_array();
-	}
-	
-	function get_doj()
-	{
-		$Emp_Number=$this->session->userdata('Emp_Number');
-		return $this->db->query("SELECT DATE_FORMAT(JoiningDate,'%d-%m-%Y') as JoiningDate, TIMESTAMPDIFF(MONTH,JoiningDate,CURRENT_TIMESTAMP) as Experience FROM team  WHERE EmployeeName='$Emp_Number' ")->result_array();
-	}
-
-
-
-
-	function insert_file($file_name,$id){
-		$date=date('Y-m-d H:i:s');
-		return $this->db->query("INSERT INTO files(filename,leave_id,date) values('$file_name','$id','$date')");
-	}
 		
-
-	function show_document($lid)
-	{
-		$data=$this->db->query("SELECT filename FROM files WHERE leave_id='$lid'")->result_array();
-		foreach($data as $name){
-			$name1=$name["filename"];
-		}
-		return $name1;
-	}
-
-
-
-
-
-	function getMailData($date_from,$reasoning,$day,$l_type,$Offr){
-		$Emp_Number=$this->session->userdata('Emp_Number');
-			
-		return $this->db->query("SELECT DISTINCT (SELECT email FROM admin_users WHERE name='$Emp_Number') AS FromMail ,
-					(SELECT email FROM admin_users WHERE name=(SELECT LeaveApprover_L1 FROM team WHERE Emp_Number='$Emp_Number' ) ) AS ToMail1,
-					 (SELECT email 	FROM admin_users WHERE user_email='MD' limit 1 ) AS ToMail2,'$Emp_Number' as Name,
-					filename,file_count
-					 FROM  (
-					 SELECT IF(filename!='',filename,'NO') as filename, COUNT(filename) as file_count FROM files	WHERE leave_id = (SELECT Leave_ID FROM leave_history WHERE Emp_Number='$Emp_Number' AND Leave_Type='Sick Leave' AND DATE_FORMAT(From_Date,'%d-%m-%Y')='$date_from') limit 1) a")->result_array();
-			
-
-	}
-		
-	function approve_mail($lid){
-		$app=$this->session->userdata('Emp_Number');
-		return $this->db->query("SELECT Emp_Number,Leave_Type AS Type,From_Date As Date,Total_Days As Days,AppliedTime AS Time,leave_status.Description As Status,
-																	admin_users.email AS Email,(SELECT email FROM admin_users WHERE name='$app' ) AS FromMail
-																	FROM leave_history 
-																	INNER JOIN leave_status ON leave_status.Status=leave_history.Leave_Status 
-																	INNER JOIN admin_users ON admin_users.name=leave_history.Emp_Number
-																	WHERE leaveID='$lid'")->result_array();	
-
-	}
-		
-
-		
-			
-		
-		
-
-	function get_OT_hrs(){
-		$Emp_Number=$this->session->userdata('Emp_Number');
-			
-		return $this->db->query("SELECT HOUR(used) as used,HOUR(ot) as ot,HOUR(IFNULL(sun,'00:00:00')) as sun, HOUR(ADDTIME(ot,IFNULL(sun,'00:00:00'))) as tot, HOUR(SUBTIME(ADDTIME(ot,IFNULL(sun,'00:00:00')),used)) as remain
-					FROM ( SELECT
-					(SELECT Sec_to_time(SUM(TIME_TO_SEC(ts_duty))) FROM time_sheet WHERE ts_name='$Emp_Number' AND (DAYNAME(ts_date)='Sunday' OR ts_date IN (SELECT holi_date FROM holidays)))  as sun, 
-					(SELECT Sec_to_time(SUM(TIME_TO_SEC(ts_ot))) FROM time_sheet WHERE ts_name='$Emp_Number' AND (ts_date NOT IN (SELECT holi_date FROM holidays)) AND DAYNAME(ts_date)!='Sunday') as ot, 
-					(SELECT Comp_off FROM team WHERE Emp_Number='$Emp_Number') AS used
-					FROM time_sheet WHERE ts_name='$Emp_Number') a ")->result_array();
-			
-	}
-
-
-	function get_approved_leaves($year,$month,$emp){
-		if($emp!='All Employees'){
-			return $this->db->query("SELECT a.*, b.*, c.* FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status JOIN team c ON c.Employee_Number = a.Employee_Number
-															WHERE 	YEAR(a.From_Date)='$year'  AND  MONTHNAME(a.From_Date)='$month'  AND a.Leave_Status IN (4) AND a.Employee_Number='$emp' 
-															 ORDER BY a.AppliedTime Desc ")->result_array();
-		}
-		if($emp=='All Employees'){
-			return $this->db->query("SELECT a.*, b.*, c.* FROM leave_history a JOIN leave_status b ON  a.Leave_Status = b.Status JOIN team c ON c.Employee_Number = a.Employee_Number
-															WHERE 	YEAR(a.From_Date)='$year'  AND  MONTHNAME(a.From_Date)='$month'  AND a.Leave_Status IN (4) 
-															 ORDER BY a.AppliedTime Desc ")->result_array();
-		}
-	}
-
-	function process_leave($id){
-			
-		$this->db->query("UPDATE leave_history SET Leave_Status='5' WHERE Leave_ID='$id'");
-			
-	}
-
-
-	function remove_leave($id){
-		$this->db->query("DELETE FROM  leave_history WHERE Leave_ID='$id' ");
-
-	}
-
-	
-	
-	
 	
 	
 																		/* * * 			Permissions 			* * */

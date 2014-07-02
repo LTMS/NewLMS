@@ -434,22 +434,21 @@ class History extends CI_Controller
 	
 	
 																								/*  * * Action on  Leaves * * */
-	
-	function remove_leave(){
-		$form_data = $this->input->post();
-		$this->history_model->remove_leave($form_data["id"]);
-			
+	function cancel_approved_leaves()
+	{
+		$data["menu"]='LMS';
+		$data["submenu"]='cencel_leave';
+		$data["result"]=$this->history_model->get_approved_leaves_for_cancel();
+
+		$this->template->write('titleText', "Pending Permissions");
+		$this->template->write_view('sideLinks', 'general/menu',$data);
+		$this->template->write_view('bodyContent', 'Leave/History/admin_cancel_approved_leaves.php',$data);
+		$this->template->render();
 	}
-		
-	function getRecentLeave(){
+	
+	function get_approved_leaves_for_cancel(){
 		$form_data = $this->input->post();
-		$result=$this->history_model->getRecentLeave($form_data["user1"],$form_data["id1"]);
-			
-		foreach($result as $row){
-			echo	$date=$row["date"];
-		}
-			
-		if(empty($result)){echo $date='---';}
+		$this->history_model->get_approved_leaves_for_cancel($form_data["dept"]);
 	}
 		
 
@@ -521,9 +520,9 @@ class History extends CI_Controller
 
 
 		$mail->From = $my_mail;
-		$mail->FromName = 'Leave Mailer';
+		$mail->FromName = 'Permission Mailer';
 		$mail->addAddress($emp_mail);
-		$mail->addCC($reporter_mail);
+		//$mail->addCC($reporter_mail);
 
 		$mail->isHTML(true);
 
