@@ -23,46 +23,6 @@ Class History_model extends CI_Model{
 	}
 	
 
-	function checkLeaveAvailability($leave_type)
-	{
-		$Emp_Number=$this->session->userdata('Emp_Number');
-		$availability =$this->db->query("SELECT SUM(Total_Days) FROM leave_history WHERE Emp_Number='$Emp_Number' AND Leave_Type='$leave_type' ");
-		return $availability->result();
-	}
-
-
-	function insert_application_data($leave_type,$d1,$d2,$days,$officer,$reason,$hrs)
-	{
-
-		$add_date=date('Y-m-d H:i:s');
-
-		$Emp_Number=$this->session->userdata('Emp_Number');
-		$availability =$this->db->query("INSERT INTO leave_history(Emp_Number,Leave_Type,From_Date,To_Date,Total_Days,Leave_Status,Reason,AppliedTime) VALUES('$Emp_Number','$leave_type',STR_TO_DATE(STR_TO_DATE('$d1','%d-%m-%Y'),'%Y-%m-%d'),STR_TO_DATE(STR_TO_DATE('$d2','%d-%m-%Y'),'%Y-%m-%d'),'$days',1,\"$reason\",'$add_date');");
-		if($leave_type=='Sick Leave'){
-			return $this->db->insert_id();
-		}
-		if($leave_type=='Comp-Off'){
-			$this->db->query("UPDATE team SET Comp_off=ADDTIME(Comp_off,'$hrs') WHERE EmployeeName='$Emp_Number'");
-		}
-	}
-
-
-
-	function insert_other_application($Emp_Number,$leave_type,$d1,$d2,$days,$officer,$reason,$hrs)
-	{
-		$add_date=date('Y-m-d H:i:s');
-
-		$availability =$this->db->query("INSERT INTO leave_history(Emp_Number,Leave_Type,From_Date,To_Date,Total_Days,Leave_Status,Reason,AppliedTime) VALUES('$Emp_Number','$leave_type','$d1','$d2','$days',1,\"$reason\",'$add_date');");
-		if($leave_type=='Sick Leave'){
-			return $this->db->insert_id();
-		}
-		if($leave_type=='Comp-Off'){
-			$this->db->query("UPDATE team SET Comp_off=ADDTIME(Comp_off,'$hrs') WHERE EmployeeName='$Emp_Number'");
-		}
-			
-	}
-
-
 																/* * *   Action on Leave Ststus * * */
 
 		function get_applied_applications()	{

@@ -1,20 +1,25 @@
 														/* * * 			Date Functions			* * */
-		$("#date_from1").datepicker({ 
+		$("#Calendar_From").datepicker({ 
 								dateFormat: 'dd-mm-yy',
 								beforeShowDay: function(dt)    {
 													    return [dt.getDay() == 0  ? false : true];
 													 },
-								onClose:function(selectedDate){$("#date_to1").datepicker("option","minDate",selectedDate);},	
+								onClose:function(selectedDate){
+									document.getElementById("from_date").value=selectedDate;
+									$("#to_date").datepicker("option","minDate",selectedDate);
+								},	
 								defaultDate: new Date()	
 			}) ; 
 
-		$("#date_to1").datepicker({
-			dateFormat: 'dd-mm-yy',
-			beforeShowDay: function(dt)
-			    {
-			    return [dt.getDay() == 0  ? false : true];
-			 },
-			defaultDate: new Date()	
+		$("#Calendar_To").datepicker({
+						dateFormat: 'dd-mm-yy',
+						beforeShowDay: function(dt)  {
+						    return [dt.getDay() == 0  ? false : true];
+						 },
+						 onClose:function(selectedDate){
+								document.getElementById("to_date").value=selectedDate;
+						},	
+						defaultDate: new Date()	
 		}) ; 
 
 		$("#p_date").datepicker({ 
@@ -26,14 +31,54 @@
 			defaultDate: new Date(),minDate: 0 
 		}) ; 
 
+		
+		
+																	/* * * 						General 					* * */
 
-// Showing Divsion for Leave
-		
-		
-		function show_LeaveDiv(leave){
-			
-			
+	function remove_Specials(id,string){
+			var string=document.getElementById(id).value;
+			var new_string=string.replace(/([~!@#$%^&*()_+=`{}\[\]\|\\:;'<>,\/? ])+/g, ' ').replace(/^(-)+|(-)+$/g,'');
+			document.getElementById(id).value=new_string;
+	}
+/*		
+	$("#CL_Div").click(function(id){
+		var cur_Div=document.getElementById("Current_Div").value;
+		  $("#CL_Table").fadeOut(500);
+		  $(id).fadeIn(500);
+		});
+	
+	$("#SL_Div").click(function(){
+		  $("#SL_Table").fadeOut();
+		  $(id).fadeIn(500);
+		});
+	
+	$("#EL_Div").click(function(id){
+		  $("#EL_Table").fadeOut();
+		  $(id).fadeIn(500);
+		});
+	
+	$("#CO_Div").click(function(id){
+		  $("#CO_Table").fadeOut();
+		  $(id).fadeIn(500);
+		});
+	
+*/	
+		function show_LeaveDiv(new_Div){
+			var cur_Div=document.getElementById("Current_Table").value;
+			//alert(cur_Div+', '+new_Div);
+			document.getElementById("Current_Table").value=new_Div;
+				if(cur_Div!=new_Div){
+						cur_Div='#'+cur_Div;
+						new_Div='#'+new_Div;
+						
+						$(cur_Div).slideToggle(1000);
+						$(new_Div).slideToggle(2000);
+						//alert(cur_Div+', '+new_Div);
+				}
 		}
+
+																/* * * 				Casual Leave 				* * */
+		
 
 	function check_leave_status(datevalue){
 		document.getElementById('Table2').style.display="";
@@ -477,76 +522,6 @@
 	}
 	
 
-	
-			function insert_other_application()
-			{	
-								document.getElementById('success').innerHTML="" ;
-								var user=document.getElementById('tech_name').value;
-								var type=document.getElementById('leave_type').value;
-								var date1=document.getElementById('date_from').value;
-								var date2=document.getElementById('date_to').value;
-								var am1=document.getElementById('am_pm1').value;
-								var am2=document.getElementById('am_pm2').value;
-								var days=document.getElementById('no_of_days').value;
-								var officer=document.getElementById('approval_officer').value;
-								var reason=document.getElementById('reason').value;
-								
-								var ask=confirm("Do You want to send this Application to Your Approval Officers?");
-								if(ask==true){
-
-									var leavid;
-									var data={};
-									data['uname']=user;
-									data['leave_type']=type;
-									data['date1']=date1+' '+am1;
-									data['date2']=date2+' '+am2;
-									data['days']=days;
-									data['officer']=officer;
-									data['reason']=reason;
-									
-									$.post(site_url+"/Leave/apply/insert_other_application",data,function(result){
-										//alert(result);
-										
-													if(type=='Sick Leave'){
-													document.getElementById('leavID').value=result;					
-													 leavid = document.getElementById('leavID').value;				
-													$.ajaxFileUpload({				
-												         url :site_url+'/lms/upload_file/'+leavid,   secureuri  :false, fileElementId  :'fileupload', 
-												         		dataType    : 'json', data : {  'lid': leavid },success  : function (data, status)
-												         		{
-												         			if(data.status != 'error')
-												         			{
-												         					$('#files').html('<p>Reloading files...</p>');
-												         					refresh_files();
-												         					$('#title').val('');
-												         			}
-												         		}
-														});
-													}
-									});
-									
-									
-										
-							// Call the file upload function
-									juploadstop();
-												
-								$.post(site_url+"/Leave/apply/SendMail",{date_from:date1,reasoning:reason,day:days,l_type:type,Offr:officer},function(data){
-								//alert(data);
-							});
-							
-							document.getElementById('error').innerHTML="";
-							document.getElementById('error1').innerHTML="";
-							document.getElementById('date_to').value="";
-							document.getElementById('date_from').value="";
-							document.getElementById('reason').value="";
-							document.getElementById('no_of_days').value="";
-							document.getElementById('success').innerHTML="Your Leave Application has sent to Your Approval Officer.!";
-
-					}
-									
-			}
-			
-
 			$("#doj_date").datepicker({
 				dateFormat: 'yy-mm-dd',onClose:function(selectedDate){},		
 				defaultDate: new Date()		
@@ -558,7 +533,7 @@
 			/* * *   onMOUSE  Functions * * */
 
 		function change_OnMouseOver(id,img){
-			//alert(id);
+			//alert(img);
 			if(id!="" && img!="" && img!=null){
 						document.getElementById(id).src='../../../images/Leave/'+img;
 				}

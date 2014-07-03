@@ -1561,3 +1561,30 @@ label.checkbox1 {
 	font-weight: bold !important;
 	font-size: 12pt;
 }
+
+/*********** Font Style ************/
+.Font_Style1 {
+	font-size: 13pt;
+	font-weight: bolder;
+	color: #003333;
+}
+
+.input_date {
+	width:100px;
+	height:25px;
+	font-size:12pt;
+	font-weight: bold;
+	color: #003333;
+	background-color:#ECF4FF;
+	border:2px inset #BAD0EF;
+	border-radius:3px;'
+}
+
+textarea{
+	font-size:12pt;
+	font-weight: bold;
+	color: #003333;
+	background-color:#ECF4FF;
+	border:2px inset #BAD0EF;
+	border-radius:3px;'	
+}

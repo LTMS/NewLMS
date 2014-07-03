@@ -21,114 +21,144 @@
 <div style='width:60%;margin:1% 0 0 20%'>
 	<table id='Leave_List' >
 		<tr>
-			<td align='center'><img width='150' height='100' src='../../../images/Leave/CL.png'  alt='Casual Leave' onclick='show_LeaveDiv("CL")'/></td>
-			<td align='center'><img width='150' height='100' src='../../../images/Leave/SL.png' alt='Sick Leave' onclick='show_LeaveDiv("SL")'/></td>
-			<td align='center'><img width='150' height='100' src='../../../images/Leave/EL.png' alt='Earned Leave' onclick='show_LeaveDiv("EL")'/></td>
-			<td align='center'><img width='150' height='100' src='../../../images/Leave/CO.png' alt='Comp Off' onclick='show_LeaveDiv("CO")'/></td>
+			<td align='center'><input type='image' id='CL_Div' width='150' height='100' src='../../../images/Leave/CL.png'  alt='Casual Leave' onclick='show_LeaveDiv("CL_Table")'/></td>
+			<td align='center'><input type='image' id='CL_Div' width='150' height='100' src='../../../images/Leave/SL.png' alt='Sick Leave' onclick='show_LeaveDiv("SL_Table")'/></td>
+			<td align='center'><input type='image' id='CL_Div' width='150' height='100' src='../../../images/Leave/EL.png' alt='Earned Leave' onclick='show_LeaveDiv("EL_Table")'/></td>
+			<td align='center'><input type='image' id='CL_Div' width='150' height='100' src='../../../images/Leave/CO.png' alt='Comp Off' onclick='show_LeaveDiv("CO_Table")'/></td>
 		</tr>
 	</table>
-
-
-			<table style="width: 70%" border="0" align="center">
-			<tr>
-				<td id="error" align="center" colspan="2"
-					style="color: red; width: 250px; font-size: 15px; font-weight: bolder;">
-				</td>
-			</tr>
-			<tr>
-				<td id="error1" align="center" colspan="2"
-					style="color: red; width: 250px; font-size: 15px; font-weight: bolder;">
-				</td>
-			</tr>
-			<tr>
-				<td align="right"><font class="font_align">Name</font></td>
-				<td><input name="tech_name" id="tech_name" type="text"
-					style="width: 150px; height: 18px; font-size: 15px; font-weight: bolder"
-					placeholder="Name of Technician " value="" /></td>
-			</tr>
-
-			<tr>
-				<td width='40%' align="right"><font class="font_align">Leave Type</font>
-				</td>
-				<td><select name="leave_type" id="leave_type"
-					style="height: 25px; width: 120px;" onchange="hide_doc()">
-						<option value="Casual Leave">Casual Leave</option>
-						<option value="Paid Leave">Paid Leave</option>
-						<option value="Sick Leave">Sick Leave</option>
-						<option value="Comp-Off">Comp-Off</option>
-				</select>
-				</td>
-			</tr>
-			<tr>
-				<td align="right"><font class="font_align">From</font></td>
-				<td><input name="date_from" class="input" id="date_from" type="text"
-					style="width: 80px; height: 18px;" " onchange="calculate_days()" />
-					<select name="am_pm1" id="am_pm1"
-					style="height: 25px; width: 60px;">
-						<option value="AM">AM</option>
-						<option value="PM">PM</option>
-				</select>
-				</td>
-			</tr>
-			<tr>
-				<td align="right"><font class="font_align">To</font></td>
-				<td><input name="date_to" class="input" id="date_to" type="text"
-					style="width: 80px; height: 18px;" " onchange="calculate_days()" />
-					<select name="am_pm2" id="am_pm2"
-					style="height: 25px; width: 60px;">
-						<option value="PM">PM</option>
-						<option value="AM">AM</option>
-				</select>
-				</td>
-			</tr>
-			<tr>
-				<td align="right"><font class="font_align">No of Days</font></td>
-				<td><input name="no_of_days" class="input" id="no_of_days"
-					type="text" readonly="readonly" style="width: 50px; height: 18px;" " />
-				</td>
-			</tr>
-
-			<tr id="Lev1Off">
-				<td align="right"><font class="font_align">Level-1 Approver</font></td>
-				<td align="left"><select name="approval_officer" class="input"
-					id="approval_officer" style="height: 25px; width: 120px;">
-						<option value="MD">MD</option>
-						<option value="Admin">Admin</option>
-				</select>
-				</td>
-			</tr>
-			<tr>
-				<td align="right"><font class="font_align">Level-2 Approver</font></td>
-				<td align="left"><select name="approval_officer2" class="input"
-					id="approval_officer2" style="width: 120px; height: 25px;">
-						<option value="MD">MD</option>
-						<option value="Admin">Admin</option>
-				</select>
-				</td>
-			</tr>
-			<tr>
-				<td align="right"><font class="font_align">Reason</font></td>
-				<td align="left" width=""><textarea name="reason" id="reason"
-						rows="3" cols="100" class="txtarea"></textarea></td>
-			</tr>
-			<tr style="display: none" id="doc_row1">
-				<td align="right"><font class="font_align">Upload Document</font></td>
-				<td align="left" width=""><input type="file" name="fileupload"
-					id='fileupload' />
-				</td>
-			</tr>
-			<tr>
-				<td id="success" align="center" colspan="2"
-					style="color: green; width: 250px; font-size: 15px; font-weight: bolder;"></td>
-			</tr>
-			<tr>
-				<td colspan="2" align="center"><img id='apply_image' width='150' height='35' src="../../../images/Leave/apply.png"	onmouseover='change_OnMouseOver("apply_image","apply_over.png")'        onmouseout='change_OnMouseOver("apply_image","apply.png")'  	onclick="javascript:insert_other_application();"></td>
-			</tr>
-
-		</table>
-	
 </div>
 
+<div id='CL_Table' style='background:#EAFEE2;width:60%;margin:1% 0 0 20%;border:5px groove #EAFEE2;border-radius:5px;' >
+		<center><p style='font-size:14pt;font-weight:bolder;color:#218429;'><u>CASUAL LEAVE</u></p></center>
+			<table   height='200'   border="0" align="center">
+				<tr height='60'>
+					<td   width='10%' class='Font_Style1'></td>
+					<td  align='left' width='180'  class='Font_Style1'>Leave On</td>
+					<td width='10' class='Font_Style1'>:</td>
+					<td><input id='CL_from_date'  readonly='readonly' class='input_date'/><input type='image' id='Calendar_From' width='50' height='30' src='../../../images/Leave/calendar1.png'/></td>
+				</tr>
+				<tr height='30' class='Font_Style1'>
+					<td   width='10%' ></td>
+					<td align='left' >No of Days</td>
+					<td   width='10' >:</td>
+					<td><input id='CL_days' readonly='readonly' class='input_date' style='width:20px;height:25px;' value='1'></td>
+				</tr>
+				<tr height='30'>
+					<td   width='10%' class='Font_Style1'></td>
+					<td  align='left' class='Font_Style1'>Reason for Leave</td>
+					<td width='10' class='Font_Style1'>:</td>
+					<td ><textarea  id='CL_reason' cols='30' rows='4' onblur='remove_Specials("CL_reason",this.value)'></textarea></td>
+				</tr>
+				<tr id='SL_Button' height='80'>
+					<td colspan='5' align='center'>
+							<input id='apply_img2' type='image' src='../../../images/Leave/apply.png'   style='width:100px;height:32px;'  onclick='validate_SickLeave()' onmouseover='change_OnMouseOver("apply_img2","apply_over.png")' onmouseout='change_OnMouseOver("apply_img2","apply.png")'/>
+					</td>
+				</tr>
+				<tr height='50'>
+					<td></td>
+				</tr>
+			</table>
+</div>
+<div id='SL_Table'  style='display:none;background:#FFE3FF;width:60%;margin:1% 0 0 20%;border:5px groove #E78CC6;border-radius:5px;' >
+		<center><p style='font-size:14pt;font-weight:bolder;color:#730063;'><u>SICK LEAVE</u></p></center>
+			<table  height='200'  border="0" align="center">
+				<tr height='60'>
+					<td   width='10%' class='Font_Style1'></td>
+					<td  align='left' width='180'  class='Font_Style1'>Leave On</td>
+					<td width='10' class='Font_Style1'>:</td>
+					<td><input id='CL_from_date'  readonly='readonly' class='input_date'/><input type='image' id='Calendar_From' width='50' height='30' src='../../../images/Leave/calendar1.png'/></td>
+				</tr>
+				<tr height='30' class='Font_Style1'>
+					<td   width='10%' ></td>
+					<td align='left' >No of Days</td>
+					<td   width='10' >:</td>
+					<td><input id='CL_days' readonly='readonly' class='input_date' style='width:20px;height:25px;' value='1'></td>
+				</tr>
+				<tr height='30'>
+					<td   width='10%' class='Font_Style1'></td>
+					<td  align='left' class='Font_Style1'>Reason for Leave</td>
+					<td width='10' class='Font_Style1'>:</td>
+					<td ><textarea  id='CL_reason' cols='30' rows='4' onblur='remove_Specials("CL_reason",this.value)'></textarea></td>
+				</tr>
+				<tr id='EL_Button' height='80'>
+					<td colspan='5' align='center'>
+							<input id='apply_img3' type='image' src='../../../images/Leave/apply_SL.png'   style='width:100px;height:32px;'  onclick='validate_EarnedLeave()' onmouseover='change_OnMouseOver("apply_img3","apply_SL_over.png")' onmouseout='change_OnMouseOver("apply_img3","apply_SL.png")'/>
+					</td>
+				</tr>
+				<tr height='50'>
+					<td></td>
+				</tr>
+			</table>
+</div>
+
+
+<div id='EL_Table'  style='display:none;background:#BFBFBF;width:60%;margin:1% 0 0 20%;border:5px groove #BFBFBF;border-radius:5px;' >
+		<center><p style='font-size:14pt;font-weight:bolder;color:#616161;'><u>EARNED LEAVE</u></p></center>
+			<table   height='200'  border="0" align="center">
+				<tr height='60'>
+					<td   width='10%' class='Font_Style1'></td>
+					<td  align='left' width='180'  class='Font_Style1'>Leave On</td>
+					<td width='10' class='Font_Style1'>:</td>
+					<td><input id='EL_from_date'  readonly='readonly' class='input_date'/><input type='image' id='Calendar_From' width='50' height='30' src='../../../images/Leave/calendar1.png'/></td>
+				</tr>
+				<tr height='30' class='Font_Style1'>
+					<td   width='10%' ></td>
+					<td align='left' >No of Days</td>
+					<td   width='10' >:</td>
+					<td><input id='CL_days' readonly='readonly' class='input_date' style='width:20px;height:25px;' value='1'></td>
+				</tr>
+				<tr height='30'>
+					<td   width='10%' class='Font_Style1'></td>
+					<td  align='left' class='Font_Style1'>Reason for Leave</td>
+					<td width='10' class='Font_Style1'>:</td>
+					<td ><textarea  id='CL_reason' cols='30' rows='4' onblur='remove_Specials("CL_reason",this.value)'></textarea></td>
+				</tr>
+				<tr id='EL_Button' height='80'>
+					<td colspan='5' align='center'>
+							<input id='apply_img1' type='image' src='../../../images/Leave/apply_EL.png'   style='width:100px;height:32px;'  onclick='validate_CasualLeave()' onmouseover='change_OnMouseOver("apply_img1","apply_EL_over.png")' onmouseout='change_OnMouseOver("apply_img1","apply_EL.png")'/>
+					</td>
+				</tr>
+				<tr height='50'>
+					<td></td>
+				</tr>
+			</table>
+</div>
+
+
+<div id='CO_Table'  style='display:none;background:#FFFFD7;width:60%;margin:1% 0 0 20%;border:5px groove #FFF9CE;border-radius:5px;' >
+		<center><p style='font-size:14pt;font-weight:bolder;color:#AD9410;'><u>COMPENSATORY LEAVE</u></p></center>
+			<table   height='200'  border="0" align="center">
+				<tr height='60'>
+					<td   width='10%' class='Font_Style1'></td>
+					<td  align='left' width='180'  class='Font_Style1'>Leave On</td>
+					<td width='10' class='Font_Style1'>:</td>
+					<td><input id='CL_from_date'  readonly='readonly' class='input_date'/><input type='image' id='Calendar_From' width='50' height='30' src='../../../images/Leave/calendar1.png'/></td>
+				</tr>
+				<tr height='30' class='Font_Style1'>
+					<td   width='10%' ></td>
+					<td align='left' >No of Days</td>
+					<td   width='10' >:</td>
+					<td><input id='CL_days' readonly='readonly' class='input_date' style='width:20px;height:25px;' value='1'></td>
+				</tr>
+				<tr height='30'>
+					<td   width='10%' class='Font_Style1'></td>
+					<td  align='left' class='Font_Style1'>Reason for Leave</td>
+					<td width='10' class='Font_Style1'>:</td>
+					<td ><textarea  id='CL_reason' cols='30' rows='4' onblur='remove_Specials("CL_reason",this.value)'></textarea></td>
+				</tr>
+				<tr id='CL_Button' height='80'>
+					<td colspan='5' align='center'>
+							<input id='apply_img4' type='image' src='../../../images/Leave/apply_CO.png'   style='width:100px;height:32px;'  onclick='validate_CompOff()' onmouseover='change_OnMouseOver("apply_img4","apply_CO_over.png")' onmouseout='change_OnMouseOver("apply_img4","apply_CO.png")'/>
+					</td>
+				</tr>
+				<tr height='50'>
+					<td></td>
+				</tr>
+			</table>
+</div>
+
+<input type='hidden'  id='Current_Table' value='CL_Table' >
 
 <script	type="text/javascript" src="<?php echo base_url(); ?>js/Leave/apply.js"></script>
 <script	type="text/javascript"	src="<?php echo base_url(); ?>js/Leave/ajaxfileupload.js"></script>

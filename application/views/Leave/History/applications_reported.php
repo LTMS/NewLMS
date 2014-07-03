@@ -68,8 +68,8 @@
 			print("<td  align='left'>".$rep_by."</td>");
 			print("<td  align='left'>".$reason."</td>");
 			print("<td  id='$button_row' align='center'>");
-			print("<img  valign='bottom' id='$app_img' style='width:50px;height:21px;' src='../../../images/Leave/approve.png' onmouseover='change_OnMouseOver(\"$app_img\",\"approve_over.png\")' onmouseout='change_OnMouseOver(\"$app_img\",\"approve.png\")'  onclick='update_LeaveStatusApprover(\"$leave_id\",4,\"$button_row\",\"$emp_name\",\"$emp_num\",\"$type\",\"$d1\",\"$tot_days\",\"$reason\",\"$apptime\")'/> &nbsp;&nbsp;");
-			print("<img  valign='bottom' id='$rej_img'   style='width:50px;height:21px;'src='../../../images/Leave/reject.png'       onmouseover='change_OnMouseOver(\"$rej_img\",\"reject_over.png\")'        onmouseout='change_OnMouseOver(\"$rej_img\",\"reject.png\")'         onclick='update_LeaveStatusApprover(\"$leave_id\",5,\"$button_row\",\"$emp_name\",\"$emp_num\",\"$type\",\"$d1\",\"$tot_days\",\"$reason\",\"$apptime\")'/>");
+			print("<input type='image'   id='$app_img' style='width:50px;height:21px;' src='../../../images/Leave/approve.png' onmouseover='change_OnMouseOver(\"$app_img\",\"approve_over.png\")' onmouseout='change_OnMouseOver(\"$app_img\",\"approve.png\")'  onclick='update_LeaveStatusApprover(\"$leave_id\",4,\"$button_row\",\"$emp_name\",\"$emp_num\",\"$type\",\"$d1\",\"$tot_days\",\"$reason\",\"$apptime\")'/> &nbsp;&nbsp;");
+			print("<input type='image'   id='$rej_img'   style='width:50px;height:21px;'src='../../../images/Leave/reject.png'       onmouseover='change_OnMouseOver(\"$rej_img\",\"reject_over.png\")'        onmouseout='change_OnMouseOver(\"$rej_img\",\"reject.png\")'         onclick='update_LeaveStatusApprover(\"$leave_id\",5,\"$button_row\",\"$emp_name\",\"$emp_num\",\"$type\",\"$d1\",\"$tot_days\",\"$reason\",\"$apptime\")'/>");
 			print("</td></tr>");
 		}
 		print("</table>");
