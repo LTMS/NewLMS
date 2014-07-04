@@ -1,27 +1,94 @@
-														/* * * 			Date Functions			* * */
-		$("#Calendar_From").datepicker({ 
+														/* * * 			Date Picker Functions			* * */
+
+		$("#Calendar_From_CL").datepicker({ 				
 								dateFormat: 'dd-mm-yy',
 								beforeShowDay: function(dt)    {
 													    return [dt.getDay() == 0  ? false : true];
 													 },
 								onClose:function(selectedDate){
-									document.getElementById("from_date").value=selectedDate;
-									$("#to_date").datepicker("option","minDate",selectedDate);
+									document.getElementById("CL_from_date").value=selectedDate;
+									validate_Date(selectedDate);
 								},	
 								defaultDate: new Date()	
-			}) ; 
+		}) ; 
+		
+		$("#Calendar_From_SL").datepicker({ 				
+			dateFormat: 'dd-mm-yy',
+			beforeShowDay: function(dt)    {
+								    return [dt.getDay() == 0  ? false : true];
+								 },
+			onClose:function(selectedDate){
+				document.getElementById("SL_from_date").value=selectedDate;
+				$("#Calendar_To_SL").datepicker("option","minDate",selectedDate);
+				validate_Date(selectedDate);
+			},	
+			defaultDate: new Date()	
+		}) ; 
+		
+		$("#Calendar_From_EL").datepicker({ 				
+			dateFormat: 'dd-mm-yy',
+			beforeShowDay: function(dt)    {
+								    return [dt.getDay() == 0  ? false : true];
+								 },
+			onClose:function(selectedDate){
+					document.getElementById("EL_from_date").value=selectedDate;
+					$("#Calendar_To_EL").datepicker("option","minDate",selectedDate);
+					validate_Date(selectedDate);
+				},	
+				defaultDate: new Date()	
+		}) ; 
+		
+		$("#Calendar_From_CO").datepicker({ 				
+			dateFormat: 'dd-mm-yy',
+			beforeShowDay: function(dt)    {
+								    return [dt.getDay() == 0  ? false : true];
+								 },
+				onClose:function(selectedDate){
+				document.getElementById("CO_from_date").value=selectedDate;
+						$("#Calendar_To_CO").datepicker("option","minDate",selectedDate);
+						validate_Date(selectedDate);
+				},	
+				defaultDate: new Date()	
+		}) ; 
 
-		$("#Calendar_To").datepicker({
+		$("#Calendar_To_SL").datepicker({
 						dateFormat: 'dd-mm-yy',
-						beforeShowDay: function(dt)  {
-						    return [dt.getDay() == 0  ? false : true];
-						 },
-						 onClose:function(selectedDate){
-								document.getElementById("to_date").value=selectedDate;
+						beforeShowDay: function(dt)    {
+											    return [dt.getDay() == 0  ? false : true];
+											 },
+						onClose:function(selectedDate){
+								document.getElementById("SL_to_date").value=selectedDate;
+								validate_Date(selectedDate);
 						},	
 						defaultDate: new Date()	
 		}) ; 
 
+		
+		$("#Calendar_To_EL").datepicker({ 				
+			dateFormat: 'dd-mm-yy',
+			beforeShowDay: function(dt)    {
+								    return [dt.getDay() == 0  ? false : true];
+								 },
+			onClose:function(selectedDate){
+					document.getElementById("EL_to_date").value=selectedDate;
+					validate_Date(selectedDate);
+				},	
+				defaultDate: new Date()	
+		}) ; 
+		
+		$("#Calendar_To_CO").datepicker({ 				
+			dateFormat: 'dd-mm-yy',
+			beforeShowDay: function(dt)    {
+								    return [dt.getDay() == 0  ? false : true];
+								 },
+				onClose:function(selectedDate){
+				document.getElementById("CO_to_date").value=selectedDate;
+				validate_Date(selectedDate);
+				},	
+				defaultDate: new Date()	
+		}) ; 
+	
+		
 		$("#p_date").datepicker({ 
 			dateFormat: 'dd-mm-yy',
 			beforeShowDay: function(dt)
@@ -40,29 +107,10 @@
 			var new_string=string.replace(/([~!@#$%^&*()_+=`{}\[\]\|\\:;'<>,\/? ])+/g, ' ').replace(/^(-)+|(-)+$/g,'');
 			document.getElementById(id).value=new_string;
 	}
-/*		
-	$("#CL_Div").click(function(id){
-		var cur_Div=document.getElementById("Current_Div").value;
-		  $("#CL_Table").fadeOut(500);
-		  $(id).fadeIn(500);
-		});
 	
-	$("#SL_Div").click(function(){
-		  $("#SL_Table").fadeOut();
-		  $(id).fadeIn(500);
-		});
 	
-	$("#EL_Div").click(function(id){
-		  $("#EL_Table").fadeOut();
-		  $(id).fadeIn(500);
-		});
 	
-	$("#CO_Div").click(function(id){
-		  $("#CO_Table").fadeOut();
-		  $(id).fadeIn(500);
-		});
 	
-*/	
 		function show_LeaveDiv(new_Div){
 			var cur_Div=document.getElementById("Current_Table").value;
 			//alert(cur_Div+', '+new_Div);
@@ -71,96 +119,58 @@
 						cur_Div='#'+cur_Div;
 						new_Div='#'+new_Div;
 						
-						$(cur_Div).slideToggle(1000);
-						$(new_Div).slideToggle(2000);
+						$(cur_Div).slideUp(1000);
+							$(new_Div).slideDown(1000);
 						//alert(cur_Div+', '+new_Div);
 				}
 		}
 
-																/* * * 				Casual Leave 				* * */
+																/* * * 			 Validating Date			* * */
 		
-
-	function check_leave_status(datevalue){
-		document.getElementById('Table2').style.display="";
-		document.getElementById('Table3').style.display="none";
-		document.getElementById("error").innerHTML="";
-		document.getElementById("error1").innerHTML="";		
-		document.getElementById("error2").innerHTML="";		
-		document.getElementById('butt2').style.display="";
-		document.getElementById('butt1').style.display="";
-			
-		var type = document.getElementById('leave_type').value; 
-		
-		
-		if(datevalue == ""){
-			document.getElementById("error1").innerHTML="Please Select Date..!";		
-			document.getElementById('butt1').style.display="none";
-	//		document.getElementById('no_of_days').value="0";
+		function validate_Date(date1){
+					if(date1){
+							$.post(site_url+"/Leave/apply/check_in_holidays",{date:date1},function(holiday){
+								//alert("Is it Holiday? : "+holiday.trim());
+									if(holiday.trim()=='No'){
+										
+												$.post(site_url+"/Leave/apply/check_leavetaken",{date:date1},function(status){
+													//alert("Leave Taken? : "+status.trim());
+													if(status.trim()!='No'){
+															document.getElementById('Error_Col').innerHTML='<i>'+date1+" - "+status.trim()+'</u>';
+															$('Error').slideUp(2000);
+													}
+													else{
+															document.getElementById('Error_Col').innerHTML="";
+															$('Error').slideUp(4000);
+															document.getElementById('Error').style.display='none';
+													}
+												});
+									}
+									else{	// If it is a Holiday
+											document.getElementById('Error_Col').innerHTML='<i>'+date1+" - "+holiday.trim()+'</u>';
+											$('Error').slideUp(2000);
+											document.getElementById('Error').style.display='';
+											
+									}
+							});
+					}
 		}
-		else if(type=='Permission'){
-			document.getElementById('Table3').style.display="";
-			document.getElementById('Table2').style.display="none";
-			
-			check_permission();
-		}	
-		else {			
-			document.getElementById("error1").innerHTML="";		
-			document.getElementById('butt1').style.display="";
-			check_holiday(datevalue);
-		}
-	}
-	
-	function check_holiday(datevalue){
-		document.getElementById('butt1').style.display="";
-		document.getElementById("error").innerHTML="";
-		document.getElementById("error1").innerHTML="";		
-		document.getElementById("error2").innerHTML="";		
+						
+		
+		
+		
+																/* * * 				Casual Leave Validation			* * */
+		
 
-		$.post(site_url+"/Leave/apply/check_holidays",{date_from:datevalue},function(data){
-			//alert(data);
-			str=data.split('::');
-			
-			if(str[0].trim()=='0'){
-				document.getElementById('butt1').style.display="";
-				check_sunday(datevalue);
-				
-			}
-			else{
-				document.getElementById("error1").innerHTML=datevalue+" ( "+str[1]+" ) -  is a Holiday..!";	
-				document.getElementById('butt1').style.display="none";
-			}
-			
-		});
-	}
-	
-	function check_sunday(datevalue){
-		$.post(site_url+"/Leave/apply/check_sunday",{date_from:datevalue},function(data){
-			if(data.trim()=='0'){
-				document.getElementById('butt1').style.display="";
-				check_leavetaken(datevalue);
-			}
-			else{
-				document.getElementById("error1").innerHTML=datevalue+" - is a Sunday Holiday..!";		
-				document.getElementById('butt1').style.display="none";
-			}
-			
-		});
-
-	}
-	
-	function check_leavetaken(datevalue){
-		$.post(site_url+"/Leave/apply/check_leavetaken",{date_from:datevalue},function(data){
-			if(data.trim()=='0'){
-				
-				calculate_days();
-			}
-			else{
-				document.getElementById("error1").innerHTML="Already you have taken / applied leave on - "+datevalue+" .!";	
-				document.getElementById('butt1').style.display="none";
-			}
-			
-		});
-
+	function update_CasualLeave(){
+		var type1="CL";
+		var from_date1 = document.getElementById('CL_from_date').value; 
+		var to_date1 = document.getElementById('CL_from_date').value; 
+		var days1 = document.getElementById('CL_days').value; 
+		var reason1 = document.getElementById('CL_reason').value; 
+			$.post(site_url+"/Leave/apply/insert_LeaveApplication",{type:"CL",from_date:from_date1,to_date:to_date1,days:days1,reason:reason1},function(data){
+					alert(data);
+			});
 	}
 	
 	

@@ -46,7 +46,7 @@ class Apply extends CI_Controller
 			$data['Titlebar']="Leave Management System";
 			$this->template->write('titleText', "Leave Criteria");
 			$this->template->write_view('sideLinks', 'general/menu',$data);
-			$this->template->write_view('bodyContent', 'Leave/Apply/apply_leave',$data);
+			$this->template->write_view('bodyContent', 'Leave/Apply/applied_applications',$data);
 			$this->template->render();
 		}
 	}
@@ -56,14 +56,8 @@ class Apply extends CI_Controller
 	{
 		$data["menu"]='LMS';
 		$data["submenu"]='apply';
-		$data["summary"]=$this->apply_model->get_leave_summary();
-		$data["summary_year"]=$this->apply_model->get_leave_summary_year();
-		$data["summary_pend"]=$this->apply_model->get_leave_summary_pend();
-		$data["carry_forward"]=$this->apply_model->carry_forward_on();
 		$data['img']="/images/leave1.png";
 		$data['Titlebar']="Apply for Leave & Permission";
-		$data["Param"]=$this->apply_model->get_parameters();
-		$data["perm"]=$this->apply_model->get_allpermissions(date('Y'),date('m'));
 		$this->template->write('titleText', "Apply For Leave");
 		$this->template->write_view('sideLinks', 'general/menu',$data);
 		$this->template->write_view('bodyContent', 'Leave/Apply/apply_leave',$data);
@@ -97,106 +91,69 @@ class Apply extends CI_Controller
 	}
 
 
+	
+																					/* * *		 Date Validation 			* * */
 
-	function change_leave_type()
-	{
+
+	function check_in_holidays()	{
 		$form_data = $this->input->post();
-		$result=$this->apply_model->checkLeaveAvailability($form_data["counter"]);
-			
-	}
-
-
-	function insert_other_application()
-	{
-			
-		$form_data = $this->input->post();
-		echo $this->apply_model->insert_other_application($form_data["uname"],$form_data["leave_type"],$form_data["date1"],$form_data["date2"],$form_data["days"],$form_data["officer"],$form_data["reason"]);
-
-	}
+		$date1 = $form_data["date"];
 		
-
-	function calculate_days()
-	{
-		$form_data = $this->input->post();
-		$date1 = $form_data["date_from"];
-		$date2 = $form_data["date_to"];
-
-		$start_ts = strtotime($date1);
-		$end_ts = strtotime($date2);
-		$diff = $end_ts - $start_ts;
-		echo round($diff / 86400)+1;
-
+		$your_date = date("Y-m-d", strtotime($date1));
+		$result=$this->apply_model->check_in_holidays($your_date);
+		
+			foreach($result as $row){
+					$status= $row["status"];
+					$desc= $row["holi_desc"];
+			}
+				if($status!=0){
+					 $txt=$desc."- It is a Holiday ..!";
+				}
+				else{
+					$txt='No';
+				}
+				echo $txt;
 	}
 
-	function calculate_workingdays()
-	{
+		
+	function check_leavetaken(){
 		$form_data = $this->input->post();
-		$date1 = $form_data["date_from"];
-		$date2 = $form_data["date_to"];
-
-		$start_ts = strtotime($date1);
-		$end_ts = strtotime($date2);
-		$diff = $end_ts - $start_ts;
-		$days= round($diff / 86400)+1;
+	 	$date1 = $form_data["date"];
+		
+		$your_date = date("Y-m-d", strtotime($date1));
+		$result=$this->apply_model->check_leavetaken($your_date);
+		
+			foreach($result as $row1){
+				$count= $row1["Count"];
+				$type= $row1["LeaveDesc"];
+				$app_time= $row1["Applied_On"];
+			}
+				if($count==0){
+					 $txt="No";
+				}
+				else{
+					$txt="You have taken or  applied ".$type." on this day..!";
+				}
+				echo $txt;
 			
-		$result=$this->apply_model->calculate_workingdays($form_data["date_from"],$form_data["date_to"]);
-		foreach($result as $row){
-			$tot= $row["total"];
-			$holidays= $row["holidays"];
-			$leave= $row["leaves"];
-			$sundays= $row["sundays"];
-		}
-		echo $interval=$days-$tot.'::'.$holidays.'::'.$leave.'::'.$days.'::'.$sundays;
-
 	}
 
-	function calculate_prior()
-	{
+	
+																	/* * * 		Casual Leave 		* * */
+	
+	function insert_LeaveApplication(){
 		$form_data = $this->input->post();
-		$date1 = $form_data["date_from"];
-		$date2 =date('d-m-Y');
-
-		$start_ts = strtotime($date2);
-		$end_ts = strtotime($date1);
-		$diff = $end_ts - $start_ts;
-		echo round($diff / 86400);
-
+		
+	 	$date1 = $form_data["from_date"];
+	 	$date2 = $form_data["to_date"];	 	
+	 	$from_date = date("Y-m-d", strtotime($date1));
+	 	$to_date = date("Y-m-d", strtotime($date2));
+	 	
+	 	$result=$this->apply_model->insert_LeaveApplication($form_data["type"],$from_date,$to_date,$form_data["days"],$form_data["reason"]);		
 	}
-
-	function check_leavetaken()
-	{
-		$form_data = $this->input->post();
-		$date1 = $form_data["date_from"];
-		$result=$this->apply_model->check_leavetaken($date1);
-		foreach($result as $row){
-			echo $row["avail"];
-		}
-	}
-
-	function check_holidays()
-	{
-		$form_data = $this->input->post();
-		$date1 = $form_data["date_from"];
-		$holiday=$this->apply_model->check_holidays($date1);
-		foreach($holiday as $row){
-			$avail= $row["avail"];
-			$desc= $row["holi_desc"];
-			echo $result=$avail.'::'.$desc;
-		}
-	}
-
-	function check_sunday()
-	{
-		$form_data = $this->input->post();
-		$date1 = $form_data["date_from"];
-		$result=$this->apply_model->check_sunday($date1);
-		foreach($result as $row){
-			echo $row["day"];
-		}
-	}
-
-	function validate_casual()
-	{
+	
+	
+	function validate_casual(){
 		$form_data = $this->input->post();
 		$date1 = $form_data["date_from"];
 		$result=$this->apply_model->validate_casual($date1);
@@ -267,6 +224,55 @@ class Apply extends CI_Controller
 
 	}
 
+	function calculate_days()
+	{
+		$form_data = $this->input->post();
+		$date1 = $form_data["date_from"];
+		$date2 = $form_data["date_to"];
+
+		$start_ts = strtotime($date1);
+		$end_ts = strtotime($date2);
+		$diff = $end_ts - $start_ts;
+		echo round($diff / 86400)+1;
+
+	}
+
+	function calculate_workingdays()
+	{
+		$form_data = $this->input->post();
+		$date1 = $form_data["date_from"];
+		$date2 = $form_data["date_to"];
+
+		$start_ts = strtotime($date1);
+		$end_ts = strtotime($date2);
+		$diff = $end_ts - $start_ts;
+		$days= round($diff / 86400)+1;
+			
+		$result=$this->apply_model->calculate_workingdays($form_data["date_from"],$form_data["date_to"]);
+		foreach($result as $row){
+			$tot= $row["total"];
+			$holidays= $row["holidays"];
+			$leave= $row["leaves"];
+			$sundays= $row["sundays"];
+		}
+		echo $interval=$days-$tot.'::'.$holidays.'::'.$leave.'::'.$days.'::'.$sundays;
+
+	}
+
+	function calculate_prior()
+	{
+		$form_data = $this->input->post();
+		$date1 = $form_data["date_from"];
+		$date2 =date('d-m-Y');
+
+		$start_ts = strtotime($date2);
+		$end_ts = strtotime($date1);
+		$diff = $end_ts - $start_ts;
+		echo round($diff / 86400);
+
+	}
+
+	
 
 
 		
