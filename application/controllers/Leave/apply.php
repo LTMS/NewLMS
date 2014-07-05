@@ -31,7 +31,6 @@ class Apply extends CI_Controller
 			$data["menu"]='LMS';
 			$data["submenu"]='lms_intro';
 			$this->template->write('titleText', "Leave Criteria");
-			$data["Param"]=$this->apply_model->get_parameters();
 			$data['img']="/images/leave1.png";
 			$data['Titlebar']="Leave Management System";
 			$this->template->write_view('sideLinks', 'General/menu',$data);
@@ -41,12 +40,11 @@ class Apply extends CI_Controller
 		else{
 			$data["menu"]='LMS';
 			$data["submenu"]='lms_intro';
-			$data["Param"]=$this->apply_model->get_parameters();
 			$data['img']="/images/leave1.png";
 			$data['Titlebar']="Leave Management System";
 			$this->template->write('titleText', "Leave Criteria");
 			$this->template->write_view('sideLinks', 'general/menu',$data);
-			$this->template->write_view('bodyContent', 'Leave/Apply/applied_applications',$data);
+			$this->template->write_view('bodyContent', 'Leave/Apply/apply_leave',$data);
 			$this->template->render();
 		}
 	}
@@ -138,7 +136,51 @@ class Apply extends CI_Controller
 			
 	}
 
-	
+	function upload_ProofDoc(){
+			
+			$status = "";
+		    $msg = "";
+		    $file_element_name = 'fileupload';
+		    $type=$_POST['leavetype'];
+		    $orig_file=$_POST['filename'];
+		    
+		   if ($status != "error")
+		    { 
+		        $config['upload_path'] = './Documents/';
+		        $config['allowed_types'] = 'gif|jpg|png|doc|txt';
+		        $config['max_size'] = 1024 * 8;
+		        $config['encrypt_name'] = TRUE;
+		 
+		        $this->load->library('upload', $config);
+		 
+		        if (!$this->upload->do_upload($file_element_name))
+		        {
+		            $status = 'error';
+		            $msg = $this->upload->display_errors('', '');
+		        }
+		        else
+		        {
+		            $data = $this->upload->data();
+		            $file_id = $this->apply_model->upload_ProofDoc($orig_file ,$data['file_name'],$type);
+		            if($file_id)
+		            {
+		                $status = $_POST['file_name'];
+		                $msg = "File successfully uploaded";
+		            }
+		            else
+		            {
+		                unlink($data['full_path']);
+		                $status = "error";
+		                $msg = "Something went wrong when saving the file, please try again.";
+		            }
+		        }
+		        @unlink($_FILES[$file_element_name]);
+		    }
+		    echo json_encode(array('status' => $status, 'msg' => $msg));
+		   
+}					
+
+
 																	/* * * 		Casual Leave 		* * */
 	
 	function insert_LeaveApplication(){

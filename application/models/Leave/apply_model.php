@@ -56,9 +56,8 @@ Class Apply_model extends CI_Model{
 	}
 
 
-	function insert_file($file_name,$id){
-		$date=date('Y-m-d H:i:s');
-		return $this->db->query("INSERT INTO files(filename,leave_id,date) values('$file_name','$id','$date')");
+	function upload_ProofDoc($file_name,$encr_name,$type){
+			return $this->db->query("INSERT INTO proof_documents(File_Name,Encr_Name,Leave_Type,Status) values('$file_name','$encr_name','$type','Selected')");
 	}
 		
 

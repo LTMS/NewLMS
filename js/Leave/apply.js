@@ -159,20 +159,78 @@
 		
 		
 		
-																/* * * 				Casual Leave Validation			* * */
+																/* * * 				Inserting Leave Application			* * */
 		
-
-	function update_CasualLeave(){
-		var type1="CL";
-		var from_date1 = document.getElementById('CL_from_date').value; 
-		var to_date1 = document.getElementById('CL_from_date').value; 
-		var days1 = document.getElementById('CL_days').value; 
-		var reason1 = document.getElementById('CL_reason').value; 
-			$.post(site_url+"/Leave/apply/insert_LeaveApplication",{type:"CL",from_date:from_date1,to_date:to_date1,days:days1,reason:reason1},function(data){
-					alert(data);
-			});
-	}
-	
+// Casual Leave
+		function insert_CasualLeave(){
+			var from_date1 = document.getElementById('CL_from_date').value; 
+			var to_date1 = document.getElementById('CL_from_date').value; 
+			var days1 = document.getElementById('CL_days').value; 
+			var reason1 = document.getElementById('CL_reason').value; 
+				$.post(site_url+"/Leave/apply/insert_LeaveApplication",{type:"CL",from_date:from_date1,to_date:to_date1,days:days1,reason:reason1},function(data){
+						alert(data);
+				});
+		}
+		
+		
+//Sick Leave		
+		  function upload_ProofDoc(filepath,type){
+						var arrays=filepath.split('\\');
+						var array_lentgh=filepath.split('\\').length-1;
+						var file_name=arrays[array_lentgh];
+  							
+			  					alert(file_name);
+				    		    $.ajaxFileUpload({
+				    	            	url             		 :site_url+'/Leave/apply/upload_ProofDoc/',  
+				    	            	secureuri       :false,
+				    	            	fileElementId:'fileupload',
+				    	            	dataType        : 'json',
+				    	            	data           		 : {
+				    	            	'leavetype'    	 : type,
+				    	            	'filename':file_name
+				    	            },
+				    	            success : function (data, status)
+				    	            {
+					    	                if(data.status != 'error')
+				    	                {
+				    	                	alert(status);
+				    	                		//show_SelectedFiles();
+				    	                }
+				    	                alert("Error");
+				    	            }
+				    	        });
+			}
+				
+		function insert_SickLeave(){
+			var from_date1 = document.getElementById('SL_from_date').value; 
+			var to_date1 = document.getElementById('SL_from_date').value; 
+			var days1 = document.getElementById('SL_days').value; 
+			var reason1 = document.getElementById('SL_reason').value; 
+				$.post(site_url+"/Leave/apply/insert_LeaveApplication",{type:"SL",from_date:from_date1,to_date:to_date1,days:days1,reason:reason1},function(data){
+						alert(data);
+				});
+		}
+		
+		function insert_EarnedLeave(){
+			var from_date1 = document.getElementById('EL_from_date').value; 
+			var to_date1 = document.getElementById('EL_from_date').value; 
+			var days1 = document.getElementById('EL_days').value; 
+			var reason1 = document.getElementById('EL_reason').value; 
+				$.post(site_url+"/Leave/apply/insert_LeaveApplication",{type:"EL",from_date:from_date1,to_date:to_date1,days:days1,reason:reason1},function(data){
+						alert(data);
+				});
+		}
+		
+		function insert_CompOff(){
+			var from_date1 = document.getElementById('CO_from_date').value; 
+			var to_date1 = document.getElementById('CO_from_date').value; 
+			var days1 = document.getElementById('CO_days').value; 
+			var reason1 = document.getElementById('CO_reason').value; 
+				$.post(site_url+"/Leave/apply/insert_LeaveApplication",{type:"CO",from_date:from_date1,to_date:to_date1,days:days1,reason:reason1},function(data){
+						alert(data);
+				});
+		}
+		
 	
 	function calculate_days(){
 		var date1=document.getElementById('date_from1').value;

@@ -62,7 +62,7 @@
 				</tr>
 				<tr id='CL_Button' height='80'>
 					<td colspan='5' align='center'>
-							<input id='apply_img1' type='image' src='../../../images/Leave/apply.png'   style='width:100px;height:32px;'  onclick='update_CasualLeave()' onmouseover='change_OnMouseOver("apply_img1","apply_over.png")' onmouseout='change_OnMouseOver("apply_img1","apply.png")'/>
+							<input id='apply_img1' type='image' src='../../../images/Leave/apply.png'   style='width:100px;height:32px;'  onclick='insert_CasualLeave()' onmouseover='change_OnMouseOver("apply_img1","apply_over.png")' onmouseout='change_OnMouseOver("apply_img1","apply.png")'/>
 					</td>
 				</tr>
 				<tr height='50'>
@@ -91,27 +91,48 @@
 						<input type='image' id='Calendar_To_SL' width='50' height='30' src='../../../images/Leave/calendar1.png'/>
 					</td>
 				</tr>
-				<tr height='30' class='Font_Style1'>
+				<tr height='40' class='Font_Style1'>
 					<td   width='10%' ></td>
 					<td align='left' >No of Days</td>
 					<td   width='10' >:</td>
-					<td><input id='SL_days' readonly='readonly' class='input_date' style='width:20px;height:25px;' value='1'></td>
+					<td><input id='SL_days' readonly='readonly' class='input_date' style='width:20px;height:25px;' value=''></td>
+				</tr>
+				<tr height='40'>
+					<td   width='10%' class='Font_Style1'></td>
+					<td  align='left' class='Font_Style1'>Proof Documents</td>
+					<td width='10' class='Font_Style1'>:</td>
+					<td >
+						<input type='file' name="fileupload" id="fileupload" onchange="upload_ProofDoc(this.value,'CL')" style='color:green;font-size:12pt;font-weight:bold;'/>
+						</td>
+				</tr>
+			<tr height='30'>
+					<td   colspan='3'></td>
+					<td style='font-size:11px;color:blue;'>
+							<table>
+								<tr id='selected1' style='display:none'>
+										<td width='20'><input alt='Remove' type='image' width='15' height='15' src="../../../images/General/remove.png" onclick="delete_file1()"></td>
+										<td id="selected_file1"> kfgdfg.png</td>
+								</tr>
+								<tr id='selected2' style='display:none'>
+										<td width='20'><input alt='Remove' type='image' width='15' height='15' src="../../../images/General/remove.png" onclick="delete_file1()"></td>
+										<td id="selected_file2"> kfgdfg.png</td>
+								</tr>
+								<tr id='selected3' style='display:none'>
+										<td width='20'><input alt='Remove' type='image' width='15' height='15' src="../../../images/General/remove.png" onclick="delete_file1()"></td>
+										<td id="selected_file3"> kfgdfg.png</td>
+								</tr>
+							</table>
+					</td>
 				</tr>
 				<tr height='30'>
 					<td   width='10%' class='Font_Style1'></td>
 					<td  align='left' class='Font_Style1'>Reason for Leave</td>
 					<td width='10' class='Font_Style1'>:</td>
-					<td ><textarea  id='SL_reason' cols='30' rows='4' onblur='remove_Specials("CL_reason",this.value)'></textarea></td>
-				</tr>
-				<tr height='30'>
-					<td   width='10%' class='Font_Style1'></td>
-					<td  align='left' class='Font_Style1'>Upload Document</td>
-					<td width='10' class='Font_Style1'>:</td>
-					<td ><textarea  id='SL_reason' cols='30' rows='1' onblur='remove_Specials("CL_reason",this.value)'></textarea></td>
+					<td ><textarea  id='SL_reason' cols='30' rows='4' onblur='remove_Specials("SL_reason",this.value)'></textarea></td>
 				</tr>
 				<tr id='SL_Button' height='80'>
 					<td colspan='5' align='center'>
-							<input id='apply_img2' type='image' src='../../../images/Leave/apply_SL.png'   style='width:100px;height:32px;'  onclick='validate_SickLeave()' onmouseover='change_OnMouseOver("apply_img2","apply_SL_over.png")' onmouseout='change_OnMouseOver("apply_img2","apply_SL.png")'/>
+							<input id='apply_img2' type='image' src='../../../images/Leave/apply_SL.png'   style='width:100px;height:32px;'  onclick='insert_SickLeave()' onmouseover='change_OnMouseOver("apply_img2","apply_SL_over.png")' onmouseout='change_OnMouseOver("apply_img2","apply_SL.png")'/>
 					</td>
 				</tr>
 				<tr height='50'>
@@ -146,17 +167,17 @@
 					<td   width='10%' ></td>
 					<td align='left' >No of Days</td>
 					<td   width='10' >:</td>
-					<td><input id='EL_days' readonly='readonly' class='input_date' style='width:20px;height:25px;' value='1'></td>
+					<td><input id='EL_days' readonly='readonly' class='input_date' style='width:20px;height:25px;' value=''></td>
 				</tr>
 				<tr height='30'>
 					<td   width='10%' class='Font_Style1'></td>
 					<td  align='left' class='Font_Style1'>Reason for Leave</td>
 					<td width='10' class='Font_Style1'>:</td>
-					<td ><textarea  id='EL_reason' cols='30' rows='4' onblur='remove_Specials("CL_reason",this.value)'></textarea></td>
+					<td ><textarea  id='EL_reason' cols='30' rows='4' onblur='remove_Specials("EL_reason",this.value)'></textarea></td>
 				</tr>
 				<tr id='EL_Button' height='80'>
 					<td colspan='5' align='center'>
-							<input id='apply_img3' type='image' src='../../../images/Leave/apply_EL.png'   style='width:100px;height:32px;'  onclick='validate_EarnedLeave()' onmouseover='change_OnMouseOver("apply_img3","apply_EL_over.png")' onmouseout='change_OnMouseOver("apply_img3","apply_EL.png")'/>
+							<input id='apply_img3' type='image' src='../../../images/Leave/apply_EL.png'   style='width:100px;height:32px;'  onclick='insert_EarnedLeave()' onmouseover='change_OnMouseOver("apply_img3","apply_EL_over.png")' onmouseout='change_OnMouseOver("apply_img3","apply_EL.png")'/>
 					</td>
 				</tr>
 				<tr height='50'>
@@ -191,17 +212,17 @@
 					<td   width='10%' ></td>
 					<td align='left' >No of Days</td>
 					<td   width='10' >:</td>
-					<td><input id='CO_days' readonly='readonly' class='input_date' style='width:20px;height:25px;' value='1'></td>
+					<td><input id='CO_days' readonly='readonly' class='input_date' style='width:20px;height:25px;' value=''></td>
 				</tr>
 				<tr height='30'>
 					<td   width='10%' class='Font_Style1'></td>
 					<td  align='left' class='Font_Style1'>Reason for Leave</td>
 					<td width='10' class='Font_Style1'>:</td>
-					<td ><textarea  id='CO_reason' cols='30' rows='4' onblur='remove_Specials("CL_reason",this.value)'></textarea></td>
+					<td ><textarea  id='CO_reason' cols='30' rows='4' onblur='remove_Specials("CO_reason",this.value)'></textarea></td>
 				</tr>
 				<tr id='CO_Button' height='80'>
 					<td colspan='5' align='center'>
-							<input id='apply_img4' type='image' src='../../../images/Leave/apply_CO.png'   style='width:100px;height:32px;'  onclick='validate_CompOff()' onmouseover='change_OnMouseOver("apply_img4","apply_CO_over.png")' onmouseout='change_OnMouseOver("apply_img4","apply_CO.png")'/>
+							<input id='apply_img4' type='image' src='../../../images/Leave/apply_CO.png'   style='width:100px;height:32px;'  onclick='insert_CompOff()' onmouseover='change_OnMouseOver("apply_img4","apply_CO_over.png")' onmouseout='change_OnMouseOver("apply_img4","apply_CO.png")'/>
 					</td>
 				</tr>
 				<tr height='50'>
