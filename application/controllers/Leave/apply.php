@@ -33,6 +33,8 @@ class Apply extends CI_Controller
 			$this->template->write('titleText', "Leave Criteria");
 			$data['img']="/images/leave1.png";
 			$data['Titlebar']="Leave Management System";
+			$data["Criteria"]=$this->apply_model->get_LeaveCriteria();
+			$data["Experience"]=$this->apply_model->get_Experience();
 			$this->template->write_view('sideLinks', 'General/menu',$data);
 			$this->template->write_view('bodyContent', 'Leave/Apply/apply_leave',$data);
 			$this->template->render();
@@ -42,6 +44,8 @@ class Apply extends CI_Controller
 			$data["submenu"]='lms_intro';
 			$data['img']="/images/leave1.png";
 			$data['Titlebar']="Leave Management System";
+			$data["Criteria"]=$this->apply_model->get_LeaveCriteria();
+			$data["Experience"]=$this->apply_model->get_Experience();
 			$this->template->write('titleText', "Leave Criteria");
 			$this->template->write_view('sideLinks', 'general/menu',$data);
 			$this->template->write_view('bodyContent', 'Leave/Apply/apply_leave',$data);
@@ -56,6 +60,8 @@ class Apply extends CI_Controller
 		$data["submenu"]='apply';
 		$data['img']="/images/leave1.png";
 		$data['Titlebar']="Apply for Leave & Permission";
+		$data["Criteria"]=$this->apply_model->get_LeaveCriteria();
+		$data["Experience"]=$this->apply_model->get_Experience();
 		$this->template->write('titleText', "Apply For Leave");
 		$this->template->write_view('sideLinks', 'general/menu',$data);
 		$this->template->write_view('bodyContent', 'Leave/Apply/apply_leave',$data);
@@ -135,7 +141,109 @@ class Apply extends CI_Controller
 				echo $txt;
 			
 	}
+	
+		function check_prior_days(){
+				$form_data = $this->input->post();
+			 	$date1 = $form_data["date"];
+			 	$type = $form_data["type"];
+			 	
+				$your_date = date("Y-m-d", strtotime($date1));
+				$result=$this->apply_model->check_prior_days($your_date,$type);
+				
+					foreach($result as $row1){
+						$diff= $row1["Diff"];
+						$prior= $row1["Prior_Days"];
+					}
+					
+						if($diff>=$prior){
+									 $txt="Yes";
+						}
+						else{
+									if($type=='SL'){
+										 	$txt="You have to apply ".$type." with in  ".$prior." days after leave taken.";
+									}
+									else{
+										$txt="You have to apply ".$type." before ".$prior." days.";									
+									}
+						}
+						echo $txt;
+			
+	}
 
+	
+	function calculate_no_of_days(){
+				$form_data = $this->input->post();
+			 	$from_date = $form_data["from_date"];
+			 	$to_date = $form_data["to_date"];
+			 	
+				$date_from = date("Y-m-d", strtotime($from_date));
+				$date_to = date("Y-m-d", strtotime($to_date));
+				$result=$this->apply_model->calculate_no_of_days($date_from,$date_to);
+				
+					foreach($result as $row1){
+						$diff= $row1["Diff"];
+					}
+						echo $diff;
+	}
+
+	
+	
+	function check_MonthlyLimit(){
+				$form_data=$this->input->post();
+			 	$from_date = $form_data["from_date"];
+			 				 	
+				$date_from = date("Y-m-d", strtotime($from_date));
+				$result=$this->apply_model->check_MonthlyLimit($date_from,$form_data["type"]);
+				$days=0;
+				if(!empty($result)){
+						foreach($result as $row1){
+							$days= $row1["TotalDays"];
+						}
+				}
+				echo $days;
+	}
+	
+	function check_YearlyLimit(){
+				$form_data=$this->input->post();
+			 	$from_date = $form_data["from_date"];
+			 				 	
+				$date_from = date("Y-m-d", strtotime($from_date));
+				$result=$this->apply_model->check_YearlyLimit($date_from,$form_data["type"]);
+				$days=0;
+				if(!empty($result)){
+						foreach($result as $row1){
+							$days= $row1["TotalDays"];
+						}
+				}
+				echo $days;
+	}
+	
+	
+/*	
+	function calculate_workingdays()
+	{
+		$form_data = $this->input->post();
+		$date1 = $form_data["date_from"];
+		$date2 = $form_data["date_to"];
+
+		$start_ts = strtotime($date1);
+		$end_ts = strtotime($date2);
+		$diff = $end_ts - $start_ts;
+		$days= round($diff / 86400)+1;
+			
+		$result=$this->apply_model->calculate_workingdays($form_data["date_from"],$form_data["date_to"]);
+		foreach($result as $row){
+			$tot= $row["total"];
+			$holidays= $row["holidays"];
+			$leave= $row["leaves"];
+			$sundays= $row["sundays"];
+		}
+		echo $interval=$days-$tot.'::'.$holidays.'::'.$leave.'::'.$days.'::'.$sundays;
+
+	}
+	
+*/	
+	
 	function upload_ProofDoc(){
 			
 			$status = "";
@@ -181,7 +289,7 @@ class Apply extends CI_Controller
 }					
 
 
-																	/* * * 		Casual Leave 		* * */
+																	/* * * 		Inserting  Leave 	Application 		* * */
 	
 	function insert_LeaveApplication(){
 		$form_data = $this->input->post();
@@ -194,125 +302,7 @@ class Apply extends CI_Controller
 	 	$result=$this->apply_model->insert_LeaveApplication($form_data["type"],$from_date,$to_date,$form_data["days"],$form_data["reason"]);		
 	}
 	
-	
-	function validate_casual(){
-		$form_data = $this->input->post();
-		$date1 = $form_data["date_from"];
-		$result=$this->apply_model->validate_casual($date1);
-		if(empty($result)){	echo 0;	}
-		else{
-			foreach($result as $row){
-				echo $row["day"];
-			}
-		}
-	}
 
-	function validate_permission()
-	{
-		$form_data = $this->input->post();
-		$date1 = $form_data["date_from"];
-		$result=$this->apply_model->validate_permission($date1);
-		if(empty($result)){	echo 0;	}
-		else{
-			foreach($result as $row){
-				echo $row["status"];
-			}
-		}
-	}
-
-	function calculate_experience()
-	{
-		$form_data = $this->input->post();
-		$date1 =$form_data["then"];
-		$date2 = $form_data["now"];
-
-		$ts1 = strtotime($date1);
-		$ts2 = strtotime($date2);
-
-		$year1 = date('Y', $ts1);
-		$year2 = date('Y', $ts2);
-
-		$month1 = date('m', $ts1);
-		$month2 = date('m', $ts2);
-
-		$diff = (($year2 - $year1) * 12) + ($month2 - $month1);
-
-		echo $diff;
-	}
-
-
-	function check_leave()
-	{
-		$form_data = $this->input->post();
-		$date =$form_data["now"];
-		$type =$form_data["l_type"];
-		$d=date('Y',strtotime($date)).'-'.date('m',strtotime($date));
-		//$d=date('Y', strtotime($date));
-		//	echo $d;
-		$result=$this->apply_model->check_leave($d,$type);
-		foreach($result as $row){
-			echo $row["Leaves"];
-		}
-		//echo $result;
-	}
-
-
-	function insert_application_data()
-	{
-			
-		$form_data = $this->input->post();
-		echo $this->apply_model->insert_application_data($form_data["leave_type"],$form_data["date1"],$form_data["date2"],$form_data["days"],$form_data["reporter"],$form_data["reason"],$form_data["hrs"]);
-
-
-	}
-
-	function calculate_days()
-	{
-		$form_data = $this->input->post();
-		$date1 = $form_data["date_from"];
-		$date2 = $form_data["date_to"];
-
-		$start_ts = strtotime($date1);
-		$end_ts = strtotime($date2);
-		$diff = $end_ts - $start_ts;
-		echo round($diff / 86400)+1;
-
-	}
-
-	function calculate_workingdays()
-	{
-		$form_data = $this->input->post();
-		$date1 = $form_data["date_from"];
-		$date2 = $form_data["date_to"];
-
-		$start_ts = strtotime($date1);
-		$end_ts = strtotime($date2);
-		$diff = $end_ts - $start_ts;
-		$days= round($diff / 86400)+1;
-			
-		$result=$this->apply_model->calculate_workingdays($form_data["date_from"],$form_data["date_to"]);
-		foreach($result as $row){
-			$tot= $row["total"];
-			$holidays= $row["holidays"];
-			$leave= $row["leaves"];
-			$sundays= $row["sundays"];
-		}
-		echo $interval=$days-$tot.'::'.$holidays.'::'.$leave.'::'.$days.'::'.$sundays;
-
-	}
-
-	function calculate_prior()
-	{
-		$form_data = $this->input->post();
-		$date1 = $form_data["date_from"];
-		$date2 =date('d-m-Y');
-
-		$start_ts = strtotime($date2);
-		$end_ts = strtotime($date1);
-		$diff = $end_ts - $start_ts;
-		echo round($diff / 86400);
-
-	}
 
 	
 

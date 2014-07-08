@@ -4,6 +4,21 @@ Class Apply_model extends CI_Model{
 		parent::_construct();
 	}
 		
+	function get_Experience(){
+			$Emp_Num=$this->session->userdata("Emp_Number");
+			return $this->db->query("SELECT 12 * (YEAR(CURDATE()) - YEAR(DOJ)) 
+       																						+ (MONTH(CURDATE()) - MONTH(DOJ)) AS Experience_Month 
+																FROM employees
+																WHERE Employee_Number='$Emp_Num' limit 1")->result_array();
+		
+	}	
+	
+	
+	function get_LeaveCriteria(){
+			return $this->db->query("SELECT *
+																FROM leave_criteria")->result_array();
+	}
+	
 	function check_in_holidays($date){
 				
 				return $this->db->query("SELECT COUNT(holi_date) AS status, holi_desc 
@@ -19,29 +34,39 @@ Class Apply_model extends CI_Model{
 																		  AND Leave_Status IN (1,2,4) Limit 1")->result_array();
 	}
 	
-	function check_sunday($d){
-		return $this->db->query("SELECT if(DAYNAME(STR_TO_DATE(STR_TO_DATE('$d','%d-%m-%Y'),'%Y-%m-%d'))='Sunday',1,0) AS day FROM parameters limit 1")->result_array();
+	function check_prior_days($date,$type){	
+			return $this->db->query("SELECT DATEDIFF('$date', CURDATE()) as Diff, Prior_Days
+																FROM leave_criteria
+																WHERE Leave_Type='$type'")->result_array();
 	}
 
+	function calculate_no_of_days($date_from,$date_to){	
+			return $this->db->query("SELECT DATEDIFF('$date_to','$date_from')+1 as Diff ")->result_array();
+	}
 
+	function check_MonthlyLimit($date,$type){
+			$Emp_Num=$this->session->userdata("Emp_Number");
+			return $this->db->query("SELECT IFNULL(SUM(Total_Days),0) as TotalDays
+																FROM leave_history
+																WHERE Emp_Number='$Emp_Num' AND MONTH(From_Date)=MONTH('$date')
+																				AND Leave_Type='$type' AND Leave_Status IN (1,2,4)  ")->result_array();
+	}
+
+	function check_YearlyLimit($date,$type){
+			$Emp_Num=$this->session->userdata("Emp_Number");
+			return $this->db->query("SELECT IFNULL(SUM(Total_Days),0) as TotalDays
+																FROM leave_history
+																WHERE Emp_Number='$Emp_Num' AND YEAR(From_Date)=YEAR('$date')
+																				AND Leave_Type='$type'  AND Leave_Status IN (1,2,4)")->result_array();
+	}
+	
 	function validate_casual($d){
 		$emp_num=$this->session->userdata('Emp_Number');
 		return $this->db->query("SELECT SUM(Total_Days) AS day FROM leave_history
 																		WHERE MONTH(STR_TO_DATE(STR_TO_DATE('$d','%d-%m-%Y'),'%Y-%m-%d'))=MONTH(From_Date) AND YEAR(STR_TO_DATE(STR_TO_DATE('$d','%d-%m-%Y'),'%Y-%m-%d'))=YEAR(From_Date)
 																		AND Emp_Number='$emp_num' AND Leave_Type='Casual Leave'")->result_array();
 	}
-
-	function validate_permission($d)	{
-		$emp_num=$this->session->userdata('Emp_Number');
-		return $this->db->query("SELECT COUNT(p_date) AS status FROM permissions
-																		WHERE MONTH(STR_TO_DATE(STR_TO_DATE('$d','%d-%m-%Y'),'%Y-%m-%d'))=MONTH(p_date) AND YEAR(STR_TO_DATE(STR_TO_DATE('$d','%d-%m-%Y'),'%Y-%m-%d'))=YEAR(p_date)
-																		AND Emp_Number='$emp_num' AND ( status='Approved' OR status='Applied' ) ")->result_array();
-	}
-
-	function get_approval_officer(){
-		$emp_num=$this->session->userdata('Emp_Number');
-		return $this->db->query("SELECT IFNULL(LeaveApprover_L1,'MD') as LeaveApprover_L1 FROM team  WHERE EmployeeName='$emp_num'  ")->result_array();
-	}
+	
 
 																		/* * * 			Update Leave Applcation			* * */
 	function insert_LeaveApplication($leave_type,$from_date,$to_date,$days,$reason){
