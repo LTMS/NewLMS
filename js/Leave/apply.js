@@ -152,6 +152,72 @@
 				}
 		}
 
+		
+
+																			/* * * 		File Upload Function 		* * */
+		
+		  function upload_ProofDoc(filepath,elementid,leavetype){
+				var arrays=filepath.split('\\');
+				var array_lentgh=filepath.split('\\').length-1;
+				var file_name=arrays[array_lentgh];
+					//alert(elementid);
+	  				    $.ajaxFileUpload({
+		    	            	url             		 	: site_url+'/Leave/apply/upload_ProofDoc/'+leavetype,  
+		    	            	secureuri      	: false,
+		    	            	fileElementId	: elementid,
+		    	            	dataType       	:  'json',
+		    	            success					: function (data, status) {
+			    	                										if(data.status != 'error') {
+			    	                												//alert("Status is "+data.status);
+			    	                												count_id="Docs_Count_"+leavetype;
+			    	                												table_id="Doc_Table_"+leavetype;
+			    	                												file_id=data.status;
+			    	                												var count=parseInt(document.getElementById(count_id).value);
+			    	                												//alert("Count: "+count+"countID: "+count_id+", TableID: "+table_id);
+			    	                												if(count<=2 && count>=0){
+					    	                												var table = document.getElementById(table_id);
+					    	                												var row = table.insertRow(0);
+					    	                												var cell1 = row.insertCell(0);   
+					    	                												
+					    	                												cell1.innerHTML = "<input id='"+count+"' value='"+count+"' alt='Remove' type='image' id='' width='15' height='15' src='../../../images/General/remove.png' onclick='delete_ProofDoc(\""+file_id+"\",this.value,\""+table_id+"\",\""+count_id+"\")'> &nbsp;&nbsp;" +file_name;
+					    	                												document.getElementById(count_id).value=count-1;
+			    	                												}
+			    	                												else{
+			    	                														alert("You can upload Three Files Only..!");
+			    	                												}
+			    	                										}
+			    	                										else{
+			    	                											alert("Error");
+			    	                										}
+			    	                						}	
+		    	        });
+		    	        
+
+	}
+		  
+		  
+		  	function delete_ProofDoc(file_id1,count,table_id,count_id){
+		  			//alert("File ID: "+file_id1+", Table ID: "+table_id+", File Count:"+count);
+		  		    var warning = confirm("Are you sure you want to delete this Image?");
+		  		    if(warning == true){
+				  		    	$.post(	site_url+"/Leave/apply/delete_ProofDoc",
+				  		    					{file_id:file_id1},
+				  		    					function(data){
+				  		    								if(data){
+				  		    									document.getElementById(count_id).value;
+				  		    									// document.getElementById(count).style.display="none";
+				  		    									var table = document.getElementById(table_id);
+                												 table.deleteRow(count);
+                												 
+                											}
+				  		    						}
+				  		    	);
+		  		    }	
+		  	}
+
+		  
+		  
+		
 																/* * * 			 Validating Date			* * */
 		
 		function validate_Date(date1,type1){
@@ -368,32 +434,6 @@
 		
 		
 //Sick Leave		
-		  function upload_ProofDoc(filepath,type){
-						var arrays=filepath.split('\\');
-						var array_lentgh=filepath.split('\\').length-1;
-						var file_name=arrays[array_lentgh];
-  							
-			  					alert(file_name);
-				    		    $.ajaxFileUpload({
-				    	            	url             		 :site_url+'/Leave/apply/upload_ProofDoc/',  
-				    	            	secureuri       :false,
-				    	            	fileElementId:'fileupload',
-				    	            	dataType        : 'json',
-				    	            	data           		 : {
-				    	            	'leavetype'    	 : type,
-				    	            	'filename':file_name
-				    	            },
-				    	            success : function (data, status)
-				    	            {
-					    	                if(data.status != 'error')
-				    	                {
-				    	                	alert(status);
-				    	                		//show_SelectedFiles();
-				    	                }
-				    	                alert("Error");
-				    	            }
-				    	        });
-			}
 				
 		function insert_SickLeave(){
 			var from_date1 = document.getElementById('SL_from_date').value; 

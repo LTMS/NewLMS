@@ -244,13 +244,11 @@ class Apply extends CI_Controller
 	
 */	
 	
-	function upload_ProofDoc(){
+	function upload_ProofDoc($leavetype){
 			
 			$status = "";
 		    $msg = "";
-		    $file_element_name = 'fileupload';
-		    $type=$_POST['leavetype'];
-		    $orig_file=$_POST['filename'];
+			$file_element_name ="fileupload_".$leavetype;
 		    
 		   if ($status != "error")
 		    { 
@@ -269,10 +267,10 @@ class Apply extends CI_Controller
 		        else
 		        {
 		            $data = $this->upload->data();
-		            $file_id = $this->apply_model->upload_ProofDoc($orig_file ,$data['file_name'],$type);
+		            $file_id = $this->apply_model->upload_ProofDoc($data['file_name'],$leavetype);
 		            if($file_id)
 		            {
-		                $status = $_POST['file_name'];
+		                $status = $data['file_name'];
 		                $msg = "File successfully uploaded";
 		            }
 		            else
@@ -285,10 +283,17 @@ class Apply extends CI_Controller
 		        @unlink($_FILES[$file_element_name]);
 		    }
 		    echo json_encode(array('status' => $status, 'msg' => $msg));
-		   
+	  
 }					
 
-
+	function delete_ProofDoc(){
+				$form_data=$this->input->post();
+				$file_id=$form_data["file_id"];
+				$file_path='./Documents/'.$file_id;
+				echo	$this->apply_model->delete_ProofDoc($file_id);
+				
+				@unlink($file_path);
+	}
 																	/* * * 		Inserting  Leave 	Application 		* * */
 	
 	function insert_LeaveApplication(){
@@ -353,15 +358,6 @@ class Apply extends CI_Controller
 
 		echo json_encode(array('status' => $status, 'msg' => $id));
 	}
-
-	function show_document()
-	{
-		//echo "hello";
-		$form_data = $this->input->post();
-		echo $this->apply_model->show_document($form_data["lid"]);
-		//echo $form_data["lid"];
-	}
-
 
 	
 	

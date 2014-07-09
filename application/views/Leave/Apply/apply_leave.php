@@ -132,6 +132,8 @@
 <input type='hidden'  id='doc_days_ML'  value='<?php echo $doc_days_ML;?>'/>
 <input type='hidden'  id='chances_ML'  value='<?php echo $chances_ML;?>'/>
 
+<input type='hidden'  id='Docs_Count_SL' value='2'/>			
+<input type='hidden'  id='Docs_Count_ML' value='2'/>			
 
 
 
@@ -259,25 +261,13 @@
 					<td  align='left' class='Font_Style1'>Proof Documents</td>
 					<td width='10' class='Font_Style1'>:</td>
 					<td >
-						<input type='file' name="fileupload" id="fileupload" onchange="upload_ProofDoc(this.value,'CL')" style='color:green;font-size:12pt;font-weight:bold;'/>
+						<input type='file' name="fileupload_SL" id="fileupload_SL" onchange="upload_ProofDoc(this.value,'fileupload_SL','SL')" style='color:green;font-size:12pt;font-weight:bold;'/>
 						</td>
 				</tr>
 			<tr height='30'>
 					<td   colspan='3'></td>
-					<td style='font-size:11px;color:blue;'>
-							<table>
-								<tr id='selected1' style='display:none'>
-										<td width='20'><input alt='Remove' type='image' width='15' height='15' src="../../../images/General/remove.png" onclick="delete_file1()"></td>
-										<td id="selected_file1"> kfgdfg.png</td>
-								</tr>
-								<tr id='selected2' style='display:none'>
-										<td width='20'><input alt='Remove' type='image' width='15' height='15' src="../../../images/General/remove.png" onclick="delete_file1()"></td>
-										<td id="selected_file2"> kfgdfg.png</td>
-								</tr>
-								<tr id='selected3' style='display:none'>
-										<td width='20'><input alt='Remove' type='image' width='15' height='15' src="../../../images/General/remove.png" onclick="delete_file1()"></td>
-										<td id="selected_file3"> kfgdfg.png</td>
-								</tr>
+					<td style='font-size:13px;color:blue;'>
+							<table id='Doc_Table_SL' >
 							</table>
 					</td>
 				</tr>
@@ -325,7 +315,6 @@
 				</tr>
 			</table>
 	<?php }?>
-			
 </div>
 
 
@@ -508,12 +497,12 @@
 				</tr>				
 				<tr height='45' class='Font_Style1'>
 					<td   width='10%' ></td>
-					<td align='left' >Leave Period</td>
+					<td align='left' >Chance No:</td>
 					<td  >:</td>
 					<td>
 						<select>
-								<option value="BB" ></option>
-								<option value="AB"></option>
+								<option value="1" >ONE</option>
+								<option value="2">TWO</option>
 						</select>
 					</td>
 				</tr>
@@ -522,25 +511,17 @@
 					<td  align='left' class='Font_Style1'>Proof Documents</td>
 					<td width='10' class='Font_Style1'>:</td>
 					<td >
-						<input type='file' name="fileupload" id="fileupload" onchange="upload_ProofDoc(this.value,'ML')" style='color:green;font-size:12pt;font-weight:bold;'/>
+						<input type='file' name="fileupload_ML" id="fileupload_ML" onchange="upload_ProofDoc(this.value,'fileupload_ML','ML')" style='color:green;font-size:12pt;font-weight:bold;'/>
 						</td>
 				</tr>
 			<tr height='30'>
 					<td   colspan='3'></td>
 					<td style='font-size:11px;color:blue;'>
-							<table>
-								<tr id='selected1' style='display:none'>
-										<td width='20'><input alt='Remove' type='image' width='15' height='15' src="../../../images/General/remove.png" onclick="delete_file1()"></td>
-										<td id="selected_file1"> kfgdfg.png</td>
-								</tr>
-								<tr id='selected2' style='display:none'>
-										<td width='20'><input alt='Remove' type='image' width='15' height='15' src="../../../images/General/remove.png" onclick="delete_file1()"></td>
-										<td id="selected_file2"> kfgdfg.png</td>
-								</tr>
-								<tr id='selected3' style='display:none'>
-										<td width='20'><input alt='Remove' type='image' width='15' height='15' src="../../../images/General/remove.png" onclick="delete_file1()"></td>
-										<td id="selected_file3"> kfgdfg.png</td>
-								</tr>
+							<table id='Doc_Table_ML'>
+									<tr id='selected1_ML' style='display:none'>
+											<td width='20'><input alt='Remove' type='image' width='15' height='15' src="../../../images/General/remove.png" onclick="delete_file1()"></td>
+											<td id="selected_file1_ML"> kfgdfg.png</td>
+									</tr>
 							</table>
 					</td>
 				</tr>

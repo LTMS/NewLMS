@@ -26,7 +26,7 @@
 			<td colspan="2" align="center"><input type="image"
 				style="width: 180px; height: 60px; margin-bottom: 20px"
 				name="submit" id="submit"
-				src="<?php echo base_url(); ?>/images/login2.png" />
+				src="<?php echo base_url(); ?>/images/User/login2.png" />
 			</td>
 		</tr>
 		<tr style="">

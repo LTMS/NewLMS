@@ -13,6 +13,23 @@ Class Apply_model extends CI_Model{
 		
 	}	
 	
+	function upload_ProofDoc($encr_name,$type){
+			return	$this->db->query("INSERT INTO proof_documents(Encr_Name,Leave_Type,Status) values('$encr_name','$type','Selected')");
+
+		//	get_RecentlyUploadedFile($encr_name);
+	}
+	
+		function get_RecentlyUploadedFile($encr_name){
+			return $this->db->query("SELECT doc_id 
+																FROM proof_documents
+																WHERE Encr_Name='$encr_name'  Limit 1 ")->result_array();
+	}
+		
+	
+	function delete_ProofDoc($file_id){
+			$this->db->query("DELETE FROM proof_documents
+												WHERE Encr_Name='$file_id'");
+	}
 	
 	function get_LeaveCriteria(){
 			return $this->db->query("SELECT *
@@ -81,10 +98,6 @@ Class Apply_model extends CI_Model{
 	}
 
 
-	function upload_ProofDoc($file_name,$encr_name,$type){
-			return $this->db->query("INSERT INTO proof_documents(File_Name,Encr_Name,Leave_Type,Status) values('$file_name','$encr_name','$type','Selected')");
-	}
-		
 
 
 	function getMailData($date_from,$reasoning,$day,$l_type,$Offr){
