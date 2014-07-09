@@ -60,6 +60,18 @@
 						$prior_days_CO=$row["Prior_Days"];
 						$doc_days_CO=$row["Doc_Limit_Days"];
 					}
+					
+					if($type=="ML"){
+						$month_limit_ML=$row["Monthly_Limit"];
+						$year_limit_ML=$row["Yearly_Limit"];
+						$experience_ML=$row["Experience_Month"];
+						$min_limit_ML=$row["Minimum_Limit"];
+						$max_limit_ML=$row["Maximum_Limit"];
+						$prior_days_ML=$row["Prior_Days"];
+						$doc_days_ML=$row["Doc_Limit_Days"];
+						$chances_ML=$row["Chances"];
+					}
+					
 				}
 		
 	}
@@ -111,17 +123,28 @@
 <input type='hidden'  id='doc_days_CO'  value='<?php echo $doc_days_CO;?>'/>
 
 
+<input type='hidden'  id='month_limit_ML' value='<?php echo $month_limit_ML;?>'/>
+<input type='hidden'  id='year_limit_ML'  value='<?php echo $year_limit_ML;?>'/>
+<input type='hidden'  id='experience_ML'  value='<?php echo $experience_ML;?>'/>
+<input type='hidden'  id='min_limit_ML'  value='<?php echo $min_limit_ML;?>'/>
+<input type='hidden'  id='max_limit_ML'  value='<?php echo $max_limit_ML;?>'/>
+<input type='hidden'  id='prior_days_ML'  value='<?php echo $prior_days_ML;?>'/>
+<input type='hidden'  id='doc_days_ML'  value='<?php echo $doc_days_ML;?>'/>
+<input type='hidden'  id='chances_ML'  value='<?php echo $chances_ML;?>'/>
 
 
 
 
-<div style='width:60%;margin:1% 0 0 20%'>
+
+
+<div style='width:60%;margin:1% 0 0 19%'>
 	<table id='Leave_List' >
 		<tr>
-			<td align='center'><input type='image' id='CL_Div' width='150' height='100' src='../../../images/Leave/CL.png'  alt='Casual Leave' onclick='show_LeaveDiv("CL_Table")'/></td>
-			<td align='center'><input type='image' id='CL_Div' width='150' height='100' src='../../../images/Leave/SL.png' alt='Sick Leave' onclick='show_LeaveDiv("SL_Table")'/></td>
-			<td align='center'><input type='image' id='CL_Div' width='150' height='100' src='../../../images/Leave/EL.png' alt='Earned Leave' onclick='show_LeaveDiv("EL_Table")'/></td>
-			<td align='center'><input type='image' id='CL_Div' width='150' height='100' src='../../../images/Leave/CO.png' alt='Comp Off' onclick='show_LeaveDiv("CO_Table")'/></td>
+			<td align='center'><input type='image' id='CL_Div' width='130' height='90' src='../../../images/Leave/CL.png'  alt='Casual Leave' onclick='show_LeaveDiv("CL_Table")'/></td>
+			<td align='center'><input type='image' id='CL_Div' width='130' height='90' src='../../../images/Leave/SL.png' alt='Sick Leave' onclick='show_LeaveDiv("SL_Table")'/></td>
+			<td align='center'><input type='image' id='CL_Div' width='130' height='90' src='../../../images/Leave/EL.png' alt='Earned Leave' onclick='show_LeaveDiv("EL_Table")'/></td>
+			<td align='center'><input type='image' id='CL_Div' width='130' height='90' src='../../../images/Leave/CO.png' alt='Comp Off' onclick='show_LeaveDiv("CO_Table")'/></td>
+			<td align='center'><input type='image' id='ML_Div' width='130' height='90' src='../../../images/Leave/ML.png' alt='Maternity Leave' onclick='show_LeaveDiv("ML_Table")'/></td>
 		</tr>
 	</table>
 	<table id='Error' style='display:none;background-color:#FFEAEA;width:100%;height:30px;box-shadow: 5px 5px 5px #FFC8C8;border:1px inset red;' >
@@ -151,7 +174,7 @@
 					<td   width='10%' ></td>
 					<td align='left' >No of Days</td>
 					<td   width='10' >:</td>
-					<td><input id='CL_days' readonly='readonly' class='input_date' style='width:20px;height:25px;' value='1'></td>
+					<td><input id='CL_days' readonly='readonly' class='input_date' style='width:30px;height:25px;' value='1'></td>
 				</tr>
 				<tr height='30'>
 					<td   width='10%' class='Font_Style1'></td>
@@ -161,7 +184,7 @@
 				</tr>
 				<tr id='CL_Button' height='80'>
 					<td colspan='5' align='center'>
-							<input id='apply_img1' type='image' src='../../../images/Leave/apply.png'   style='width:100px;height:32px;'  onclick='insert_CasualLeave()' onmouseover='change_OnMouseOver("apply_img1","apply_over.png")' onmouseout='change_OnMouseOver("apply_img1","apply.png")'/>
+							<input id='apply_img_CL' type='image' src='../../../images/Leave/apply.png'   style='width:100px;height:32px;'  onclick='insert_CasualLeave()' onmouseover='change_OnMouseOver("apply_img_CL","apply_over.png")' onmouseout='change_OnMouseOver("apply_img_CL","apply.png")'/>
 					</td>
 				</tr>
 				<tr height='50'>
@@ -229,7 +252,7 @@
 					<td   width='10%' ></td>
 					<td align='left' >No of Days</td>
 					<td   width='10' >:</td>
-					<td><input id='SL_days' readonly='readonly' class='input_date' style='width:20px;height:25px;' value=''></td>
+					<td><input id='SL_days' readonly='readonly' class='input_date' style='width:30px;height:25px;' value=''></td>
 				</tr>
 				<tr height='40'>
 					<td   width='10%' class='Font_Style1'></td>
@@ -266,7 +289,7 @@
 				</tr>
 				<tr id='SL_Button' height='80'>
 					<td colspan='5' align='center'>
-							<input id='apply_img2' type='image' src='../../../images/Leave/apply_SL.png'   style='width:100px;height:32px;'  onclick='insert_SickLeave()' onmouseover='change_OnMouseOver("apply_img2","apply_SL_over.png")' onmouseout='change_OnMouseOver("apply_img2","apply_SL.png")'/>
+							<input id='apply_img_SL' type='image' src='../../../images/Leave/apply_SL.png'   style='width:100px;height:32px;'  onclick='insert_SickLeave()' onmouseover='change_OnMouseOver("apply_img_SL","apply_SL_over.png")' onmouseout='change_OnMouseOver("apply_img_SL","apply_SL.png")'/>
 					</td>
 				</tr>
 				<tr height='50'>
@@ -333,7 +356,7 @@
 					<td   width='10%' ></td>
 					<td align='left' >No of Days</td>
 					<td   width='10' >:</td>
-					<td><input id='EL_days' readonly='readonly' class='input_date' style='width:20px;height:25px;' value=''></td>
+					<td><input id='EL_days' readonly='readonly' class='input_date' style='width:30px;height:25px;' value=''></td>
 				</tr>
 				<tr height='30'>
 					<td   width='10%' class='Font_Style1'></td>
@@ -343,7 +366,7 @@
 				</tr>
 				<tr id='EL_Button' height='80'>
 					<td colspan='5' align='center'>
-							<input id='apply_img3' type='image' src='../../../images/Leave/apply_EL.png'   style='width:100px;height:32px;'  onclick='insert_EarnedLeave()' onmouseover='change_OnMouseOver("apply_img3","apply_EL_over.png")' onmouseout='change_OnMouseOver("apply_img3","apply_EL.png")'/>
+							<input id='apply_img_EL' type='image' src='../../../images/Leave/apply_EL.png'   style='width:100px;height:32px;'  onclick='insert_EarnedLeave()' onmouseover='change_OnMouseOver("apply_img_EL","apply_EL_over.png")' onmouseout='change_OnMouseOver("apply_img_EL","apply_EL.png")'/>
 					</td>
 				</tr>
 				<tr height='50'>
@@ -405,7 +428,7 @@
 					<td   width='10%' ></td>
 					<td align='left' >No of Days</td>
 					<td   width='10' >:</td>
-					<td><input id='CO_days' readonly='readonly' class='input_date' style='width:20px;height:25px;' value=''></td>
+					<td><input id='CO_days' readonly='readonly' class='input_date' style='width:30px;height:25px;' value=''></td>
 				</tr>
 				<tr height='30'>
 					<td   width='10%' class='Font_Style1'></td>
@@ -415,7 +438,7 @@
 				</tr>
 				<tr id='CO_Button' height='80'>
 					<td colspan='5' align='center'>
-							<input id='apply_img4' type='image' src='../../../images/Leave/apply_CO.png'   style='width:100px;height:32px;'  onclick='insert_CompOff()' onmouseover='change_OnMouseOver("apply_img4","apply_CO_over.png")' onmouseout='change_OnMouseOver("apply_img4","apply_CO.png")'/>
+							<input id='apply_img_CO' type='image' src='../../../images/Leave/apply_CO.png'   style='width:100px;height:32px;'  onclick='insert_CompOff()' onmouseover='change_OnMouseOver("apply_img_CO","apply_CO_over.png")' onmouseout='change_OnMouseOver("apply_img_CO","apply_CO.png")'/>
 					</td>
 				</tr>
 				<tr height='50'>
@@ -451,6 +474,125 @@
 				</tr>
 			</table>
 	<?php }?>
+</div>
+
+
+<div id='ML_Table'  style='display:none;background:#E6FCFF;width:60%;margin:1% 0 0 20%;border:5px groove #ACF3FD;border-radius:5px;' >
+		<center><p style='font-size:14pt;font-weight:bolder;color:#730063;'><u>SICK LEAVE</u></p></center>
+		<?php if(!empty($experience) && $experience>=$experience_ML)
+		{?>			
+			<table  height='200'  border="0" align="center">
+				<tr height='60'>
+					<td   width='10%' class='Font_Style1'></td>
+					<td  align='left' width='180'  class='Font_Style1'>Leave From</td>
+					<td width='10' class='Font_Style1'>:</td>
+					<td>
+						<input id='ML_from_date'  readonly='readonly' class='input_date'/>
+						<input type='image' id='Calendar_From_ML' width='50' height='30' src='../../../images/Leave/calendar1.png'/>
+					</td>
+				</tr>
+				<tr height='60'>
+					<td   width='10%' class='Font_Style1'></td>
+					<td  align='left' width='180'  class='Font_Style1'>To Date</td>
+					<td width='10' class='Font_Style1'>:</td>
+					<td>
+						<input id='ML_to_date'  readonly='readonly' class='input_date'/>
+						<input type='image' id='Calendar_To_ML' width='50' height='30' src='../../../images/Leave/calendar1.png'/>
+					</td>
+				</tr>
+				<tr height='45' class='Font_Style1'>
+					<td   width='10%' ></td>
+					<td align='left' >No of Days</td>
+					<td   width='10' >:</td>
+					<td><input id='ML_days' readonly='readonly' class='input_date' style='width:30px;height:25px;' value=''></td>
+				</tr>				
+				<tr height='45' class='Font_Style1'>
+					<td   width='10%' ></td>
+					<td align='left' >Leave Period</td>
+					<td  >:</td>
+					<td>
+						<select>
+								<option value="BB" ></option>
+								<option value="AB"></option>
+						</select>
+					</td>
+				</tr>
+				<tr height='45'>
+					<td   width='10%' class='Font_Style1'></td>
+					<td  align='left' class='Font_Style1'>Proof Documents</td>
+					<td width='10' class='Font_Style1'>:</td>
+					<td >
+						<input type='file' name="fileupload" id="fileupload" onchange="upload_ProofDoc(this.value,'ML')" style='color:green;font-size:12pt;font-weight:bold;'/>
+						</td>
+				</tr>
+			<tr height='30'>
+					<td   colspan='3'></td>
+					<td style='font-size:11px;color:blue;'>
+							<table>
+								<tr id='selected1' style='display:none'>
+										<td width='20'><input alt='Remove' type='image' width='15' height='15' src="../../../images/General/remove.png" onclick="delete_file1()"></td>
+										<td id="selected_file1"> kfgdfg.png</td>
+								</tr>
+								<tr id='selected2' style='display:none'>
+										<td width='20'><input alt='Remove' type='image' width='15' height='15' src="../../../images/General/remove.png" onclick="delete_file1()"></td>
+										<td id="selected_file2"> kfgdfg.png</td>
+								</tr>
+								<tr id='selected3' style='display:none'>
+										<td width='20'><input alt='Remove' type='image' width='15' height='15' src="../../../images/General/remove.png" onclick="delete_file1()"></td>
+										<td id="selected_file3"> kfgdfg.png</td>
+								</tr>
+							</table>
+					</td>
+				</tr>
+				<tr height='30'>
+					<td   width='10%' class='Font_Style1'></td>
+					<td  align='left' class='Font_Style1'>Reason for Leave</td>
+					<td width='10' class='Font_Style1'>:</td>
+					<td ><textarea  id='ML_reason' cols='30' rows='4' onblur='remove_Specials("ML_reason",this.value)'></textarea></td>
+				</tr>
+				<tr id='ML_Button' height='80'>
+					<td colspan='5' align='center'>
+							<input id='apply_img_ML' type='image' src='../../../images/Leave/apply_ML.png'   style='width:100px;height:32px;'  onclick='insert_MaternityLeave()' onmouseover='change_OnMouseOver("apply_img_ML","apply_ML_over.png")' onmouseout='change_OnMouseOver("apply_img_ML","apply_ML.png")'/>
+					</td>
+				</tr>
+				<tr height='50'>
+					<td></td>
+				</tr>
+			</table>
+						
+	<?php }
+	else{?>
+			<table   height='200'   border="0" >
+				<tr height='60'>				
+					<td   style='font-size:20pt;font-weight:bolder;color:red;font-family:Lucida Handwriting;'> Sorry..!</td>
+				</tr>
+				<tr height='60'>
+					<td  style='font-size:16pt;font-weight:bolder;color:#003366;font-family:Lucida Calligraphy;'> &nbsp;&nbsp;&nbsp;&nbsp;
+										You are not eligible for taking Maternity Leave..!
+					</td>
+				</tr>
+				<tr style='font-size:14pt;font-weight:bolder;color:#003366;font-family:Lucida Calligraphy;'>
+					<td ><u>Reason may be...</u></td>
+				</tr>
+				<tr style='font-size:12pt;font-weight:bolder;color:#003366;font-family:Tahoma;'>
+					<td>&nbsp;&nbsp;&nbsp;&nbsp;
+						Not having <?php echo $experience_ML;?> months of Experience.
+					</td>
+				</tr>
+					<tr style='font-size:12pt;font-weight:bolder;color:#003366;font-family:Tahoma;'>
+					<td>&nbsp;&nbsp;&nbsp;&nbsp;
+					Have utilized all <?php echo $year_limit_ML ;?> Maternity Leaves.</td>
+				</tr>
+				<tr style='font-size:12pt;font-weight:bolder;color:#003366;font-family:Tahoma;'>
+					<td>&nbsp;&nbsp;&nbsp;&nbsp;
+					Have utilized all <?php echo $chances_ML ;?> chances of Maternity Leaves.</td>
+				</tr>
+				<tr height='40'>
+					<td></td>
+				</tr>
+			</table>
+	<?php }?>
+			
 </div>
 
 <input type='hidden'  id='Current_Table' value='CL_Table' >
