@@ -243,7 +243,10 @@ class Apply extends CI_Controller
 	}
 	
 */	
+																	/* * * 		Inserting  Leave 	Application 		* * */
 	
+	
+		
 	function upload_ProofDoc($leavetype){
 			
 			$status = "";
@@ -284,7 +287,7 @@ class Apply extends CI_Controller
 		    }
 		    echo json_encode(array('status' => $status, 'msg' => $msg));
 	  
-}					
+	}					
 
 	function delete_ProofDoc(){
 				$form_data=$this->input->post();
@@ -294,7 +297,23 @@ class Apply extends CI_Controller
 				
 				@unlink($file_path);
 	}
-																	/* * * 		Inserting  Leave 	Application 		* * */
+	
+	function update_DocumentStatus(){
+				$form_data=$this->input->post();
+				$this->apply_model->update_DocumentStatus($form_data["type"],$form_data["leaveID"]);			
+	}
+	
+	function remove_NotUploadedDocuments($type){
+		$files=$this->apply_model->get_NotUploadedDocuments($type);
+				if(!empty($files))
+					foreach($files as $row){
+									$file=$row["Encr_Name"];
+									$file_path='./Documents/'.$file_id;
+									@unlink($file_path);
+					}
+			$this->apply_model->get_NotUploadedDocuments();
+	}
+	
 	
 	function insert_LeaveApplication(){
 		$form_data = $this->input->post();
@@ -304,61 +323,18 @@ class Apply extends CI_Controller
 	 	$from_date = date("Y-m-d", strtotime($date1));
 	 	$to_date = date("Y-m-d", strtotime($date2));
 	 	
-	 	$result=$this->apply_model->insert_LeaveApplication($form_data["type"],$from_date,$to_date,$form_data["days"],$form_data["reason"]);		
+	 		$result=$this->apply_model->insert_LeaveApplication($form_data["type"],$from_date,$to_date,$form_data["days"],$form_data["reason"],$form_data["proof_status"]);
+	 			 	foreach($result as $row){
+	 						$leaveID=$row["Leave_ID"];
+	 				}
+	 				if($leaveID!="" && $leaveID!="NaN"){
+	 					echo $leaveID;
+	 				}
+	 				else{
+	 					echo "Error";
+	 				}
+	 				
 	}
-	
-
-
-	
-
-
-		
-	function upload_file($lid){
-		$id=$lid;
-		$status = "";
-		$msg = "";
-		$file_element_name = 'fileupload';
-
-		 
-		//echo json_encode(array('status' => $status, 'msg' => $msg));
-		if ($status != "error")
-		{
-			$config['upload_path'] = './files/';
-			$config['allowed_types'] = 'gif|jpg|png|doc|txt';
-			$config['max_size']  = 1024 * 8;
-			$config['encrypt_name'] = TRUE;
-
-			$this->load->library('upload', $config);
-
-			if (!$this->upload->do_upload($file_element_name))
-			{
-				$status = 'error';
-				$msg = $this->upload->display_errors('', '');
-			}
-			else
-			{
-				$data = $this->upload->data();
-				$file_id = $this->apply_model->insert_file($data['file_name'],$id);
-				if($file_id)
-				//if(true)
-				{
-					$status = "success";
-					$msg = "File successfully uploaded";
-				}
-				else
-				{
-					unlink($data['full_path']);
-					$status = "error";
-					$msg = "Something went wrong when saving the file, please try again.";
-				}
-			}
-			@unlink($_FILES[$file_element_name]);
-		}
-		//  echo json_encode(array('status' => $status, 'msg' => $msg));
-
-		echo json_encode(array('status' => $status, 'msg' => $id));
-	}
-
 	
 	
 	function SendMail(){

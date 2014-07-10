@@ -1591,20 +1591,28 @@ textarea{
 
 
 														/* * * 			Image Effects			* * */
-
-@-webkit-keyframes rotate {
-  from {
-    -webkit-transform: rotate(0deg);
-  }
-  to { 
-    -webkit-transform: rotate(360deg);
-  }
+#CL_Div:hover {
+    background-color: #CEEFBD;
+    box-shadow: 0 0 100px #B5FFC8,                
+				 0 0 50px #B5FFC8;               
 }
-
-img.alert
-{
-    -webkit-animation-name:             rotate; 
-    -webkit-animation-duration:         0.5s; 
-    -webkit-animation-iteration-count:  infinite;
-    -webkit-animation-timing-function: linear;
+#SL_Div:hover {
+    background-color: #E8C6FF;
+    box-shadow: 0 0 100px #E8C6FF,                
+				 0 0 50px #E8C6FF;               
+}
+#EL_Div:hover {
+    background-color: #BFBFBF;
+    box-shadow: 0 0 100px #A1A1A1,                
+				 0 0 50px #A1A1A1;               
+}
+#CO_Div:hover {
+    background-color: #FFEAB7;
+    box-shadow: 0 0 100px #FFE699,                
+				 0 0 50px #FFE699;               
+}
+#ML_Div:hover {
+    background-color: #ACF3FD;
+    box-shadow: 0 0 100px #ACF3FD,                
+				 0 0 50px #ACF3FD;               
 }

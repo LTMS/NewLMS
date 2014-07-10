@@ -17,6 +17,7 @@
 		</tr>
 	</table>
 </div>
+
 <?php 
 	if(!empty($Criteria)){
 				foreach($Criteria as $row){
@@ -132,7 +133,8 @@
 <input type='hidden'  id='doc_days_ML'  value='<?php echo $doc_days_ML;?>'/>
 <input type='hidden'  id='chances_ML'  value='<?php echo $chances_ML;?>'/>
 
-<input type='hidden'  id='Row_Id' value='0'/>			
+<input type='hidden'  id='Row_Id_SL' value='0'/>			
+<input type='hidden'  id='Row_Id_ML' value='0'/>			
 <input type='hidden'  id='Docs_Total_Count_SL' value='1'/>			
 <input type='hidden'  id='Docs_Total_Count_ML' value='1'/>			
 
@@ -143,11 +145,11 @@
 <div style='width:60%;margin:1% 0 0 19%'>
 	<table id='Leave_List' >
 		<tr>
-			<td align='center'><input type='image' id='CL_Div' width='130' height='90' src='../../../images/Leave/CL.png'  alt='Casual Leave' onclick='show_LeaveDiv("CL_Table")'/></td>
-			<td align='center'><input type='image' id='CL_Div' width='130' height='90' src='../../../images/Leave/SL.png' alt='Sick Leave' onclick='show_LeaveDiv("SL_Table")'/></td>
-			<td align='center'><input type='image' id='CL_Div' width='130' height='90' src='../../../images/Leave/EL.png' alt='Earned Leave' onclick='show_LeaveDiv("EL_Table")'/></td>
-			<td align='center'><input type='image' id='CL_Div' width='130' height='90' src='../../../images/Leave/CO.png' alt='Comp Off' onclick='show_LeaveDiv("CO_Table")'/></td>
-			<td align='center'><input type='image' id='ML_Div' width='130' height='90' src='../../../images/Leave/ML.png' alt='Maternity Leave' onclick='show_LeaveDiv("ML_Table")'/></td>
+			<td align='center'><input type='image' id='CL_Div' width='130' height='90' src='../../../images/Leave/CL.png'  alt='Casual Leave' onclick='show_LeaveDiv("CL_Table")' onmouseover='show_Shadow("CL_Div","#E3FBE9")' /></td>
+			<td align='center'><input type='image' id='SL_Div' width='130' height='90' src='../../../images/Leave/SL.png' alt='Sick Leave' onclick='show_LeaveDiv("SL_Table")'  onmouseover='show_Shadow("SL_Div","#FFEEFD")'/></td>
+			<td align='center'><input type='image' id='EL_Div' width='130' height='90' src='../../../images/Leave/EL.png' alt='Earned Leave' onclick='show_LeaveDiv("EL_Table")'  onmouseover='show_Shadow("EL_Div","#E0E0E0")'/></td>
+			<td align='center'><input type='image' id='CO_Div' width='130' height='90' src='../../../images/Leave/CO.png' alt='Comp Off' onclick='show_LeaveDiv("CO_Table")' onmouseover='show_Shadow("CO_Div","#FFFFD7")'/></td>
+			<td align='center'><input type='image' id='ML_Div' width='130' height='90' src='../../../images/Leave/ML.png' alt='Maternity Leave' onclick='show_LeaveDiv("ML_Table")'  onmouseover='show_Shadow("ML_Div","#E6FCFF")'/></td>
 		</tr>
 	</table>
 	<table id='Error' style='display:none;background-color:#FFEAEA;width:100%;height:30px;box-shadow: 5px 5px 5px #FFC8C8;border:1px inset red;' >
@@ -183,10 +185,12 @@
 					<td   width='10%' class='Font_Style1'></td>
 					<td  align='left' class='Font_Style1'>Reason for Leave</td>
 					<td width='10' class='Font_Style1'>:</td>
-					<td ><textarea  id='CL_reason' cols='30' rows='4' onblur='remove_Specials("CL_reason",this.value)'></textarea></td>
+					<td ><textarea  id='CL_reason' cols='30' rows='4' onblur='remove_Specials("CL_reason",this.value)'></textarea>
+						<br><font color='red'>* Maximum 200 Characters allowed.</font>
+					</td>
 				</tr>
-				<tr id='CL_Button' height='80'>
-					<td colspan='5' align='center'>
+				<tr  height='80'>
+					<td id='CL_Button' colspan='5' align='center'>
 							<input id='apply_img_CL' type='image' src='../../../images/Leave/apply.png'   style='width:100px;height:32px;'  onclick='insert_CasualLeave()' onmouseover='change_OnMouseOver("apply_img_CL","apply_over.png")' onmouseout='change_OnMouseOver("apply_img_CL","apply.png")'/>
 					</td>
 				</tr>
@@ -276,10 +280,13 @@
 					<td   width='10%' class='Font_Style1'></td>
 					<td  align='left' class='Font_Style1'>Reason for Leave</td>
 					<td width='10' class='Font_Style1'>:</td>
-					<td ><textarea  id='SL_reason' cols='30' rows='4' onblur='remove_Specials("SL_reason",this.value)'></textarea></td>
+					<td >
+						<textarea  id='SL_reason'  cols='30' rows='4' onblur='remove_Specials("SL_reason",this.value)'></textarea>
+						<br><font color='red'>* Maximum 200 Characters allowed.</font>
+					</td>
 				</tr>
-				<tr id='SL_Button' height='80'>
-					<td colspan='5' align='center'>
+				<tr height='80'>
+					<td  id='SL_Button'  colspan='5' align='center'>
 							<input id='apply_img_SL' type='image' src='../../../images/Leave/apply_SL.png'   style='width:100px;height:32px;'  onclick='insert_SickLeave()' onmouseover='change_OnMouseOver("apply_img_SL","apply_SL_over.png")' onmouseout='change_OnMouseOver("apply_img_SL","apply_SL.png")'/>
 					</td>
 				</tr>
@@ -352,10 +359,12 @@
 					<td   width='10%' class='Font_Style1'></td>
 					<td  align='left' class='Font_Style1'>Reason for Leave</td>
 					<td width='10' class='Font_Style1'>:</td>
-					<td ><textarea  id='EL_reason' cols='30' rows='4' onblur='remove_Specials("EL_reason",this.value)'></textarea></td>
+					<td ><textarea  id='EL_reason' cols='30' rows='4' onblur='remove_Specials("EL_reason",this.value)'></textarea>
+						<br><font color='red'>* Maximum 200 Characters allowed.</font>
+					</td>
 				</tr>
-				<tr id='EL_Button' height='80'>
-					<td colspan='5' align='center'>
+				<tr  height='80'>
+					<td id='EL_Button' colspan='5' align='center'>
 							<input id='apply_img_EL' type='image' src='../../../images/Leave/apply_EL.png'   style='width:100px;height:32px;'  onclick='insert_EarnedLeave()' onmouseover='change_OnMouseOver("apply_img_EL","apply_EL_over.png")' onmouseout='change_OnMouseOver("apply_img_EL","apply_EL.png")'/>
 					</td>
 				</tr>
@@ -424,10 +433,12 @@
 					<td   width='10%' class='Font_Style1'></td>
 					<td  align='left' class='Font_Style1'>Reason for Leave</td>
 					<td width='10' class='Font_Style1'>:</td>
-					<td ><textarea  id='CO_reason' cols='30' rows='4' onblur='remove_Specials("CO_reason",this.value)'></textarea></td>
+					<td ><textarea  id='CO_reason' cols='30' rows='4' onblur='remove_Specials("CO_reason",this.value)'></textarea>
+						<br><font color='red'>* Maximum 200 Characters allowed.</font>
+					</td>
 				</tr>
-				<tr id='CO_Button' height='80'>
-					<td colspan='5' align='center'>
+				<tr  height='80'>
+					<td id='CO_Button' colspan='5' align='center'>
 							<input id='apply_img_CO' type='image' src='../../../images/Leave/apply_CO.png'   style='width:100px;height:32px;'  onclick='insert_CompOff()' onmouseover='change_OnMouseOver("apply_img_CO","apply_CO_over.png")' onmouseout='change_OnMouseOver("apply_img_CO","apply_CO.png")'/>
 					</td>
 				</tr>
@@ -468,7 +479,7 @@
 
 
 <div id='ML_Table'  style='display:none;background:#E6FCFF;width:60%;margin:1% 0 0 20%;border:5px groove #ACF3FD;border-radius:5px;' >
-		<center><p style='font-size:14pt;font-weight:bolder;color:#730063;'><u>SICK LEAVE</u></p></center>
+		<center><p style='font-size:14pt;font-weight:bolder;color:#730063;'><u>MATERNITY LEAVE</u></p></center>
 		<?php if(!empty($experience) && $experience>=$experience_ML)
 		{?>			
 			<table  height='200'  border="0" align="center">
@@ -517,12 +528,8 @@
 				</tr>
 			<tr height='30'>
 					<td   colspan='3'></td>
-					<td style='font-size:11px;color:blue;'>
+							<td style='font-size:13px;color:blue;'>
 							<table id='Doc_Table_ML'>
-									<tr id='selected1_ML' style='display:none'>
-											<td width='20'><input alt='Remove' type='image' width='15' height='15' src="../../../images/General/remove.png" onclick="delete_file1()"></td>
-											<td id="selected_file1_ML"> kfgdfg.png</td>
-									</tr>
 							</table>
 					</td>
 				</tr>
@@ -530,11 +537,13 @@
 					<td   width='10%' class='Font_Style1'></td>
 					<td  align='left' class='Font_Style1'>Reason for Leave</td>
 					<td width='10' class='Font_Style1'>:</td>
-					<td ><textarea  id='ML_reason' cols='30' rows='4' onblur='remove_Specials("ML_reason",this.value)'></textarea></td>
+					<td ><textarea  id='ML_reason' cols='30' rows='4' onblur='remove_Specials("ML_reason",this.value)'></textarea>
+						<br><font color='red'>* Maximum 200 Characters allowed.</font>
+					</td>
 				</tr>
-				<tr id='ML_Button' height='80'>
+				<tr  height='80'>
 					<td colspan='5' align='center'>
-							<input id='apply_img_ML' type='image' src='../../../images/Leave/apply_ML.png'   style='width:100px;height:32px;'  onclick='insert_MaternityLeave()' onmouseover='change_OnMouseOver("apply_img_ML","apply_ML_over.png")' onmouseout='change_OnMouseOver("apply_img_ML","apply_ML.png")'/>
+							<input id='ML_Button'  id='apply_img_ML' type='image' src='../../../images/Leave/apply_ML.png'   style='width:100px;height:32px;'  onclick='insert_MaternityLeave()' onmouseover='change_OnMouseOver("apply_img_ML","apply_ML_over.png")' onmouseout='change_OnMouseOver("apply_img_ML","apply_ML.png")'/>
 					</td>
 				</tr>
 				<tr height='50'>

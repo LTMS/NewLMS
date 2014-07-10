@@ -12,26 +12,6 @@ Class Apply_model extends CI_Model{
 																WHERE Employee_Number='$Emp_Num' limit 1")->result_array();
 		
 	}	
-	
-	function upload_ProofDoc($encr_name,$type){
-			$emp_num=$this->session->userdata("Emp_Number");
-			return	$this->db->query("INSERT INTO proof_documents(Emp_Number,Encr_Name,Leave_Type,Status) values('$emp_num','$encr_name','$type','Selected')");
-
-		//	get_RecentlyUploadedFile($encr_name);
-	}
-	
-		function get_RecentlyUploadedFile($encr_name){
-			return $this->db->query("SELECT doc_id 
-																FROM proof_documents
-																WHERE Encr_Name='$encr_name'  Limit 1 ")->result_array();
-	}
-		
-	
-	function delete_ProofDoc($file_id){
-			$this->db->query("DELETE FROM proof_documents
-												WHERE Encr_Name='$file_id'");
-	}
-	
 	function get_LeaveCriteria(){
 			return $this->db->query("SELECT *
 																FROM leave_criteria")->result_array();
@@ -87,15 +67,71 @@ Class Apply_model extends CI_Model{
 	
 
 																		/* * * 			Update Leave Applcation			* * */
-	function insert_LeaveApplication($leave_type,$from_date,$to_date,$days,$reason){
+		
+	function upload_ProofDoc($encr_name,$type){
+				$emp_num=$this->session->userdata("Emp_Number");
+				return	$this->db->query("INSERT INTO proof_documents(Emp_Number,Encr_Name,Leave_Type,Status) values('$emp_num','$encr_name','$type','Selected')");
+	}
+	
+	
+		function update_DocumentStatus($type,$leaveid){
+					$emp_num=$this->session->userdata("Emp_Number");
+					return $this->db->query("UPDATE proof_documents
+																		SET Leave_ID='$leaveid',
+																				Status='Uploaded'
+																		WHERE Leave_Type='$type' AND  EMp_Number='$emp_num' ");
+	}
+		
+	
+	function delete_ProofDoc($file_id){
+			$this->db->query("DELETE FROM proof_documents
+												WHERE Encr_Name='$file_id' 
+																WHERE Status='Selected' ");
+	}
+
+		function get_NotUploadedDocuments($type){
+				$emp_num=$this->session->userdata("Emp_Number");
+				return 	$this->db->query("SELECT Encr_Name
+																	WHERE Emp_Number='$emp_num' AND Status='Selected' 
+																		AND Leave_Type='$type'  ")->result_array();
+				
+				
+	}
+	
+	
+		function delete_NotUploadedDocuments(){
+			$emp_num=$this->session->userdata("Emp_Number");
+			$this->db->query("DELETE FROM proof_documents
+												WHERE Emp_Number='$emp_num' AND Status='Selected' ");
+	}
+	
+	
+	
+	function insert_LeaveApplication($leave_type,$from_date,$to_date,$days,$reason,$proof_status){
 
 		$add_date=date('Y-m-d H:i:s');
 		$emp_num=$this->session->userdata('Emp_Number');
 		$emp_name=$this->session->userdata('Emp_Name');
 		
-		$availability =$this->db->query("INSERT INTO 
-																	leave_history(Emp_Number, Emp_Name, Leave_Type, From_Date,To_Date,Total_Days,Leave_Status,Reason,Applied_On)
-																	VALUES('$emp_num','$emp_name','$leave_type','$from_date','$to_date','$days','1','$reason',CURRENT_TIMESTAMP );");
+		$this->db->query("INSERT INTO 
+																	leave_history(Emp_Number, Emp_Name, Leave_Type, From_Date,To_Date,Total_Days,Leave_Status,Reason,Applied_On,Proof_Uploaded)
+																	VALUES('$emp_num','$emp_name','$leave_type','$from_date','$to_date','$days','1','$reason',CURRENT_TIMESTAMP,'$proof_status' )  ");
+				return $this->db->query("SELECT Leave_ID
+														FROM leave_history
+														WHERE Emp_Number='$emp_num' AND From_Date='$from_date'
+																		AND Leave_Status='1' AND Leave_Type='$leave_type' ")->result_array();	
+
+	}
+
+	
+	
+	function get_RecentlyInsertedLeave($leave_type,$from_date){
+				$emp_name=$this->session->userdata('Emp_Name');
+				return $this->db->query("SELECT Leave_ID
+														FROM leave_history
+														WHERE Emp_Number='$emp_num' AND From_Date='$from_date'
+																		AND Leave_Status='Applied' AND Leave_Type='$leave_type' ")->result_array();	
+				
 	}
 
 
