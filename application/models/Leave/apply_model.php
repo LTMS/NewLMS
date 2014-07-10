@@ -14,7 +14,8 @@ Class Apply_model extends CI_Model{
 	}	
 	
 	function upload_ProofDoc($encr_name,$type){
-			return	$this->db->query("INSERT INTO proof_documents(Encr_Name,Leave_Type,Status) values('$encr_name','$type','Selected')");
+			$emp_num=$this->session->userdata("Emp_Number");
+			return	$this->db->query("INSERT INTO proof_documents(Emp_Number,Encr_Name,Leave_Type,Status) values('$emp_num','$encr_name','$type','Selected')");
 
 		//	get_RecentlyUploadedFile($encr_name);
 	}

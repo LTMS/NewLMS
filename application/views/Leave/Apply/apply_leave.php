@@ -132,8 +132,9 @@
 <input type='hidden'  id='doc_days_ML'  value='<?php echo $doc_days_ML;?>'/>
 <input type='hidden'  id='chances_ML'  value='<?php echo $chances_ML;?>'/>
 
-<input type='hidden'  id='Docs_Count_SL' value='2'/>			
-<input type='hidden'  id='Docs_Count_ML' value='2'/>			
+<input type='hidden'  id='Row_Id' value='0'/>			
+<input type='hidden'  id='Docs_Total_Count_SL' value='1'/>			
+<input type='hidden'  id='Docs_Total_Count_ML' value='1'/>			
 
 
 

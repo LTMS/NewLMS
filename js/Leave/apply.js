@@ -160,54 +160,62 @@
 				var arrays=filepath.split('\\');
 				var array_lentgh=filepath.split('\\').length-1;
 				var file_name=arrays[array_lentgh];
-					//alert(elementid);
+				//alert(elementid);
+				doc_count_id="Docs_Total_Count_"+leavetype;
+				var doc_count=parseInt(document.getElementById(doc_count_id).value);
+				table_id="Doc_Table_"+leavetype;
+				var row_count=parseInt(document.getElementById("Row_Id").value);
+				row_id=leavetype+row_count;
+				
+				//alert("Count: "+tot_count+"countID: "+count_id+", TableID: "+table_id);
+				if(doc_count<=3 && doc_count>=0){
+	
 	  				    $.ajaxFileUpload({
 		    	            	url             		 	: site_url+'/Leave/apply/upload_ProofDoc/'+leavetype,  
 		    	            	secureuri      	: false,
 		    	            	fileElementId	: elementid,
 		    	            	dataType       	:  'json',
-		    	            success					: function (data, status) {
+		    	            	success				: function (data, status) {
 			    	                										if(data.status != 'error') {
 			    	                												//alert("Status is "+data.status);
-			    	                												count_id="Docs_Count_"+leavetype;
-			    	                												table_id="Doc_Table_"+leavetype;
-			    	                												file_id=data.status;
-			    	                												var count=parseInt(document.getElementById(count_id).value);
-			    	                												//alert("Count: "+count+"countID: "+count_id+", TableID: "+table_id);
-			    	                												if(count<=2 && count>=0){
-					    	                												var table = document.getElementById(table_id);
-					    	                												var row = table.insertRow(0);
+			    	                														var file_id=data.status;
+			    	                											
+			    	                														var table = document.getElementById(table_id);
+					    	                												var row = table.insertRow(0);					    	                												
+					    	                												row.id=row_id;
 					    	                												var cell1 = row.insertCell(0);   
-					    	                												
-					    	                												cell1.innerHTML = "<input id='"+count+"' value='"+count+"' alt='Remove' type='image' id='' width='15' height='15' src='../../../images/General/remove.png' onclick='delete_ProofDoc(\""+file_id+"\",this.value,\""+table_id+"\",\""+count_id+"\")'> &nbsp;&nbsp;" +file_name;
-					    	                												document.getElementById(count_id).value=count-1;
-			    	                												}
-			    	                												else{
-			    	                														alert("You can upload Three Files Only..!");
-			    	                												}
+					    	                												//alert(row_id);
+					    	                												cell1.innerHTML = "<input alt='Remove' type='image' id='' width='15' height='15' src='../../../images/General/remove.png' onclick='delete_ProofDoc(this,\""+file_id+"\",\""+table_id+"\",\""+doc_count_id+"\")'> &nbsp;&nbsp;" +file_name;
+					    	                												document.getElementById(doc_count_id).value=doc_count+1;
+					    	                												document.getElementById("Row_Id").value=row_count+1;
 			    	                										}
 			    	                										else{
 			    	                											alert("Error");
 			    	                										}
 			    	                						}	
 		    	        });
+		  }
+			else{
+					alert("You can upload Three Files Only..!");
+			}
 		    	        
 
 	}
 		  
 		  
-		  	function delete_ProofDoc(file_id1,count,table_id,count_id){
-		  			//alert("File ID: "+file_id1+", Table ID: "+table_id+", File Count:"+count);
+		  	function delete_ProofDoc(row,file_id1,table_id,doc_count_id){
+		  			//alert("File ID: "+file_id1+", Table ID: "+table_id+", File Count:"+doc_count_id);
+		  		
 		  		    var warning = confirm("Are you sure you want to delete this Image?");
 		  		    if(warning == true){
 				  		    	$.post(	site_url+"/Leave/apply/delete_ProofDoc",
 				  		    					{file_id:file_id1},
 				  		    					function(data){
 				  		    								if(data){
-				  		    									document.getElementById(count_id).value;
-				  		    									// document.getElementById(count).style.display="none";
-				  		    									var table = document.getElementById(table_id);
-                												 table.deleteRow(count);
+				  		    									var doc_count=parseInt(document.getElementById(doc_count_id).value);
+				  		    							  		var i=row.parentNode.parentNode.rowIndex;
+				  		    							  	    document.getElementById(table_id).deleteRow(i);
+               												 document.getElementById(doc_count_id).value=doc_count-1;
                 												 
                 											}
 				  		    						}
