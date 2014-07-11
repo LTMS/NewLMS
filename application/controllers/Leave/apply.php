@@ -279,7 +279,7 @@ class Apply extends CI_Controller
 		            else
 		            {
 		                unlink($data['full_path']);
-		                $status = "Check File Format and File Size..!";
+		                $status = "error";
 		                $msg = "Something went wrong when saving the file, please try again.";
 		            }
 		        }

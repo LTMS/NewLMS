@@ -261,7 +261,7 @@
 					<td   width='10' >:</td>
 					<td><input id='SL_days' readonly='readonly' class='input_date' style='width:30px;height:25px;' value=''></td>
 				</tr>
-				<tr height='40'>
+				<tr id='Doc_Upload_SL' style='display:none' height='40'>
 					<td   width='10%' class='Font_Style1'></td>
 					<td  align='left' class='Font_Style1'>Proof Documents</td>
 					<td width='10' class='Font_Style1'>:</td>
@@ -508,7 +508,7 @@
 					<td   width='10' >:</td>
 					<td><input id='ML_days' readonly='readonly' class='input_date' style='width:30px;height:25px;' value=''></td>
 				</tr>				
-				<tr height='45'>
+				<tr id='Doc_Upload_ML' style='display:none' height='45'>
 					<td   width='10%' class='Font_Style1'></td>
 					<td  align='left' class='Font_Style1'>Proof Documents</td>
 					<td width='10' class='Font_Style1'>:</td>
