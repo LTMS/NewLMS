@@ -370,7 +370,7 @@
 				row_id=leavetype+row_count;
 				
 				//alert("Count: "+tot_count+"countID: "+count_id+", TableID: "+table_id);
-				if(doc_count<=3 && doc_count>=0){
+				if(doc_count<=1 && doc_count>=0){
 	
 	  				    $.ajaxFileUpload({
 		    	            	url             		 	: site_url+'/Leave/apply/upload_ProofDoc/'+leavetype,  
@@ -392,13 +392,14 @@
 					    	                												document.getElementById(row_count_id).value=row_count+1;
 			    	                										}
 			    	                										else{
-			    	                											alert("Error");
+			    	                											
+			    	                											alert(data.status);
 			    	                										}
 			    	                						}	
 		    	        });
 		  }
 			else{
-					alert("You can upload Three Files Only..!");
+					alert("You can upload One File Only..!");
 			}
 		    	        
 
@@ -413,6 +414,7 @@
 				  		    	$.post(	site_url+"/Leave/apply/delete_ProofDoc",
 				  		    					{file_id:file_id1},
 				  		    					function(data){
+				  		    						//alert(data);
 				  		    								if(data){
 				  		    									var doc_count=parseInt(document.getElementById(doc_count_id).value);
 				  		    							  		var i=row.parentNode.parentNode.rowIndex;
@@ -425,109 +427,137 @@
 		  	}
 
 	
+		  	
+		  	function remove_NotUploadedDocuments(){
+		  		
+		  		$.post(site_url+"/Leave/apply/remove_NotUploadedDocuments",function(data){
+		  			//alert(data);
+		  		});
+		  	}
 		
 																/* * * 				Inserting Leave Application			* * */
 		
 // Casual Leave
 		function insert_CasualLeave(){
-			alert();
-			document.getElementById("CL_Button").innerHTML="Please wait  while sending E-Mail..!";
-			var from_date1 = document.getElementById('CL_from_date').value; 
-			var to_date1 = from_date1; 
-			var days1 = document.getElementById('CL_days').value; 
-			var reason1 = document.getElementById('CL_reason').value; 
-		/*		$.post(site_url+"/Leave/apply/insert_LeaveApplication",{type:"CL",from_date:from_date1,to_date:to_date1,days:days1,reason:reason1,proof_status:'NO'},function(data){
-					window.location.reload();
-				});
-				*/
-			document.getElementById("CL_Button").innerHTML="E-Mail has been sent to  Your Leave Reporting Authority.";
+				var from_date1 = document.getElementById('CL_from_date').value; 
+				var to_date1 = from_date1; 
+				var days1 = document.getElementById('CL_days').value; 
+				var reason1 = document.getElementById('CL_reason').value; 
+				if(from_date1!="" && to_date1!="" && days1!="" && reason1!=""){
+					document.getElementById("CL_Button").innerHTML="Please wait  while sending E-Mail..!";
+
+							$.post(site_url+"/Leave/apply/insert_LeaveApplication",{type:"CL",from_date:from_date1,to_date:to_date1,days:days1,reason:reason1,proof_status:'NO'},function(data){
+								
+									innertxt=" <center>E-Mail has been sent to Your Leave Approver..!<br><br><input type='image' width='100px' height='30px' src='../../../images/Leave/ok.png'  onclick='window.location.reload()' ></center>";
+									document.getElementById("CL_Button").innerHTML=innertxt;
+							});
+				}
+				else{
+					alert("Check input Fields..! All are Mandatory..!");
+				}
 		}
 		
 		
 //Sick Leave
 		function insert_SickLeave(){
-			document.getElementById("apply_img_SL").style.display="none";
-			var Doc_Count = document.getElementById('Docs_Total_Count_SL').value; 
-			var from_date1 = document.getElementById('SL_from_date').value; 
-			var to_date1 = document.getElementById('SL_to_date').value; 
-			var days1 = document.getElementById('SL_days').value; 
-			var days1 = document.getElementById('SL_days').value; 
-			var reason1 = document.getElementById('SL_reason').value; 
-			if(Doc_Count>=2){
-				var proofstatus='YES';
-			}
-			else{
-				var proofstatus='NO';
-			}
-				$.post(site_url+"/Leave/apply/insert_LeaveApplication",{type:"SL",from_date:from_date1,to_date:to_date1,days:days1,reason:reason1,proof_status:proofstatus},function(data){
-					if(proofstatus=='YES'){
-									var result=data.trim(); 
-									if(result!="Error"){
-										var leave_ID=parseInt(result); //	alert(leave_ID);
-										$.post(site_url+"/Leave/apply/update_DocumentStatus",{type:"SL",leaveID:leave_ID},function(data2){
-											window.location.reload();
-										});
-										
-									}	
+					var Doc_Count = document.getElementById('Docs_Total_Count_SL').value; 
+					var from_date1 = document.getElementById('SL_from_date').value; 
+					var to_date1 = document.getElementById('SL_to_date').value; 
+					var days1 = document.getElementById('SL_days').value; 
+					var reason1 = document.getElementById('SL_reason').value; 
+					
+					if(Doc_Count>=2){
+						var proofstatus='YES';
 					}
-							
-							
-				});
+					else{
+						var proofstatus='NO';
+					}
+					
+					if(from_date1!="" && to_date1!="" && days1!="" && reason1!="" && Doc_Count>1){
+						document.getElementById("SL_Button").innerHTML="Please wait  while sending E-Mail..!";
+
+									$.post(site_url+"/Leave/apply/insert_LeaveApplication",{type:"SL",from_date:from_date1,to_date:to_date1,days:days1,reason:reason1,proof_status:proofstatus},function(data){
+										
+										innertxt=" <center>E-Mail has been sent to Your Leave Approver..!<br><br><input type='image' width='100px' height='30px' src='../../../images/Leave/ok.png'  onclick='window.location.reload()' ></center>";
+										document.getElementById("SL_Button").innerHTML=innertxt;
+								});
+					}
+					else{
+						alert("Check input Fields..! All are Mandatory..!");
+					}
 		}
 		
 		function insert_EarnedLeave(){
-			document.getElementById("apply_img_EL").style.display="none";
-			var from_date1 = document.getElementById('EL_from_date').value; 
-			var to_date1 = document.getElementById('EL_to_date').value; 
-			var days1 = document.getElementById('EL_days').value; 
-			var reason1 = document.getElementById('EL_reason').value; 
-				$.post(site_url+"/Leave/apply/insert_LeaveApplication",{type:"EL",from_date:from_date1,to_date:to_date1,days:days1,reason:reason1,proof_status:'NO'},function(data){
-					window.location.reload();
-				});
+					var from_date1 = document.getElementById('EL_from_date').value; 
+					var to_date1 = document.getElementById('EL_to_date').value; 
+					var days1 = document.getElementById('EL_days').value; 
+					var reason1 = document.getElementById('EL_reason').value; 
+					if(from_date1!="" && to_date1!="" && days1!="" && reason1!=""){
+						document.getElementById("EL_Button").innerHTML="Please wait  while sending E-Mail..!";
+
+						$.post(site_url+"/Leave/apply/insert_LeaveApplication",{type:"EL",from_date:from_date1,to_date:to_date1,days:days1,reason:reason1,proof_status:'NO'},function(data){
+								
+									innertxt=" <center>E-Mail has been sent to Your Leave Approver..!<br><br><input type='image' width='100px' height='30px' src='../../../images/Leave/ok.png'  onclick='window.location.reload()' ></center>";
+									document.getElementById("EL_Button").innerHTML=innertxt;
+							});
+					}
+					else{
+						alert("Check input Fields..! All are Mandatory..!");
+					}
 		}
 		
 		function insert_CompOff(){
-			document.getElementById("apply_img_CO").style.display="none";
-			var from_date1 = document.getElementById('CO_from_date').value; 
-			var to_date1 = document.getElementById('CO_to_date').value; 
-			var days1 = document.getElementById('CO_days').value; 
-			var reason1 = document.getElementById('CO_reason').value; 
-					$.post(site_url+"/Leave/apply/insert_LeaveApplication",{type:"CO",from_date:from_date1,to_date:to_date1,days:days1,reason:reason1,proof_status:'NO'},function(data){
-						window.location.reload();
-					});
+					var from_date1 = document.getElementById('CO_from_date').value; 
+					var to_date1 = document.getElementById('CO_to_date').value; 
+					var days1 = document.getElementById('CO_days').value; 
+					var reason1 = document.getElementById('CO_reason').value; 
+					if(from_date1!="" && to_date1!="" && days1!="" && reason1!=""){
+						document.getElementById("CO_Button").innerHTML="Please wait  while sending E-Mail..!";
+						
+								$.post(site_url+"/Leave/apply/insert_LeaveApplication",{type:"CO",from_date:from_date1,to_date:to_date1,days:days1,reason:reason1,proof_status:'NO'},function(data){
+									
+									innertxt=" <center>E-Mail has been sent to Your Leave Approver..!<br><br><input type='image' width='100px' height='30px' src='../../../images/Leave/ok.png'  onclick='window.location.reload()' ></center>";
+									document.getElementById("CO_Button").innerHTML=innertxt;
+									
+								});
+						
+					}
+					else{
+						alert("Check input Fields..! All are Mandatory..!");
+					}
 		}
 		
 		//Sick Leave		
 		
 		function insert_MaternityLeave(){
-			document.getElementById("apply_img_ML").style.display="none";
-			var Doc_Count = document.getElementById('Docs_Total_Count_ML').value; 
-			var from_date1 = document.getElementById('ML_from_date').value; 
-			var to_date1 = document.getElementById('ML_to_date').value; 
-			var days1 = document.getElementById('ML_days').value; 
-			var days1 = document.getElementById('ML_days').value; 
-			var reason1 = document.getElementById('ML_reason').value; 
-			if(Doc_Count>=2){
-				var proofstatus='YES';
-			}
-			else{
-				var proofstatus='NO';
-			}
-				$.post(site_url+"/Leave/apply/insert_LeaveApplication",{type:"ML",from_date:from_date1,to_date:to_date1,days:days1,reason:reason1,proof_status:proofstatus},function(data){
-					if(proofstatus=='YES'){
-									var result=data.trim(); 
-									if(result!="Error"){
-										var leave_ID=parseInt(result); //	alert(leave_ID);
-										$.post(site_url+"/Leave/apply/update_DocumentStatus",{type:"ML",leaveID:leave_ID},function(data2){
-											window.location.reload();
-										});
-										
-									}	
+					var Doc_Count = document.getElementById('Docs_Total_Count_ML').value; 
+					var from_date1 = document.getElementById('ML_from_date').value; 
+					var to_date1 = document.getElementById('ML_to_date').value; 
+					var days1 = document.getElementById('ML_days').value; 
+					var days1 = document.getElementById('ML_days').value; 
+					var reason1 = document.getElementById('ML_reason').value; 
+					
+					if(Doc_Count>=2){
+						var proofstatus='YES';
 					}
-							
-							
-				});
+					else{
+						var proofstatus='NO';
+					}
+					
+					if(from_date1!="" && to_date1!="" && days1!="" && reason1!="" && Doc_Count>1){
+						document.getElementById("ML_Button").innerHTML="Please wait  while sending E-Mail..!";
+
+									$.post(site_url+"/Leave/apply/insert_LeaveApplication",{type:"ML",from_date:from_date1,to_date:to_date1,days:days1,reason:reason1,proof_status:proofstatus},function(data){
+										
+										innertxt=" <center>E-Mail has been sent to Your Leave Approver..!<br><br><input type='image' width='100px' height='30px' src='../../../images/Leave/ok.png'  onclick='window.location.reload()' ></center>";
+										document.getElementById("ML_Button").innerHTML=innertxt;
+								});
+					}
+					else{
+						alert("Check input Fields..! All are Mandatory..!");
+					}
 		}
+		
 	
 
 			$("#doj_date").datepicker({

@@ -256,8 +256,8 @@ class Apply extends CI_Controller
 		   if ($status != "error")
 		    { 
 		        $config['upload_path'] = './Documents/';
-		        $config['allowed_types'] = 'gif|jpg|png|doc|txt';
-		        $config['max_size'] = 1024 * 8;
+		        $config['allowed_types'] = 'jpg|png|doc|pdf';
+		        $config['max_size'] = 1024 * 2;
 		        $config['encrypt_name'] = TRUE;
 		 
 		        $this->load->library('upload', $config);
@@ -279,7 +279,7 @@ class Apply extends CI_Controller
 		            else
 		            {
 		                unlink($data['full_path']);
-		                $status = "error";
+		                $status = "Check File Format and File Size..!";
 		                $msg = "Something went wrong when saving the file, please try again.";
 		            }
 		        }
@@ -293,26 +293,25 @@ class Apply extends CI_Controller
 				$form_data=$this->input->post();
 				$file_id=$form_data["file_id"];
 				$file_path='./Documents/'.$file_id;
-				echo	$this->apply_model->delete_ProofDoc($file_id);
+				echo	$this->apply_model->delete_ProofDoc($form_data["file_id"]);
 				
 				@unlink($file_path);
 	}
 	
-	function update_DocumentStatus(){
-				$form_data=$this->input->post();
-				$this->apply_model->update_DocumentStatus($form_data["type"],$form_data["leaveID"]);			
-	}
 	
-	function remove_NotUploadedDocuments($type){
-		$files=$this->apply_model->get_NotUploadedDocuments($type);
+	function remove_NotUploadedDocuments(){
+		$files=$this->apply_model->get_NotUploadedDocuments();
 				if(!empty($files))
 					foreach($files as $row){
-									$file=$row["Encr_Name"];
+									$file_id=$row["Encr_Name"];
 									$file_path='./Documents/'.$file_id;
 									@unlink($file_path);
+									
+						$this->apply_model->delete_ProofDoc($file_id);
 					}
-			$this->apply_model->get_NotUploadedDocuments();
 	}
+	
+																			/* * *		 Inserting Leave Application 			* * */
 	
 	
 	function insert_LeaveApplication(){
@@ -322,49 +321,50 @@ class Apply extends CI_Controller
 	 	$date2 = $form_data["to_date"];	 	
 	 	$from_date = date("Y-m-d", strtotime($date1));
 	 	$to_date = date("Y-m-d", strtotime($date2));
+	 	$type = $form_data["type"];	 
+	 	$proof_status=$form_data["proof_status"];
 	 	
 	 		$result=$this->apply_model->insert_LeaveApplication($form_data["type"],$from_date,$to_date,$form_data["days"],$form_data["reason"],$form_data["proof_status"]);
-	 			 	foreach($result as $row){
-	 						$leaveID=$row["Leave_ID"];
-	 				}
-	 				if($leaveID!="" && $leaveID!="NaN"){
-	 					echo $leaveID;
-	 				}
-	 				else{
-	 					echo "Error";
-	 				}
-	 				
+
+	 					foreach($result as $row){
+								$leaveID=$row["Leave_ID"];
+						}
+	
+				 		if($proof_status=="YES"){
+								$this->update_DocumentStatus($type,$leaveID);
+				 		}
+		 				$this->Send_LeaveMail($type,$date1,$form_data["days"],$form_data["reason"],$proof_status);
+		 				
+	}
+	
+	function update_DocumentStatus($type,$leaveID){
+				$form_data=$this->input->post();
+				$this->apply_model->update_DocumentStatus($type,$leaveID);			
 	}
 	
 	
-	function SendMail(){
-
-		$form_data = $this->input->post();
-		$sick_limit=$form_data["sick_limit"];
-		$holidays_list=$form_data["holidays_list"];
-		$l_type=$form_data["l_type"];
-		$reason=$form_data["reasoning"];
-		$days=$form_data["day"];
-		$date=$form_data["date_from"];
-		$date2=$form_data["date_to"];
-		$type=$form_data["l_type"];
-
-		$result = $this->apply_model->getMailData($form_data["date_from"],$form_data["reasoning"], $form_data["day"],$form_data["l_type"],$form_data["Offr"]);
-
-
-		foreach($result as $row){
-
-			$to1=$row["ToMail1"];
-			$to2=$row["ToMail2"];
-			$from=$row["FromMail"];
-			$file=$row["filename"];
-			$file_count=$row["file_count"];
-			$name=$row["Name"];
-
+	function 	Send_LeaveMail($type,$date,$days,$reason,$proof_status){
+		
+		$my_name=$this->session->userdata('Emp_Name');
+		$my_num=$this->session->userdata('Emp_Number');
+		$my_mail=$this->session->userdata('My_Mail');
+		$app_time = date('l jS \of F Y h:i:s A');
+		
+		$MailID=$this->apply_model->get_MailID($my_num);
+		foreach($MailID as $row){
+			//	$emp_mail=$row["Emp_Mail"];
+			$reporter_mail=$row["Reporter_Mail"];
 		}
-			
+		
+		if($proof_status=="YES"){
+								update_DocumentStatus($type,$leaveID);
+		}
+		
+		$mail_subject=$my_name." has applied ".$type;
+		
+		
+		
 		$mail = new PHPMailer;
-
 		$mail->isSMTP();
 		$mail->Host = 'mail.preipolar.com';
 		$mail->SMTPAuth = True;
@@ -372,78 +372,67 @@ class Apply extends CI_Controller
 		$mail->Password = 'prei@123';
 
 
-		$mail->From = $from;
+		$mail->From = $my_mail;
 		$mail->FromName = 'Leave Mailer';
+		$mail->addAddress($reporter_mail);
+		$mail->addCC($my_mail);
 
-		if($to1==$to2){
-			$mail->addAddress($to1);
-		}
-		else{
-
-			$mail->addAddress($to1);
-			$mail->addAddress($to2);
-		}
-
-		if($file_count>0){
-			$mail->AddAttachment("files/".$file);
-		}
-			
 		$mail->isHTML(true);
 
-		$mail->Subject = $name."  has applied  ".$type." for ".$days." day(s).";
-
+		$mail->Subject = $mail_subject;
 
 		$c=	"
-								<html><body>
-									<table border='1' align='center' cellpading='0' cellspacing='0' width='80%' style='color:blue;font-weight:bold;margin: 40px 0px 0px 50px;'>
-												<tr >
-														<td colspan='2' align='center' style='width:40%;color:red'>Leave Details</td>
-														
-												</tr>
-												<tr >
-														<td align='right' >Employee Name</td>
-														<td  >$name</td>
-												</tr>
-												<tr>
-														<td align='right'>Leave Type</td>
-														<td>$type</td>
-												</tr>
-												<tr>
-														<td align='right'>From & To Date</td>
-														<td>$date to $date2</td>
-												</tr>
-												<tr>
-														<td align='right'>No of Days</td>
-														<td>$days</td>
-												</tr>
-												<tr>
-														<td align='right'>Holidays & Leaves</td>
-														<td>$holidays_list</td>
-												</tr>
-												<tr>
-														<td align='right'>Reason</td>
-														<td>$reason</td>
-													<tr>
-														<td align='left' colspan='4'> Link:  http://192.168.2.54:8877/LMS/index.php/lms/pending_applications</td>
-													
-												</tr>
-									</table>
-							 	  </body></html>";
+							<html>
+										<body>
+										<h style='font-weight:bold' ><font color='#003366' size='5pt' face='Lucida Handwriting' >Hi, <b>Gnanajeyam G..!</b></font></h>
+										<br>
+										<br>
+										<p style='font-weight:bold;font-size:13px;color:#003366' >&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; 
+											$mail_subject
+										</p>
+										<br>
+										<h3 style='font-weight:bold;font-size:13px;color:#003366' ><u>Leave Details</u></h3>
+										<br>
+										<table style='font-size:13px;color:#006699;'>
+											<tr>
+												<td width='100px'>Type of Leave</td><td width='10px'>:</td>
+												<td>$type</td>
+											</tr>
+											<tr>
+												<td width='100px'>Leave On</td><td width='10px'>:</td>
+												<td>$date</td>
+											</tr>
+											<tr>
+												<td width='100px'>No of Days</td><td width='10px'>:</td>
+												<td>$days</td>
+											</tr>
+											<tr>
+												<td width='100px'>Reason</td><td width='10px'>:</td>
+												<td>$reason</td>
+											</tr>
+											<tr>
+												<td width='100px'>Applied On</td><td width='10px'>:</td>
+												<td>$app_time</td>
+											</tr>
+										</table>
+										</body>					 	  
+							 </html>";
 
+		
 		$mail->Body =$c;
 
-	
+
 		if(!$mail->send()) {
 			echo 'Message could not be sent.';
-			echo 'Mailer Error: ' . $mail->ErrorInfo.' File Name: '.$file;
+			echo 'Mailer Error: ' . $mail->ErrorInfo;
 			exit;
 		}
 
 		echo 'Message has been sent';
-
 	}
-
-
+		
+	
+	
 
 																					/* * *        Permissions         * * */
 	function insert_permission_data(){

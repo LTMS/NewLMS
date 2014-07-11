@@ -1,9 +1,18 @@
 <?php
 Class Apply_model extends CI_Model{
-	function _construct(){
-		parent::_construct();
-	}
-		
+			function _construct(){
+				parent::_construct();
+			}
+	
+	
+		function get_MailID($emp_num){
+				return	$this->db->query("SELECT Email as Emp_Mail,
+																	(SELECT DISTINCT Email FROM employees WHERE Employee_Number=a.Reporter) as Reporter_Mail, 
+																	(SELECT DISTINCT Email FROM employees WHERE Employee_Number=a.Approver) as Approver_Mail
+																	FROM 
+																	(SELECT Email, Reporter, Approver FROM employees WHERE Employee_Number='$emp_num') a")->result_array();
+		}
+	
 	function get_Experience(){
 			$Emp_Num=$this->session->userdata("Emp_Number");
 			return $this->db->query("SELECT 12 * (YEAR(CURDATE()) - YEAR(DOJ)) 
@@ -70,7 +79,8 @@ Class Apply_model extends CI_Model{
 		
 	function upload_ProofDoc($encr_name,$type){
 				$emp_num=$this->session->userdata("Emp_Number");
-				return	$this->db->query("INSERT INTO proof_documents(Emp_Number,Encr_Name,Leave_Type,Status) values('$emp_num','$encr_name','$type','Selected')");
+				return	$this->db->query("INSERT INTO proof_documents(Emp_Number,Encr_Name,Leave_Type,Status) 
+																	VALUES('$emp_num','$encr_name','$type','Selected')");
 	}
 	
 	
@@ -85,15 +95,14 @@ Class Apply_model extends CI_Model{
 	
 	function delete_ProofDoc($file_id){
 			$this->db->query("DELETE FROM proof_documents
-												WHERE Encr_Name='$file_id' 
-																WHERE Status='Selected' ");
+												WHERE Encr_Name='$file_id' AND Status='Selected' ");
 	}
 
-		function get_NotUploadedDocuments($type){
+		function get_NotUploadedDocuments(){
 				$emp_num=$this->session->userdata("Emp_Number");
 				return 	$this->db->query("SELECT Encr_Name
-																	WHERE Emp_Number='$emp_num' AND Status='Selected' 
-																		AND Leave_Type='$type'  ")->result_array();
+																	FROM proof_documents
+																	WHERE Emp_Number='$emp_num' AND Status='Selected'  ")->result_array();
 				
 				
 	}
@@ -105,7 +114,14 @@ Class Apply_model extends CI_Model{
 												WHERE Emp_Number='$emp_num' AND Status='Selected' ");
 	}
 	
+																			/* * * 		Inserting Leave Application 		* * */	
 	
+	function get_FileName($emp_num,$type){
+				return $this->db->query("SELECT Encr_Name
+																	FROM proof_documents
+																	WHERE Emp_Number='$emp_num' AND Leave_Type='$type'
+																					AND  ")->result_array();
+	}
 	
 	function insert_LeaveApplication($leave_type,$from_date,$to_date,$days,$reason,$proof_status){
 
@@ -117,50 +133,14 @@ Class Apply_model extends CI_Model{
 																	leave_history(Emp_Number, Emp_Name, Leave_Type, From_Date,To_Date,Total_Days,Leave_Status,Reason,Applied_On,Proof_Uploaded)
 																	VALUES('$emp_num','$emp_name','$leave_type','$from_date','$to_date','$days','1','$reason',CURRENT_TIMESTAMP,'$proof_status' )  ");
 				return $this->db->query("SELECT Leave_ID
-														FROM leave_history
-														WHERE Emp_Number='$emp_num' AND From_Date='$from_date'
-																		AND Leave_Status='1' AND Leave_Type='$leave_type' ")->result_array();	
-
-	}
-
-	
-	
-	function get_RecentlyInsertedLeave($leave_type,$from_date){
-				$emp_name=$this->session->userdata('Emp_Name');
-				return $this->db->query("SELECT Leave_ID
-														FROM leave_history
-														WHERE Emp_Number='$emp_num' AND From_Date='$from_date'
-																		AND Leave_Status='Applied' AND Leave_Type='$leave_type' ")->result_array();	
+																	FROM leave_history
+																	WHERE Emp_Number='$emp_num' AND From_Date='$from_date'
+																					AND Leave_Status='1' AND Leave_Type='$leave_type' ")->result_array();	
 				
-	}
-
-
-
-
-	function getMailData($date_from,$reasoning,$day,$l_type,$Offr){
-		$emp_num=$this->session->userdata('Emp_Number');
-			
-		return $this->db->query("SELECT DISTINCT (SELECT email FROM admin_users WHERE name='$emp_num') AS FromMail ,
-					(SELECT email FROM admin_users WHERE name=(SELECT LeaveApprover_L1 FROM team WHERE EmployeeName='$emp_num' ) ) AS ToMail1,
-					 (SELECT email 	FROM admin_users WHERE user_email='MD' limit 1 ) AS ToMail2,'$emp_num' as Name,
-					filename,file_count
-					 FROM  (
-					 SELECT IF(filename!='',filename,'NO') as filename, COUNT(filename) as file_count FROM files	WHERE leave_id = (SELECT LeaveID FROM leave_history WHERE Emp_Number='$emp_num' AND Leave_Type='Sick Leave' AND DATE_FORMAT(From_Date,'%d-%m-%Y')='$date_from') limit 1) a")->result_array();
-			
 
 	}
-		
-	function approve_mail($lid){
-		$app=$this->session->userdata('Emp_Number');
-		return $this->db->query("SELECT Emp_Number,Leave_Type AS Type,From_Date As Date,Total_Days As Days,Applied_On AS Time,leave_status.Description As Status,
-																	admin_users.email AS Email,(SELECT email FROM admin_users WHERE name='$app' ) AS FromMail
-																	FROM leave_history 
-																	INNER JOIN leave_status ON leave_status.status=leave_history.Leave_Status 
-																	INNER JOIN admin_users ON admin_users.name=leave_history.Emp_Number
-																	WHERE leaveID='$lid'")->result_array();	
 
-	}
-		
+
 
 
 	function insert_permission_data($d,$time,$total,$reason){

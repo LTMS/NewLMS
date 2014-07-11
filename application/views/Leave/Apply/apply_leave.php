@@ -17,7 +17,7 @@
 		</tr>
 	</table>
 </div>
-
+<body onload="remove_NotUploadedDocuments()" ></body>
 <?php 
 	if(!empty($Criteria)){
 				foreach($Criteria as $row){
@@ -144,7 +144,7 @@
 
 <div style='width:60%;margin:1% 0 0 19%'>
 	<table id='Leave_List' >
-		<tr>
+		<tr >
 			<td align='center'><input type='image' id='CL_Div' width='130' height='90' src='../../../images/Leave/CL.png'  alt='Casual Leave' onclick='show_LeaveDiv("CL_Table")' onmouseover='show_Shadow("CL_Div","#E3FBE9")' /></td>
 			<td align='center'><input type='image' id='SL_Div' width='130' height='90' src='../../../images/Leave/SL.png' alt='Sick Leave' onclick='show_LeaveDiv("SL_Table")'  onmouseover='show_Shadow("SL_Div","#FFEEFD")'/></td>
 			<td align='center'><input type='image' id='EL_Div' width='130' height='90' src='../../../images/Leave/EL.png' alt='Earned Leave' onclick='show_LeaveDiv("EL_Table")'  onmouseover='show_Shadow("EL_Div","#E0E0E0")'/></td>
@@ -186,11 +186,11 @@
 					<td  align='left' class='Font_Style1'>Reason for Leave</td>
 					<td width='10' class='Font_Style1'>:</td>
 					<td ><textarea  id='CL_reason' cols='30' rows='4' onblur='remove_Specials("CL_reason",this.value)'></textarea>
-						<br><font color='red'>* Maximum 200 Characters allowed.</font>
+						<br><font color='#333300'>* Maximum 200 Characters allowed.</font>
 					</td>
 				</tr>
 				<tr  height='80'>
-					<td id='CL_Button' colspan='5' align='center'>
+					<td id='CL_Button'  style='font-size:13pt;color:#339900;font-family:lucida Handwriting' colspan='5' align='center'>
 							<input id='apply_img_CL' type='image' src='../../../images/Leave/apply.png'   style='width:100px;height:32px;'  onclick='insert_CasualLeave()' onmouseover='change_OnMouseOver("apply_img_CL","apply_over.png")' onmouseout='change_OnMouseOver("apply_img_CL","apply.png")'/>
 					</td>
 				</tr>
@@ -267,6 +267,7 @@
 					<td width='10' class='Font_Style1'>:</td>
 					<td >
 						<input type='file' name="fileupload_SL" id="fileupload_SL" onchange="upload_ProofDoc(this.value,'fileupload_SL','SL')" style='color:green;font-size:12pt;font-weight:bold;'/>
+						<br><br><font color='#333300'>* File Format: jpg / png / doc / pdf &nbsp;&nbsp; * Max Fize Size: 2 MB</font>
 						</td>
 				</tr>
 			<tr height='30'>
@@ -282,11 +283,11 @@
 					<td width='10' class='Font_Style1'>:</td>
 					<td >
 						<textarea  id='SL_reason'  cols='30' rows='4' onblur='remove_Specials("SL_reason",this.value)'></textarea>
-						<br><font color='red'>* Maximum 200 Characters allowed.</font>
+						<br><font color='#333300'>* Maximum 200 Characters allowed.</font>
 					</td>
 				</tr>
 				<tr height='80'>
-					<td  id='SL_Button'  colspan='5' align='center'>
+					<td  id='SL_Button'   style='font-size:13pt;color:#339900;font-family:lucida Handwriting' colspan='5' align='center'>
 							<input id='apply_img_SL' type='image' src='../../../images/Leave/apply_SL.png'   style='width:100px;height:32px;'  onclick='insert_SickLeave()' onmouseover='change_OnMouseOver("apply_img_SL","apply_SL_over.png")' onmouseout='change_OnMouseOver("apply_img_SL","apply_SL.png")'/>
 					</td>
 				</tr>
@@ -360,11 +361,11 @@
 					<td  align='left' class='Font_Style1'>Reason for Leave</td>
 					<td width='10' class='Font_Style1'>:</td>
 					<td ><textarea  id='EL_reason' cols='30' rows='4' onblur='remove_Specials("EL_reason",this.value)'></textarea>
-						<br><font color='red'>* Maximum 200 Characters allowed.</font>
+						<br><font color='#333300'>* Maximum 200 Characters allowed.</font>
 					</td>
 				</tr>
 				<tr  height='80'>
-					<td id='EL_Button' colspan='5' align='center'>
+					<td id='EL_Button'  style='font-size:13pt;color:#339900;font-family:lucida Handwriting' colspan='5' align='center'>
 							<input id='apply_img_EL' type='image' src='../../../images/Leave/apply_EL.png'   style='width:100px;height:32px;'  onclick='insert_EarnedLeave()' onmouseover='change_OnMouseOver("apply_img_EL","apply_EL_over.png")' onmouseout='change_OnMouseOver("apply_img_EL","apply_EL.png")'/>
 					</td>
 				</tr>
@@ -434,11 +435,11 @@
 					<td  align='left' class='Font_Style1'>Reason for Leave</td>
 					<td width='10' class='Font_Style1'>:</td>
 					<td ><textarea  id='CO_reason' cols='30' rows='4' onblur='remove_Specials("CO_reason",this.value)'></textarea>
-						<br><font color='red'>* Maximum 200 Characters allowed.</font>
+						<br><font color='#333300'>* Maximum 200 Characters allowed.</font>
 					</td>
 				</tr>
 				<tr  height='80'>
-					<td id='CO_Button' colspan='5' align='center'>
+					<td id='CO_Button'  style='font-size:13pt;color:#339900;font-family:lucida Handwriting' colspan='5' align='center'>
 							<input id='apply_img_CO' type='image' src='../../../images/Leave/apply_CO.png'   style='width:100px;height:32px;'  onclick='insert_CompOff()' onmouseover='change_OnMouseOver("apply_img_CO","apply_CO_over.png")' onmouseout='change_OnMouseOver("apply_img_CO","apply_CO.png")'/>
 					</td>
 				</tr>
@@ -507,23 +508,13 @@
 					<td   width='10' >:</td>
 					<td><input id='ML_days' readonly='readonly' class='input_date' style='width:30px;height:25px;' value=''></td>
 				</tr>				
-				<tr height='45' class='Font_Style1'>
-					<td   width='10%' ></td>
-					<td align='left' >Chance No:</td>
-					<td  >:</td>
-					<td>
-						<select>
-								<option value="1" >ONE</option>
-								<option value="2">TWO</option>
-						</select>
-					</td>
-				</tr>
 				<tr height='45'>
 					<td   width='10%' class='Font_Style1'></td>
 					<td  align='left' class='Font_Style1'>Proof Documents</td>
 					<td width='10' class='Font_Style1'>:</td>
 					<td >
 						<input type='file' name="fileupload_ML" id="fileupload_ML" onchange="upload_ProofDoc(this.value,'fileupload_ML','ML')" style='color:green;font-size:12pt;font-weight:bold;'/>
+						<br><br><font color='#333300'>* File Format: jpg / png / doc / pdf &nbsp;&nbsp; * Max Fize Size: 2 MB</font>
 						</td>
 				</tr>
 			<tr height='30'>
@@ -538,12 +529,12 @@
 					<td  align='left' class='Font_Style1'>Reason for Leave</td>
 					<td width='10' class='Font_Style1'>:</td>
 					<td ><textarea  id='ML_reason' cols='30' rows='4' onblur='remove_Specials("ML_reason",this.value)'></textarea>
-						<br><font color='red'>* Maximum 200 Characters allowed.</font>
+						<br><font color='#333300'>* Maximum 200 Characters allowed.</font>
 					</td>
 				</tr>
 				<tr  height='80'>
-					<td colspan='5' align='center'>
-							<input id='ML_Button'  id='apply_img_ML' type='image' src='../../../images/Leave/apply_ML.png'   style='width:100px;height:32px;'  onclick='insert_MaternityLeave()' onmouseover='change_OnMouseOver("apply_img_ML","apply_ML_over.png")' onmouseout='change_OnMouseOver("apply_img_ML","apply_ML.png")'/>
+					<td id='ML_Button' colspan='5'  style='font-size:13pt;color:#339900;font-family:lucida Handwriting'  align='center'>
+							<input  id='apply_img_ML' type='image' src='../../../images/Leave/apply_ML.png'   style='width:100px;height:32px;'  onclick='insert_MaternityLeave()' onmouseover='change_OnMouseOver("apply_img_ML","apply_ML_over.png")' onmouseout='change_OnMouseOver("apply_img_ML","apply_ML.png")'/>
 					</td>
 				</tr>
 				<tr height='50'>
