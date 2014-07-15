@@ -30,6 +30,7 @@
 						$max_limit_CL=$row["Maximum_Limit"];
 						$prior_days_CL=$row["Prior_Days"];
 						$doc_days_CL=$row["Doc_Limit_Days"];
+						$carry_CL=$row["Carry_Forward"];
 					}
 
 					if($type=="SL"){
@@ -40,6 +41,7 @@
 						$max_limit_SL=$row["Maximum_Limit"];
 						$prior_days_SL=$row["Prior_Days"];
 						$doc_days_SL=$row["Doc_Limit_Days"];
+						$carry_SL=$row["Carry_Forward"];
 					}
 				
 					if($type=="EL"){
@@ -50,6 +52,7 @@
 						$max_limit_EL=$row["Maximum_Limit"];
 						$prior_days_EL=$row["Prior_Days"];
 						$doc_days_EL=$row["Doc_Limit_Days"];
+						$carry_EL=$row["Carry_Forward"];
 					}
 				
 					if($type=="CO"){
@@ -60,6 +63,7 @@
 						$max_limit_CO=$row["Maximum_Limit"];
 						$prior_days_CO=$row["Prior_Days"];
 						$doc_days_CO=$row["Doc_Limit_Days"];
+						$carry_CO=$row["Carry_Forward"];
 					}
 					
 					if($type=="ML"){
@@ -70,6 +74,7 @@
 						$max_limit_ML=$row["Maximum_Limit"];
 						$prior_days_ML=$row["Prior_Days"];
 						$doc_days_ML=$row["Doc_Limit_Days"];
+						$carry_ML=$row["Carry_Forward"];
 						$chances_ML=$row["Chances"];
 					}
 					
@@ -82,6 +87,30 @@
 					$experience=$row2["Experience_Month"];
 			}
 	}
+
+// Assinging Leave Balance Variables
+
+	$rep_month_CL=$rep_year_CL=0;$apvr_month_CL=$apvr_year_CL=$apprd_month_CL=$apprd_year_CL=0;
+//	$rep_month_SL=$rep_year_SL=0;$apvr_month_SL=$apvr_year_SL=$apprd_month_SL=$apprd_year_SL=0;
+//	$rep_month_EL=$rep_year_EL=0;$apvr_month_EL=$apvr_year_EL=$apprd_month_EL=$apprd_year_EL=0;
+//	$rep_month_CO=$rep_year_CO=0;$apvr_month_CO=$apvr_year_CO=$apprd_month_CO=$apprd_year_CO=0;
+//	$rep_month_ML=$rep_year_ML=0;$apvr_month_ML=$apvr_year_ML=$apprd_month_ML=$apprd_year_ML=0;
+		
+	
+			foreach($Leave_Details_Year as $row3){
+				$rep_year=$row3["At_Reporter"];
+				$appr_year=$row3["At_Approver"];
+				$apprd_year=$row3["Approved"];
+			}
+
+			foreach($Leave_Details_Month as $row4){
+				$rep_month=$row4["At_Reporter"];
+				$appr_month=$row4["At_Approver"];
+				$apprd_month=$row4["Approved"];
+			}
+	
+	$balance=$year_limit_CL-$apprd_year;
+	
 ?>
 
 
@@ -140,9 +169,86 @@
 
 
 
+<div id='Criteria_CL' style='position:absolute;width:28%;height:65%;margin:9.5% 0 0 54%;background:#ECF4FF;box-shadow: 5px 5px 5px #BBDAFF;border:1px groove #62A9FF;border-radius:10px;'>
+
+			<p class="Font_Small" style='font-size:13pt;' align='center'><u>Criteria</u></p>
+			<table class='Font_Small'>
+				<tr>	<td colspan='3' > </td></tr>	
+				<tr>
+					<td > * Experience Needed </td>
+					<td width='5'>:</td>
+					<td id='exp' ><?php if($experience_CL==0){ $experience_CL="---";}else{ echo $experience_CL." Months";} ?>  </td>
+				</tr>	
+				<tr>
+					<td > * Prior Approval</td>
+					<td width='5'>:</td>
+					<td id='prior' ><?php if($prior_days_CL==0){ echo "---";} else{echo $prior_days_CL." Days"; } ?> Days</td>
+				</tr>	
+				<tr>
+					<td> * Document Uploading Limit</td>
+					<td width='5'>:</td>
+					<td id='doc_limit' ><?php if($doc_days_CL==0){ echo "---";} else{echo $doc_days_CL." Days"; } ?> </td>
+				</tr>	
+				<tr>
+					<td > * Leaves allowed per Month</td>
+					<td width='5'>:</td>
+					<td id='month_limit'><?php  if($month_limit_CL==0){ echo "---";} else{echo $month_limit_CL." Days"; } ?></td>
+				</tr>	
+				<tr>
+					<td > * Leaves allowed per Year</td>
+					<td width='5'>:</td>
+					<td id='year_limit'><?php  if($year_limit_CL==0){ echo "---";} else{echo $year_limit_CL." Days"; }?></td>
+				</tr>	
+				<tr>
+					<td > * Minimum at a Time</td>
+					<td width='5'>:</td>
+					<td id='min_limit'><?php if($min_limit_CL==0){ echo "---";} else{echo $min_limit_CL." Days"; } ?> Days</td>
+				</tr>	
+				<tr>
+					<td > * Maximum at a Time</td>
+					<td width='5'>:</td>
+					<td id='max_limit'><?php if($max_limit_CL==0){ echo "---";} else{echo $max_limit_CL." Days"; }  ?> Days</td>
+				</tr>	
+				<tr>
+					<td> * Carry Forward</td>
+					<td width='5'>:</td>
+					<td id='carry' ><?php echo $carry_CL; ?></td>
+				</tr>	
+			</table>
+			<br>
+			<p class="Font_Small" style='font-size:13pt;' align='center'><u>Leave Balance</u></p>
+			
+			<table width='100%'align='center' class='Font_Small' >
+				<tr align='center'>
+						<td  ></td>
+						<td >This Month</td>
+						<td  >This Year</td>
+				</tr>
+				<tr align='center'>
+						<td  align='left'>Pending @ Reporter</td>
+						<td id='rep_month'></td>
+						<td id='rep_year' ></td>
+				</tr>
+				<tr align='center'>
+						<td  align='left'>Pending @ Approver</td>
+						<td id='apvr_month'></td>
+						<td  id='apvr_year'></td>
+				</tr>
+				<tr align='center'>
+						<td  align='left'>Approved Leaves</td>
+						<td id='apprd_month'></td>
+						<td  id='apprd_year'></td>
+				</tr>
+				<tr align='center'  style="font-size:12pt;color:#23819C;">
+						<td  colspan='2' align='left'>Balance</td>
+						<td id="balance"><?php echo $balance;?></td>
+				</tr>
+			</table>
+</div>
 
 
-<div style='width:60%;margin:1% 0 0 19%'>
+
+<div style='width:60%;margin:1% 0 0 1%'>
 	<table id='Leave_List' >
 		<tr >
 			<td align='center'><input type='image' id='CL_Div' width='130' height='90' src='../../../images/Leave/CL.png'  alt='Casual Leave' onclick='show_LeaveDiv("CL_Table")' onmouseover='show_Shadow("CL_Div","#E3FBE9")' /></td>
@@ -152,34 +258,46 @@
 			<td align='center'><input type='image' id='ML_Div' width='130' height='90' src='../../../images/Leave/ML.png' alt='Maternity Leave' onclick='show_LeaveDiv("ML_Table")'  onmouseover='show_Shadow("ML_Div","#E6FCFF")'/></td>
 		</tr>
 	</table>
-	<table id='Error' style='display:none;background-color:#FFEAEA;width:100%;height:30px;box-shadow: 5px 5px 5px #FFC8C8;border:1px inset red;' >
-				<tr  height='30' style='font-size:11pt;font-weight:bold;color:red;'>
-						<td align='left' width='35px'><img width='20px' style='display:inline;'height='20x' src='../../../images/General/alert.png' /> </td>
-						<td  align='center' id='Error_Col'  align='center'> Hi..!</td>
+	
+	<table align='center' id='Error' style='display:none;background-color:#FFEAEA;height:30px;box-shadow: 5px 5px 5px #FFC8C8;border:1px inset red;' >
+				<tr height='30' style='font-size:11pt;font-weight:bold;color:red;'>
+						<td align='left' width='35px'>
+								<img width='20px' style='display:inline;'height='20x' src='../../../images/General/alert.png' /> 
+						</td>
+						<td  align='center' id='Error_Col'  align='center'></td>
 				</tr>
 	</table>
 	
 </div>
 
-<div id='CL_Table' style='background-color:#E3FBE9;width:60%;margin:1% 0 0 20%;border:5px groove #BDF4CB;border-radius:5px;' >
+<div id='CL_Table' style='background-color:#E3FBE9;width:60%;margin:1% 0 0 2%;border:5px groove #BDF4CB;border-radius:5px;' >
 		<center><p style='font-size:14pt;font-weight:bolder;color:#218429;'><u>CASUAL LEAVE</u></p></center>
 		<?php if(!empty($experience) && $experience>=$experience_CL)
 		{?>			
 			<table   height='200'   border="0" align="center">
 				<tr height='60'>				
 					<td   width='10%' class='Font_Style1'></td>
-					<td  align='left' width='180'  class='Font_Style1'>Leave On</td>
+					<td  align='left' width='180'  class='Font_Style1'>Leave From</td>
 					<td width='10' class='Font_Style1'>:</td>
 					<td>
 							<input id='CL_from_date'  readonly='readonly' class='input_date'"/>
 							<input type='image' id='Calendar_From_CL' width='50' height='30' src='../../../images/Leave/calendar1.png'/>
 					</td>
 				</tr>
-				<tr height='30' class='Font_Style1'>
+				<tr height='60'>				
+					<td   width='10%' class='Font_Style1'></td>
+					<td  align='left' width='180'  class='Font_Style1'>To Date</td>
+					<td width='10' class='Font_Style1'>:</td>
+					<td>
+							<input id='CL_to_date'  readonly='readonly' class='input_date'"/>
+							<input type='image' id='Calendar_to_CL' width='50' height='30' src='../../../images/Leave/calendar1.png'/>
+					</td>
+				</tr>
+				<tr height='40' class='Font_Style1'>
 					<td   width='10%' ></td>
 					<td align='left' >No of Days</td>
 					<td   width='10' >:</td>
-					<td><input id='CL_days' readonly='readonly' class='input_date' style='width:30px;height:25px;' value='1'></td>
+					<td><input id='CL_days' readonly='readonly' class='input_date' style='width:30px;height:25px;' value=''></td>
 				</tr>
 				<tr height='30'>
 					<td   width='10%' class='Font_Style1'></td>
@@ -194,7 +312,7 @@
 							<input id='apply_img_CL' type='image' src='../../../images/Leave/apply.png'   style='width:100px;height:32px;'  onclick='insert_CasualLeave()' onmouseover='change_OnMouseOver("apply_img_CL","apply_over.png")' onmouseout='change_OnMouseOver("apply_img_CL","apply.png")'/>
 					</td>
 				</tr>
-				<tr height='50'>
+				<tr height='40'>
 					<td></td>
 				</tr>
 			</table>
@@ -227,12 +345,13 @@
 				</tr>
 			</table>
 			<?php }?>
+			
 </div>
 
 
 
 
-<div id='SL_Table'  style='display:none;background:#FFEEFD;width:60%;margin:1% 0 0 20%;border:5px groove #F4D2F4;border-radius:5px;' >
+<div id='SL_Table'  style='display:none;background:#FFEEFD;width:60%;margin:1% 0 0 2%;border:5px groove #F4D2F4;border-radius:5px;' >
 		<center><p style='font-size:14pt;font-weight:bolder;color:#730063;'><u>SICK LEAVE</u></p></center>
 		<?php if(!empty($experience) && $experience>=$experience_CL)
 		{?>			
@@ -327,7 +446,7 @@
 </div>
 
 
-<div id='EL_Table'  style='display:none;background:#E0E0E0;width:60%;margin:1% 0 0 20%;border:5px groove #BFBFBF;border-radius:5px;' >
+<div id='EL_Table'  style='display:none;background:#E0E0E0;width:60%;margin:1% 0 0 2%;border:5px groove #BFBFBF;border-radius:5px;' >
 		<center><p style='font-size:14pt;font-weight:bolder;color:#616161;'><u>EARNED LEAVE</u></p></center>
 		<?php if(!empty($experience) && $experience>=$experience_EL)
 		{?>			
@@ -401,7 +520,7 @@
 </div>
 
 
-<div id='CO_Table'  style='display:none;background:#FFFFD7;width:60%;margin:1% 0 0 20%;border:5px groove #FFF9CE;border-radius:5px;' >
+<div id='CO_Table'  style='display:none;background:#FFFFD7;width:60%;margin:1% 0 0 2%;border:5px groove #FFF9CE;border-radius:5px;' >
 		<center><p style='font-size:14pt;font-weight:bolder;color:#AD9410;'><u>COMPENSATORY LEAVE</u></p></center>
 		<?php if(!empty($experience) && $experience>=$experience_CO)
 		{?>			
@@ -479,7 +598,7 @@
 </div>
 
 
-<div id='ML_Table'  style='display:none;background:#E6FCFF;width:60%;margin:1% 0 0 20%;border:5px groove #ACF3FD;border-radius:5px;' >
+<div id='ML_Table'  style='display:none;background:#E6FCFF;width:60%;margin:1% 0 0 2%;border:5px groove #ACF3FD;border-radius:5px;' >
 		<center><p style='font-size:14pt;font-weight:bolder;color:#730063;'><u>MATERNITY LEAVE</u></p></center>
 		<?php if(!empty($experience) && $experience>=$experience_ML)
 		{?>			

@@ -35,19 +35,22 @@
 					$.post(site_url + "/User/users/get_reporters/",{dept:dept1},function(data){	
 						//alert(data);
 						var list=data.split('::');
-						for(i=0;i<list.length;i++)
+						for(i=1;i<list.length;i++)
 						{
-							if(list[i]!="" && list[i]!=null){
-								var opt = document.createElement("option");
-								if(document.getElementById("reporters")){
-									document.getElementById("reporters").options.add(opt);
-									opt.text = list[i].replace(/\s/g, '');
-								    opt.value = list[i].replace(/\s/g, '');
-									
-									}
+							if(i%2!=0){
+								//alert(list[i]+" : "+list[i+1]);
+									if(list[i]!="" && list[i].replace(/[^A-Z]/gi, "").length>0){
+											var opt = document.createElement("option");
+													if(document.getElementById("reporters")){
+																document.getElementById("reporters").options.add(opt);
+																opt.text =list[i];
+															    opt.value = list[i+1];
+													}
+										}
 							}
 						
-							}
+				}
+
 						get_approvers(dept1);
 						
 						}); 
@@ -59,19 +62,22 @@
 					$.post(site_url + "/User/users/get_approvers/",{dept:dept1},function(data){	
 						//alert(data);
 						var list=data.split('::');
-						for(i=0;i<list.length;i++)
+						for(i=1;i<list.length;i++)
 						{
-							if(list[i]!="" && list[i]!=null){
-								var opt = document.createElement("option");
-								if(document.getElementById("approvers")){
-									document.getElementById("approvers").options.add(opt);
-									opt.text = list[i].replace(/\s/g, '');
-								    opt.value = list[i].replace(/\s/g, '');
-									
+							if(i%2!=0){
+								//alert(list[i]+" : "+list[i+1]);
+									if(list[i]!="" && list[i].replace(/[^A-Z]/gi, "").length>0){
+											var opt = document.createElement("option");
+													if(document.getElementById("approvers")){
+																document.getElementById("approvers").options.add(opt);
+																opt.text =list[i];
+															    opt.value = list[i+1];
+													}
+											}
 									}
-							}
 						
 							}
+
 						}); 
 					}
 			}
@@ -144,6 +150,19 @@
 			}
 				
 			}
+				
+				
+		function checkEmail() {
+
+				    var email = document.getElementById('email');
+				    var filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+
+				    if (!filter.test(email.value)) {
+						    alert('Please provide a valid email address');
+						    email.focus;
+						    return false;
+				 }
+		}
 			
 			function submit_userData(){
 				
@@ -198,9 +217,10 @@
 							    document.getElementById("button").style.display='none';
 							    document.getElementById('buttonrow').innerHTML='Please wait..! System is sending mail..!';
 									$.post(site_url + "/User/users/create_user/",{emp_name:emp_name1,emp_num:emp_num1,passwd:passwd1,userrole:userrole1,mail:mail1,dept:dept1,reporter:reporters1,approver:approvers1,doj:doj1},function(data){	
-									alert(	'Mail has been sent to '+emp_name1+' ..!');
-									window.location.reload();
-										}); 
+												//alert(data);
+												alert(	'Mail has been sent to '+emp_name1+' ..!');
+												window.location.reload();
+									}); 
 					}
 				
 			}
@@ -215,9 +235,10 @@
 					"<hr width='100%'>"+
 					"<div id='myuser' style='margin:20px 20px 20px 40px;'><p>Please wait while Loading....</p></div>  <div style='margin-left:100px;margin-bottom:30px;'><input style='margin-right:25px;' class='button' type=\"button\" id='update' value='Update' onclick='opener.updateuserFinish()'/><input class='button' type=\"button\" id='close' value='Close' onclick='javascript:self.close()'/></div></body</html>";
 						 updatepop.document.write(generatedContent);   
+						 
 						 $.get(site_url + "/User/users/fetch_user_info/"+user_id,function(data){	
-					 updatepop.document.getElementById('myuser').innerHTML=data;
-					}); 
+							 			updatepop.document.getElementById('myuser').innerHTML=data;
+						 }); 
 			}
 			
 			function deleteuser(user_id1,name1){

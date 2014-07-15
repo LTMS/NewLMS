@@ -30,12 +30,16 @@ Class Users_model extends CI_Model{
 
 	function get_reporters($dept)
 	{
-		return $this->db->query("SELECT Name FROM authorities WHERE Department='$dept' AND Task='Reporting' ")->result_array();
+		return $this->db->query("SELECT CONCAT(Emp_Name,'::',Emp_Number) as Reporter
+															FROM authorities 
+															WHERE Department='$dept' AND Task='Reporting' ")->result_array();
 	}
 
 	function get_approvers($dept)
 	{
-		return $this->db->query("SELECT Name FROM authorities WHERE Department='$dept' AND Task='Approving' ")->result_array();
+		return $this->db->query("SELECT CONCAT(Emp_Name,'::',Emp_Number)  as Approver
+															FROM authorities 
+															WHERE Department='$dept' AND Task='Approving' ")->result_array();
 	}
 
 	function get_leaves()

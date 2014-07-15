@@ -76,21 +76,23 @@ function get_reporters(){
 	$form_data = $this->input->post();
 	$reporters="";
 	$result=$this->users_model->get_reporters($form_data['dept']);
+	$list="";
 	foreach($result as $row){
-		$reporters=$row["Name"];
-		$reporters=$reporters.'::';
+		$reporters=$row["Reporter"];
+		$list=$list.'::'.$reporters;
 	}
-	echo $reporters;
+	echo $list;
 }
 
 function get_approvers(){
 	$form_data = $this->input->post();
 	$result=$this->users_model->get_approvers($form_data['dept']);
+	$list="";
 	foreach($result as $row){
-		$approvers=$row["Name"];
-		$approvers=$approvers.'::';
+		$approvers=$row["Approver"];
+		$list=$list.'::'.$approvers;
 	}
-	echo $approvers;
+	echo $list;
 
 }
 
@@ -180,7 +182,7 @@ function AccountMail($UserName,$Password,$mailID){
 	$mail->Subject ='Leave Management System Web-Application Account';
 
 	$body1 ="<font size='3pt' color='green'>Your Account was created in Leave Management System Successfully..! <br><br> <b>User ID: ".$UserName."<br> Password: ".$Password."</b><br></font>";
-	$body2 ="<br> <b><font size='3pt' color='red'> * Please submit your details in the Menu:</font><font color='brown' size='3pt'> <i>My Account Details -> My Profile </i></font><br><br><font size='3pt' color='blue'> Login Now using this link:     </font>";
+	$body2 ="<br> <b><font size='3pt' color='red'> * Please submit your details in the Menu:</font><font color='brown' size='3pt'> <i>My Account Details -> My Profile </i></font><br><br><font size='3pt' color='blue'> Login Now using this link:...............    </font>";
 	$mail->Body=$body1.$body2;
 	if(!$mail->send()) {
 		echo 'Message could not be sent.';

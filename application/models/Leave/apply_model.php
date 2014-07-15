@@ -1,13 +1,57 @@
 <?php
 Class Apply_model extends CI_Model{
+	
 			function _construct(){
 				parent::_construct();
 			}
 	
-	
+		function get_Leave_At_Reporter_Year($type){
+			$year=date("Y");
+			$emp_num=$this->session->userdata["Emp_Number"];		
+			return $this->db->query("	SELECT SUM(At_Reporter) AS 'At_Reporter',SUM(At_Approver) AS 'At_Approver', SUM(Approved) AS 'Approved'
+																FROM(
+																						SELECT Emp_Number,
+																										IF(Leave_Status='1',Total_Days, 0) as 'At_Reporter',
+																										IF(Leave_Status='2',Total_Days, 0) as 'At_Approver',
+																										IF(Leave_Status='4',Total_Days, 0) as 'Approved'
+																						FROM leave_history
+																						WHERE YEAR(From_Date)='$year' AND Emp_Number='$emp_num') A	")->result_array();
+			
+		}
+		
+		function get_Leave_At_Reporter_Month($type){
+			$month=date("m");
+			$year=date("Y");
+			$emp_num=$this->session->userdata["Emp_Number"];		
+			return $this->db->query("	SELECT SUM(At_Reporter) AS 'At_Reporter',SUM(At_Approver) AS 'At_Approver', SUM(Approved) AS 'Approved'
+																FROM(
+																						SELECT Emp_Number,
+																										IF(Leave_Status='1',Total_Days, 0) as 'At_Reporter',
+																										IF(Leave_Status='2',Total_Days, 0) as 'At_Approver',
+																										IF(Leave_Status='4',Total_Days, 0) as 'Approved'
+																						FROM leave_history
+																						WHERE YEAR(From_Date)='$year' AND MONTH(From_Date)='$month'
+																										 AND Emp_Number='$emp_num') A	")->result_array();
+			
+		}
+		
+					
+		function get_Leave_Approved($type){
+			$month=date("m");
+			$year=date("Y");
+			$emp_num=$this->session->userdata["Emp_Number"];		
+			return $this->db->query("SELECT SUM(Total_Days) as Total,Leave_Type,Leave_Status
+																FROM leave_history
+																WHERE YEAR(From_Date)='$year' AND Leave_Type='$type' 
+																				AND Emp_Number='$emp_num' AND Leave_Status IN (2,4) ")->result_array();
+			
+		}
+					
 		function get_MailID($emp_num){
 				return	$this->db->query("SELECT Email as Emp_Mail,
+																	(SELECT DISTINCT Employee_Name FROM employees WHERE Employee_Number=a.Reporter) as Reporter_Name,
 																	(SELECT DISTINCT Email FROM employees WHERE Employee_Number=a.Reporter) as Reporter_Mail, 
+																	(SELECT DISTINCT Employee_Name FROM employees WHERE Employee_Number=a.Approver) as Approver_Name,
 																	(SELECT DISTINCT Email FROM employees WHERE Employee_Number=a.Approver) as Approver_Mail
 																	FROM 
 																	(SELECT Email, Reporter, Approver FROM employees WHERE Employee_Number='$emp_num') a")->result_array();
@@ -21,6 +65,7 @@ Class Apply_model extends CI_Model{
 																WHERE Employee_Number='$Emp_Num' limit 1")->result_array();
 		
 	}	
+	
 	function get_LeaveCriteria(){
 			return $this->db->query("SELECT *
 																FROM leave_criteria")->result_array();
@@ -89,7 +134,7 @@ Class Apply_model extends CI_Model{
 					return $this->db->query("UPDATE proof_documents
 																		SET Leave_ID='$leaveid',
 																				Status='Uploaded'
-																		WHERE Leave_Type='$type' AND  EMp_Number='$emp_num' ");
+																		WHERE Leave_Type='$type' AND  Emp_Number='$emp_num' AND Status='Selected'  ");
 	}
 		
 	
@@ -116,12 +161,6 @@ Class Apply_model extends CI_Model{
 	
 																			/* * * 		Inserting Leave Application 		* * */	
 	
-	function get_FileName($emp_num,$type){
-				return $this->db->query("SELECT Encr_Name
-																	FROM proof_documents
-																	WHERE Emp_Number='$emp_num' AND Leave_Type='$type'
-																					AND  ")->result_array();
-	}
 	
 	function insert_LeaveApplication($leave_type,$from_date,$to_date,$days,$reason,$proof_status){
 
@@ -141,82 +180,49 @@ Class Apply_model extends CI_Model{
 	}
 
 
-
-
-	function insert_permission_data($d,$time,$total,$reason){
-		$emp_num=$this->session->userdata('Emp_Number');
-		$this->db->query("INSERT INTO permissions(p_date,Emp_Number,timefrom,totalhrs,reason)  VALUES(STR_TO_DATE(STR_TO_DATE('$d','%d-%m-%Y'),'%Y-%m-%d'),'$emp_num','$time','$total',\"$reason\") ");
-
-	}
-
-
-	function get_permission($d){
-		$emp_num=$this->session->userdata('Emp_Number');
-		$this->db->query("SELECT COUNT(p_date) as permission FROM permissions WHERE  Emp_Number='$emp_num' AND month(STR_TO_DATE(DATE_FORMAT(p_date,'%d-%m-%Y'),'%d-%m-%Y'))=month('$d') ")->result_array();
-
-	}
-	function get_allpermissions($y,$d){
-		$emp_num=$this->session->userdata('Emp_Number');
-		return $this->db->query("SELECT DISTINCT (SELECT COUNT(p_date) as permission FROM permissions WHERE Emp_Number='$emp_num' AND MONTH(p_date) ='05' AND YEAR(p_date) ='2014' AND status='Approved') as month,
-																							(SELECT COUNT(p_date) as permission FROM permissions WHERE Emp_Number='$emp_num' AND YEAR(p_date) ='2014' AND status='Approved') as year,
-																							(SELECT COUNT(p_date) as permission FROM permissions WHERE Emp_Number='$emp_num' AND YEAR(p_date) ='2014' AND status='Applied') as pending
-																							FROM permissions ")->result_array();
-
-	}
-
-
-	function check_permission_data($d){
-		$emp_num=$this->session->userdata('Emp_Number');
-		$data=$this->db->query("SELECT COUNT(p_date) as 'count' FROM permissions WHERE  Emp_Number='$emp_num' AND MONTH(p_date)=SUBSTRING('$d',4,2)  AND YEAR(p_date)=SUBSTRING('$d',7,10)  AND status!='Applied' ")->result_array();
-		foreach($data as $name){
-			$count1=$name["count"];
-		}
-		return $count1;
-
-	}
-
-	function get_pending_permissions(){
-		$availability =$this->db->query("SELECT *  FROM permissions  WHERE status='Applied' ORDER BY permission_id");
-		return $availability->result_array();
-
-			
-	}
-
-
-
-	function process_permission($id,$str){
-		$this->db->query("UPDATE permissions SET status='$str' WHERE permission_id='$id' ");
-
-	}
-
-
-	function calculate_workingdays($date1,$date2){
-		$emp_num=$this->session->userdata('Emp_Number');
-		return $this->db->query("SELECT (leaves+holidays+sundays) as total, leaves,holidays,sundays
-																					FROM (SELECT COUNT(From_Date) as leaves,
-																							(SELECT COUNT(holi_date)  FROM holidays WHERE STR_TO_DATE(DATE_FORMAT(holi_date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$date1','%d-%m-%Y') AND STR_TO_DATE('$date2','%d-%m-%Y')) as holidays, 
-																							(select COUNT(DATE_ADD(STR_TO_DATE('$date1','%d-%m-%Y'), INTERVAL ROW DAY))
-																		  			 FROM
-																						(SELECT @row := @row + 1 as row FROM 	(select 0 union all select 1 union all select 3 	union all select 4 union all select 5 union all select 6) t1,
-																								(select 0 union all select 1 union all select 3 union all select 4 union all select 5 union all select 6) t2,
-																								(SELECT @row:=-1) t3 limit 31
-																							) b
-																						WHERE		DATE_ADD(STR_TO_DATE('$date1','%d-%m-%Y'), INTERVAL ROW DAY)
-																						BETWEEN STR_TO_DATE('$date1','%d-%m-%Y') and STR_TO_DATE('$date2','%d-%m-%Y') AND DAYOFWEEK(DATE_ADD(STR_TO_DATE('$date1','%d-%m-%Y'), INTERVAL ROW DAY))=1) as sundays
-																							FROM leave_history
-																							WHERE ((STR_TO_DATE(DATE_FORMAT(From_Date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$date1','%d-%m-%Y') AND STR_TO_DATE('$date2','%d-%m-%Y')) OR (STR_TO_DATE(DATE_FORMAT(To_Date,'%d-%m-%Y'),'%d-%m-%Y') BETWEEN STR_TO_DATE('$date1','%d-%m-%Y') AND STR_TO_DATE('$date2','%d-%m-%Y')))
-																							AND Emp_Number='$emp_num') a  ")->result_array();
-			
-	}
-
-
-
 	function getFilePath($leaveID){
 		return $this->db->query("SELECT filename 	FROM files
 																			WHERE leave_id = '$leaveID' Limit 1")->result_array();
 			
 	}
 
+	
+	function get_Attachments($leave_Id){
+				return $this->db->query("SELECT Encr_Name
+																	FROM proof_documents
+																	WHERE Leave_ID='$leave_Id' ")->result_array();
+		
+	}	
+	
+	
+	
+	
+												/* * * 		OT Calculation 		* * */
+	// to be done after Timesheet have completed.
+		function get_OT_Summary(){
+				$year=date('Y');
+				$month=date('m');
+				$emp_num=$this->session->userdata("Emp_Number");
+					
+				return $this->db->query("SELECT IFNULL(HOUR(ADDTIME(normal,sun))+IF(MINUTE(ADDTIME(normal,sun))>29,1,0),0) as total, normal,sun
+																			FROM (
+																						SELECT (SELECT SEC_TO_TIME(SUM(time_to_sec(ts_ot))) FROM time_sheet  
+																											WHERE YEAR(ts_date)='$year' AND MONTH(ts_date)='$month' AND ts_name='$emp_num'
+																											AND (DAYNAME(ts_date)!='Sunday' OR ts_date NOT IN (SELECT holi_date FROM holidays))) as normal,
+																										(SELECT IFNULL(SEC_TO_TIME(SUM(time_to_sec(ts_duty))),'0')  FROM time_sheet  
+																											WHERE YEAR(ts_date)='$year' AND MONTH(ts_date)='$month' AND ts_name='$emp_num'
+																											AND (DAYNAME(ts_date)='Sunday' OR ts_date IN (SELECT holi_date FROM holidays)) ) as sun) a")->result_array();
+			
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 		
 }

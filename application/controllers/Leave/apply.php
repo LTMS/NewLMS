@@ -62,6 +62,8 @@ class Apply extends CI_Controller
 		$data['Titlebar']="Apply for Leave & Permission";
 		$data["Criteria"]=$this->apply_model->get_LeaveCriteria();
 		$data["Experience"]=$this->apply_model->get_Experience();
+		$data["Leave_Details_Year"]=$this->apply_model->get_Leave_At_Reporter_Year('CL');
+		$data["Leave_Details_Month"]=$this->apply_model->get_Leave_At_Reporter_Month('CL');
 		$this->template->write('titleText', "Apply For Leave");
 		$this->template->write_view('sideLinks', 'general/menu',$data);
 		$this->template->write_view('bodyContent', 'Leave/Apply/apply_leave',$data);
@@ -333,7 +335,7 @@ class Apply extends CI_Controller
 				 		if($proof_status=="YES"){
 								$this->update_DocumentStatus($type,$leaveID);
 				 		}
-		 				$this->Send_LeaveMail($type,$date1,$form_data["days"],$form_data["reason"],$proof_status);
+		 				$this->Send_LeaveMail($type,$date1,$form_data["days"],$form_data["reason"],$proof_status,$leaveID);
 		 				
 	}
 	
@@ -343,22 +345,21 @@ class Apply extends CI_Controller
 	}
 	
 	
-	function 	Send_LeaveMail($type,$date,$days,$reason,$proof_status){
+	function 	Send_LeaveMail($type,$date,$days,$reason,$proof_status,$leaveID){
 		
 		$my_name=$this->session->userdata('Emp_Name');
 		$my_num=$this->session->userdata('Emp_Number');
 		$my_mail=$this->session->userdata('My_Mail');
+		$R=$this->session->userdata('My_Mail');
 		$app_time = date('l jS \of F Y h:i:s A');
 		
 		$MailID=$this->apply_model->get_MailID($my_num);
 		foreach($MailID as $row){
 			//	$emp_mail=$row["Emp_Mail"];
 			$reporter_mail=$row["Reporter_Mail"];
+			$reporter_name=$row["Reporter_Name"];
 		}
 		
-		if($proof_status=="YES"){
-								update_DocumentStatus($type,$leaveID);
-		}
 		
 		$mail_subject=$my_name." has applied ".$type;
 		
@@ -376,6 +377,15 @@ class Apply extends CI_Controller
 		$mail->FromName = 'Leave Mailer';
 		$mail->addAddress($reporter_mail);
 		$mail->addCC($my_mail);
+		$files=$this->apply_model->get_Attachments($leaveID);
+			if($proof_status=="YES" && !empty($files)){							
+							foreach($files as $row){
+								$filename=$row["Encr_Name"];
+								$filepath="./Documents/".$filename;
+								$mail->addAttachment($filepath);	
+							}
+			}
+		
 
 		$mail->isHTML(true);
 
@@ -384,16 +394,16 @@ class Apply extends CI_Controller
 		$c=	"
 							<html>
 										<body>
-										<h style='font-weight:bold' ><font color='#003366' size='5pt' face='Lucida Handwriting' >Hi, <b>Gnanajeyam G..!</b></font></h>
+										<h style='font-weight:bold' ><font color='#003366' size='5pt' face='Lucida Handwriting' >Hi, <b> $reporter_name  </b></font></h>
 										<br>
 										<br>
-										<p style='font-weight:bold;font-size:13px;color:#003366' >&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; 
-											$mail_subject
+										<p style='font-weight:bold;font-size:15px;color:#003366' >&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; 
+											$mail_subject.
 										</p>
 										<br>
-										<h3 style='font-weight:bold;font-size:13px;color:#003366' ><u>Leave Details</u></h3>
+										<h3 style='font-weight:bold;font-size:14px;color:#003366' ><u>Leave Details</u></h3>
 										<br>
-										<table style='font-size:13px;color:#006699;'>
+										<table style='font-weight:bold;font-size:14px;color:#003366;'>
 											<tr>
 												<td width='100px'>Type of Leave</td><td width='10px'>:</td>
 												<td>$type</td>

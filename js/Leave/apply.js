@@ -7,7 +7,8 @@
 													 },
 								onClose:function(selectedDate){
 									document.getElementById("CL_from_date").value=selectedDate;
-									validate_Date(selectedDate,'CL');
+									document.getElementById("CL_to_date").value=selectedDate;
+										validate_Date(selectedDate,'CL');
 								},	
 								defaultDate: new Date()	
 		}) ; 
@@ -138,7 +139,7 @@
 	
 	
 	
-		function show_LeaveDiv(new_Div){
+		function show_LeaveDiv(new_Div,type){
 			var cur_Div=document.getElementById("Current_Table").value;
 			//alert(cur_Div+', '+new_Div);
 			document.getElementById("Current_Table").value=new_Div;
@@ -150,9 +151,12 @@
 							$(new_Div).slideDown(1000);
 						//alert(cur_Div+', '+new_Div);
 				}
+				show_LeaveBalance(type);
 		}
 
+	function show_LeaveBalance(type){
 		
+	}	
 	
 																/* * * 			 Validating Date			* * */
 		
@@ -164,6 +168,7 @@
 			}	
 		
 		function check_in_holidays(date1,type1,button_id){
+						//alert(button_id);
 						$.post(site_url+"/Leave/apply/check_in_holidays",{date:date1},function(holiday){
 								//	alert("Is it Holiday? : "+holiday.trim());
 							
@@ -179,6 +184,7 @@
 						});
 		}
 
+		
 		function check_leavetaken(date1,type1,button_id){
 					$.post(site_url+"/Leave/apply/check_leavetaken",{date:date1},function(leave){
 									//alert("Leave Taken? : "+leave.trim());
@@ -216,6 +222,7 @@
 
 		
 		function calculate_no_of_days(type,button_id){
+			
 			//alert("Welcome to Calaculate no of days..!");
 			var from_id=type+"_from_date";
 			var to_id=type+"_to_date";
@@ -233,7 +240,7 @@
 									//alert("No of Days: "+no_of_days);
 									document.getElementById(days_id).value=no_of_days;
 									if(type=="SL" || type=="ML"){
-										check_DocumentUploadLimit(type,parseInt(no_of_days));
+										check_DocumentUploadLimit(type,parseInt(no_of_days),button_id);
 									}
 									else{
 										check_minimumLimit(parseInt(no_of_days),type,button_id);
@@ -245,23 +252,22 @@
 					document.getElementById('Error').style.display='none';		
 					document.getElementById(button_id).style.display='';		
 				}
-			
-			}
+		}
 
 		
 		
-		function check_DocumentUploadLimit(type,No_of_days){
+		function check_DocumentUploadLimit(type,No_of_days,button_id){
 			var Doc_Count=document.getElementById("doc_days_"+type).value; 
 			var days_id=type+"_days";
 			
 			var Doc_Upload_ID="Doc_Upload_"+type;
 			if(No_of_days>=Doc_Count){
 					document.getElementById(Doc_Upload_ID).style.display=""; 
-					check_minimumLimit(No_of_days,type);
+					check_minimumLimit(No_of_days,type,button_id);
 			}
 			else{
 				document.getElementById(Doc_Upload_ID).style.display="none"; 
-				check_minimumLimit(No_of_days,type);
+				check_minimumLimit(No_of_days,type,button_id);
 			}
 		}
 
@@ -306,6 +312,7 @@
 							}
 					}
 					else{
+						
 						check_MonthlyLimit(no_of_days,type,button_id);
 					}
 		}
@@ -342,7 +349,7 @@
 	
 		
 		function check_YearlyLimit(no_of_days,type1,button_id){
-			
+			//alert(button_id);
 			var year_limit_id="year_limit_"+type1;
 			var year_limit=document.getElementById(year_limit_id).value;
 			var date_id=type1+"_from_date";
@@ -385,14 +392,16 @@
 				var array_lentgh=filepath.split('\\').length-1;
 				var file_name=arrays[array_lentgh];
 				//alert(elementid);
+				
 				doc_count_id="Docs_Total_Count_"+leavetype;
 				row_count_id="Row_Id_"+leavetype;
-					var doc_count=parseInt(document.getElementById(doc_count_id).value);
+				
+				var doc_count=parseInt(document.getElementById(doc_count_id).value);
 				table_id="Doc_Table_"+leavetype;
 				var row_count=parseInt(document.getElementById(row_count_id).value);
 				row_id=leavetype+row_count;
 				
-				//alert("Count: "+tot_count+"countID: "+count_id+", TableID: "+table_id);
+				//alert(file_name);
 				if(doc_count<=1 && doc_count>=0){
 	
 	  				    $.ajaxFileUpload({
@@ -470,8 +479,10 @@
 
 							$.post(site_url+"/Leave/apply/insert_LeaveApplication",{type:"CL",from_date:from_date1,to_date:to_date1,days:days1,reason:reason1,proof_status:'NO'},function(data){
 								
-									innertxt=" <center>E-Mail has been sent to Your Leave Approver..!<br><br><input type='image' width='100px' height='30px' src='../../../images/Leave/ok.png'  onclick='window.location.reload()' ></center>";
+									innertxt=" E-Mail has been sent to Your Leave Approver..!";
 									document.getElementById("CL_Button").innerHTML=innertxt;
+									alert(innertxt);
+									window.location.reload();
 							});
 				}
 				else{
@@ -489,9 +500,10 @@
 						document.getElementById("EL_Button").innerHTML="Please wait  while sending E-Mail..!";
 
 						$.post(site_url+"/Leave/apply/insert_LeaveApplication",{type:"EL",from_date:from_date1,to_date:to_date1,days:days1,reason:reason1,proof_status:'NO'},function(data){
-								
-									innertxt=" <center>E-Mail has been sent to Your Leave Approver..!<br><br><input type='image' width='100px' height='30px' src='../../../images/Leave/ok.png'  onclick='window.location.reload()' ></center>";
+									innertxt=" E-Mail has been sent to Your Leave Approver..!";
 									document.getElementById("EL_Button").innerHTML=innertxt;
+									alert(innertxt);
+									window.location.reload();
 							});
 					}
 					else{
@@ -509,8 +521,10 @@
 						
 								$.post(site_url+"/Leave/apply/insert_LeaveApplication",{type:"CO",from_date:from_date1,to_date:to_date1,days:days1,reason:reason1,proof_status:'NO'},function(data){
 									
-									innertxt=" <center>E-Mail has been sent to Your Leave Approver..!<br><br><input type='image' width='100px' height='30px' src='../../../images/Leave/ok.png'  onclick='window.location.reload()' ></center>";
+									innertxt=" E-Mail has been sent to Your Leave Approver..!";
 									document.getElementById("CO_Button").innerHTML=innertxt;
+									alert(innertxt);
+									window.location.reload();
 									
 								});
 						
@@ -548,9 +562,11 @@
 								document.getElementById("SL_Button").innerHTML="Please wait  while sending E-Mail..!";
 
 											$.post(site_url+"/Leave/apply/insert_LeaveApplication",{type:"SL",from_date:from_date1,to_date:to_date1,days:days1,reason:reason1,proof_status:proofstatus},function(data){
-												
-												innertxt=" <center>E-Mail has been sent to Your Leave Approver..!<br><br><input type='image' width='100px' height='30px' src='../../../images/Leave/ok.png'  onclick='window.location.reload()' ></center>";
+												//alert(data);
+												innertxt=" E-Mail has been sent to Your Leave Approver..!";
 												document.getElementById("SL_Button").innerHTML=innertxt;
+												alert(innertxt);
+												window.location.reload();
 										});
 							}
 							else{
@@ -588,8 +604,10 @@
 
 									$.post(site_url+"/Leave/apply/insert_LeaveApplication",{type:"ML",from_date:from_date1,to_date:to_date1,days:days1,reason:reason1,proof_status:proofstatus},function(data){
 										
-										innertxt=" <center>E-Mail has been sent to Your Leave Approver..!<br><br><input type='image' width='100px' height='30px' src='../../../images/Leave/ok.png'  onclick='window.location.reload()' ></center>";
+										innertxt=" E-Mail has been sent to Your Leave Approver..!";
 										document.getElementById("ML_Button").innerHTML=innertxt;
+										alert(innertxt);
+										window.location.reload();
 								});
 					}
 					else{

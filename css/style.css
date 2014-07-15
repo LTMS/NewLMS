@@ -1569,6 +1569,19 @@ label.checkbox1 {
 	color: #003333;
 }
 
+.Font_Style2 {
+	font-size: 12pt;
+	font-weight: bold;
+	color: #003333;
+}
+.Font_Small {
+	font-size: 10pt;
+	font-weight: bold;
+	font-family:Lucida Handwriting;
+	color: #2966B8;
+}
+
+
 .input_date {
 	width:100px;
 	height:25px;
@@ -1591,6 +1604,8 @@ textarea{
 
 
 														/* * * 			Image Effects			* * */
+														
+														
 #CL_Div:hover {
     background-color: #CEEFBD;
     box-shadow: 0 0 100px #B5FFC8,                
@@ -1616,3 +1631,5 @@ textarea{
     box-shadow: 0 0 100px #ACF3FD,                
 				 0 0 50px #ACF3FD;               
 }
+
+
