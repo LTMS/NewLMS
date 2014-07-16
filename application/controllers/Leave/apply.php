@@ -46,6 +46,8 @@ class Apply extends CI_Controller
 			$data['Titlebar']="Leave Management System";
 			$data["Criteria"]=$this->apply_model->get_LeaveCriteria();
 			$data["Experience"]=$this->apply_model->get_Experience();
+			$data["Leave_Details_Year"]=$this->apply_model->get_Leave_At_Reporter_Year('CL');
+			$data["Leave_Details_Month"]=$this->apply_model->get_Leave_At_Reporter_Month('CL');
 			$this->template->write('titleText', "Leave Criteria");
 			$this->template->write_view('sideLinks', 'general/menu',$data);
 			$this->template->write_view('bodyContent', 'Leave/Apply/apply_leave',$data);

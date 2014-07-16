@@ -87,29 +87,6 @@
 					$experience=$row2["Experience_Month"];
 			}
 	}
-
-// Assinging Leave Balance Variables
-
-	$rep_month_CL=$rep_year_CL=0;$apvr_month_CL=$apvr_year_CL=$apprd_month_CL=$apprd_year_CL=0;
-//	$rep_month_SL=$rep_year_SL=0;$apvr_month_SL=$apvr_year_SL=$apprd_month_SL=$apprd_year_SL=0;
-//	$rep_month_EL=$rep_year_EL=0;$apvr_month_EL=$apvr_year_EL=$apprd_month_EL=$apprd_year_EL=0;
-//	$rep_month_CO=$rep_year_CO=0;$apvr_month_CO=$apvr_year_CO=$apprd_month_CO=$apprd_year_CO=0;
-//	$rep_month_ML=$rep_year_ML=0;$apvr_month_ML=$apvr_year_ML=$apprd_month_ML=$apprd_year_ML=0;
-		
-	
-			foreach($Leave_Details_Year as $row3){
-				$rep_year=$row3["At_Reporter"];
-				$appr_year=$row3["At_Approver"];
-				$apprd_year=$row3["Approved"];
-			}
-
-			foreach($Leave_Details_Month as $row4){
-				$rep_month=$row4["At_Reporter"];
-				$appr_month=$row4["At_Approver"];
-				$apprd_month=$row4["Approved"];
-			}
-	
-	$balance=$year_limit_CL-$apprd_year;
 	
 ?>
 
@@ -167,13 +144,35 @@
 <input type='hidden'  id='Docs_Total_Count_SL' value='1'/>			
 <input type='hidden'  id='Docs_Total_Count_ML' value='1'/>			
 
+<?php 
 
+// Assinging Leave Balance Variables
 
-<div id='Criteria_CL' style='position:absolute;width:28%;height:65%;margin:9.5% 0 0 54%;background:#ECF4FF;box-shadow: 5px 5px 5px #BBDAFF;border:1px groove #62A9FF;border-radius:10px;'>
+//	$rep_month=$rep_year=$apvr_month=$apvr_year=$apprd_month=$apprd_year=0;
+	
+		if(!empty($Leave_Details_Year)){
+					foreach($Leave_Details_Year as $row3){
+						$rep_year=$row3["At_Reporter"];
+						$apvr_year=$row3["At_Approver"];
+						$apprd_year=$row3["Approved"];
+					}
+		}
+		
+		if(!empty($Leave_Details_Month)){
+					foreach($Leave_Details_Month as $row4){
+						$rep_month=$row4["At_Reporter"];
+						$apvr_month=$row4["At_Approver"];
+						$apprd_month=$row4["Approved"];
+					}
+		}
+
+	$balance=$year_limit_CL-$apprd_year;
+?>
+
+<div id='Criteria_CL' style='position:absolute;width:28%;height:69%;margin:9.5% 0 0 54%;background:#ECF4FF;box-shadow: 5px 5px 5px #BBDAFF;border:1px groove #62A9FF;border-radius:10px;'>
 
 			<p class="Font_Small" style='font-size:13pt;' align='center'><u>Criteria</u></p>
 			<table class='Font_Small'>
-				<tr>	<td colspan='3' > </td></tr>	
 				<tr>
 					<td > * Experience Needed </td>
 					<td width='5'>:</td>
@@ -182,7 +181,7 @@
 				<tr>
 					<td > * Prior Approval</td>
 					<td width='5'>:</td>
-					<td id='prior' ><?php if($prior_days_CL==0){ echo "---";} else{echo $prior_days_CL." Days"; } ?> Days</td>
+					<td id='prior' ><?php if($prior_days_CL==0){ echo "---";} else{echo $prior_days_CL." Days"; } ?> </td>
 				</tr>	
 				<tr>
 					<td> * Document Uploading Limit</td>
@@ -202,12 +201,12 @@
 				<tr>
 					<td > * Minimum at a Time</td>
 					<td width='5'>:</td>
-					<td id='min_limit'><?php if($min_limit_CL==0){ echo "---";} else{echo $min_limit_CL." Days"; } ?> Days</td>
+					<td id='min_limit'><?php if($min_limit_CL==0){ echo "---";} else{echo $min_limit_CL." Days"; } ?> </td>
 				</tr>	
 				<tr>
 					<td > * Maximum at a Time</td>
 					<td width='5'>:</td>
-					<td id='max_limit'><?php if($max_limit_CL==0){ echo "---";} else{echo $max_limit_CL." Days"; }  ?> Days</td>
+					<td id='max_limit'><?php if($max_limit_CL==0){ echo "---";} else{echo $max_limit_CL." Days"; }  ?> </td>
 				</tr>	
 				<tr>
 					<td> * Carry Forward</td>
@@ -226,21 +225,21 @@
 				</tr>
 				<tr align='center'>
 						<td  align='left'>Pending @ Reporter</td>
-						<td id='rep_month'></td>
-						<td id='rep_year' ></td>
+						<td id='rep_month'><?php echo $rep_month;?></td>
+						<td id='rep_year' ><?php echo $rep_year;?></td>
 				</tr>
 				<tr align='center'>
 						<td  align='left'>Pending @ Approver</td>
-						<td id='apvr_month'></td>
-						<td  id='apvr_year'></td>
+						<td id='apvr_month'><?php echo $apvr_month;?></td>
+						<td  id='apvr_year'><?php echo $apvr_year;?></td>
 				</tr>
 				<tr align='center'>
 						<td  align='left'>Approved Leaves</td>
-						<td id='apprd_month'></td>
-						<td  id='apprd_year'></td>
+						<td id='apprd_month'><?php echo $apprd_month;?></td>
+						<td  id='apprd_year'><?php echo $apprd_year;?></td>
 				</tr>
-				<tr align='center'  style="font-size:12pt;color:#23819C;">
-						<td  colspan='2' align='left'>Balance</td>
+				<tr align='center'  style="font-size:12pt;color:#2F619C;font-family:Tahoma;">
+						<td  colspan='2' align='left'>Balance <font color='red'  size='2px'>&nbsp; (Excld Pending Leaves)</font></td>
 						<td id="balance"><?php echo $balance;?></td>
 				</tr>
 			</table>
@@ -251,11 +250,11 @@
 <div style='width:60%;margin:1% 0 0 1%'>
 	<table id='Leave_List' >
 		<tr >
-			<td align='center'><input type='image' id='CL_Div' width='130' height='90' src='../../../images/Leave/CL.png'  alt='Casual Leave' onclick='show_LeaveDiv("CL_Table")' onmouseover='show_Shadow("CL_Div","#E3FBE9")' /></td>
-			<td align='center'><input type='image' id='SL_Div' width='130' height='90' src='../../../images/Leave/SL.png' alt='Sick Leave' onclick='show_LeaveDiv("SL_Table")'  onmouseover='show_Shadow("SL_Div","#FFEEFD")'/></td>
-			<td align='center'><input type='image' id='EL_Div' width='130' height='90' src='../../../images/Leave/EL.png' alt='Earned Leave' onclick='show_LeaveDiv("EL_Table")'  onmouseover='show_Shadow("EL_Div","#E0E0E0")'/></td>
-			<td align='center'><input type='image' id='CO_Div' width='130' height='90' src='../../../images/Leave/CO.png' alt='Comp Off' onclick='show_LeaveDiv("CO_Table")' onmouseover='show_Shadow("CO_Div","#FFFFD7")'/></td>
-			<td align='center'><input type='image' id='ML_Div' width='130' height='90' src='../../../images/Leave/ML.png' alt='Maternity Leave' onclick='show_LeaveDiv("ML_Table")'  onmouseover='show_Shadow("ML_Div","#E6FCFF")'/></td>
+			<td align='center'><input type='image' id='CL_Div' width='130' height='90' src='../../../images/Leave/CL.png'  alt='Casual Leave' onclick='show_LeaveDiv("CL_Table","CL")' onmouseover='show_Shadow("CL_Div","#E3FBE9")' /></td>
+			<td align='center'><input type='image' id='SL_Div' width='130' height='90' src='../../../images/Leave/SL.png' alt='Sick Leave' onclick='show_LeaveDiv("SL_Table","SL")'  onmouseover='show_Shadow("SL_Div","#FFEEFD")'/></td>
+			<td align='center'><input type='image' id='EL_Div' width='130' height='90' src='../../../images/Leave/EL.png' alt='Earned Leave' onclick='show_LeaveDiv("EL_Table","EL")'  onmouseover='show_Shadow("EL_Div","#E0E0E0")'/></td>
+			<td align='center'><input type='image' id='CO_Div' width='130' height='90' src='../../../images/Leave/CO.png' alt='Comp Off' onclick='show_LeaveDiv("CO_Table","CO")' onmouseover='show_Shadow("CO_Div","#FFFFD7")'/></td>
+			<td align='center'><input type='image' id='ML_Div' width='130' height='90' src='../../../images/Leave/ML.png' alt='Maternity Leave' onclick='show_LeaveDiv("ML_Table","ML")'  onmouseover='show_Shadow("ML_Div","#E6FCFF")'/></td>
 		</tr>
 	</table>
 	

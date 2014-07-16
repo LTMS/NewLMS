@@ -8,14 +8,19 @@ Class Apply_model extends CI_Model{
 		function get_Leave_At_Reporter_Year($type){
 			$year=date("Y");
 			$emp_num=$this->session->userdata["Emp_Number"];		
-			return $this->db->query("	SELECT SUM(At_Reporter) AS 'At_Reporter',SUM(At_Approver) AS 'At_Approver', SUM(Approved) AS 'Approved'
+			return $this->db->query("	SELECT SUM(At_Reporter) AS 'At_Reporter',
+																				SUM(At_Approver) AS 'At_Approver', 
+																				SUM(Approved) AS 'Approved',
+																				SUM(Total) as Total
 																FROM(
 																						SELECT Emp_Number,
 																										IF(Leave_Status='1',Total_Days, 0) as 'At_Reporter',
 																										IF(Leave_Status='2',Total_Days, 0) as 'At_Approver',
-																										IF(Leave_Status='4',Total_Days, 0) as 'Approved'
+																										IF(Leave_Status='4',Total_Days, 0) as 'Approved',
+																										IFNULL(Total_Days,0) as Total	
 																						FROM leave_history
-																						WHERE YEAR(From_Date)='$year' AND Emp_Number='$emp_num') A	")->result_array();
+																						WHERE Leave_Type='$type' AND YEAR(From_Date)='$year'
+																										 AND Emp_Number='$emp_num') A	")->result_array();
 			
 		}
 		
@@ -23,15 +28,19 @@ Class Apply_model extends CI_Model{
 			$month=date("m");
 			$year=date("Y");
 			$emp_num=$this->session->userdata["Emp_Number"];		
-			return $this->db->query("	SELECT SUM(At_Reporter) AS 'At_Reporter',SUM(At_Approver) AS 'At_Approver', SUM(Approved) AS 'Approved'
+			return $this->db->query("	SELECT SUM(At_Reporter) AS 'At_Reporter',
+																				SUM(At_Approver) AS 'At_Approver', 
+																				SUM(Approved) AS 'Approved',
+																				IFNULL(Total,0) as Total	
 																FROM(
 																						SELECT Emp_Number,
 																										IF(Leave_Status='1',Total_Days, 0) as 'At_Reporter',
 																										IF(Leave_Status='2',Total_Days, 0) as 'At_Approver',
-																										IF(Leave_Status='4',Total_Days, 0) as 'Approved'
+																										IF(Leave_Status='4',Total_Days, 0) as 'Approved',
+																										IFNULL(Total_Days,0) as Total	
 																						FROM leave_history
 																						WHERE YEAR(From_Date)='$year' AND MONTH(From_Date)='$month'
-																										 AND Emp_Number='$emp_num') A	")->result_array();
+																										  AND Emp_Number='$emp_num' AND Leave_Type='$type' ) A	")->result_array();
 			
 		}
 		
