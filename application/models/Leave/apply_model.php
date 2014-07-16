@@ -8,10 +8,10 @@ Class Apply_model extends CI_Model{
 		function get_Leave_At_Reporter_Year($type){
 			$year=date("Y");
 			$emp_num=$this->session->userdata["Emp_Number"];		
-			return $this->db->query("	SELECT SUM(At_Reporter) AS 'At_Reporter',
-																				SUM(At_Approver) AS 'At_Approver', 
-																				SUM(Approved) AS 'Approved',
-																				SUM(Total) as Total
+			return $this->db->query("	SELECT IFNULL(SUM(At_Reporter),0) AS 'At_Reporter',
+																				IFNULL(SUM(At_Approver),0) AS 'At_Approver', 
+																				IFNULL(SUM(Approved),0) AS 'Approved',
+																				IFNULL(SUM(Total),0) as Total
 																FROM(
 																						SELECT Emp_Number,
 																										IF(Leave_Status='1',Total_Days, 0) as 'At_Reporter',
@@ -28,11 +28,11 @@ Class Apply_model extends CI_Model{
 			$month=date("m");
 			$year=date("Y");
 			$emp_num=$this->session->userdata["Emp_Number"];		
-			return $this->db->query("	SELECT SUM(At_Reporter) AS 'At_Reporter',
-																				SUM(At_Approver) AS 'At_Approver', 
-																				SUM(Approved) AS 'Approved',
-																				IFNULL(Total,0) as Total	
-																FROM(
+			return $this->db->query("	SELECT IFNULL(SUM(At_Reporter),0) AS 'At_Reporter',
+																				IFNULL(SUM(At_Approver),0) AS 'At_Approver', 
+																				IFNULL(SUM(Approved),0) AS 'Approved',
+																				IFNULL(SUM(Total),0) as Total
+																	FROM(
 																						SELECT Emp_Number,
 																										IF(Leave_Status='1',Total_Days, 0) as 'At_Reporter',
 																										IF(Leave_Status='2',Total_Days, 0) as 'At_Approver',

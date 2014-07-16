@@ -139,7 +139,7 @@
 	
 	
 	
-		function show_LeaveDiv(new_Div,type){
+		function show_LeaveDiv(new_Div,type,color){
 			var cur_Div=document.getElementById("Current_Table").value;
 			//alert(cur_Div+', '+new_Div);
 			document.getElementById("Current_Table").value=new_Div;
@@ -151,14 +151,73 @@
 							$(new_Div).slideDown(1000);
 						//alert(cur_Div+', '+new_Div);
 				}
-				show_LeaveBalance(type);
+				show_LeaveBalance(type,color);
 		}
 
-	function show_LeaveBalance(type){
 		
-	}	
-	
-																/* * * 			 Validating Date			* * */
+
+		function show_LeaveBalance(type,color){
+			
+			document.getElementById("Criteria_Table").style.color=color;
+			document.getElementById("Balance_Table").style.color=color;
+			var exp=document.getElementById("experience_"+type).value;
+			var prior=document.getElementById("prior_days_"+type).value;
+			var doc_days=document.getElementById("doc_days_"+type).value;
+			var month_lmt=document.getElementById("month_limit_"+type).value;
+			var year_lmt=document.getElementById("year_limit_"+type).value;
+			var min_lmt=document.getElementById("min_limit_"+type).value;
+			var max_lmt=document.getElementById("max_limit_"+type).value;
+			var carry=document.getElementById("carry_"+type).value;
+			//alert(exp);
+			if(exp==0){exp='---';}else{exp=exp+" Months";}
+			if(prior==0){prior='---';}else{prior=prior+" Days";}
+			if(doc_days==0){doc_days='---';}else{doc_days=doc_days+" Days";}
+			if(month_lmt==0){month_lmt='---';}else{month_lmt=month_lmt+" Days";}
+			if(year_lmt==0){year_lmt='---';}else{year_lmt=year_lmt+" Days";}
+			if(min_lmt==0){min_lmt='---';}else{min_lmt=min_lmt+" Days";}
+			if(max_lmt==0){max_lmt='---';}else{max_lmt=max_lmt+" Days";}
+			if(carry==0){carry='---';}else{carry=carry+" Days";}
+			
+			document.getElementById('exp').innerHTML=exp;
+			document.getElementById('prior').innerHTML=prior;
+			document.getElementById('doc_limit').innerHTML=doc_days;
+			document.getElementById('month_limit').innerHTML=month_lmt;
+			document.getElementById('year_limit').innerHTML=year_lmt;
+			document.getElementById('min_limit').innerHTML=min_lmt;
+			document.getElementById('max_limit').innerHTML=max_lmt;
+			document.getElementById('carry').innerHTML=carry;
+			
+			var year_limit=document.getElementById('year_limit_'+type).value;
+			//alert(year_limit);
+			$.post(site_url+"/Leave/apply/get_Leave_Balance",{leave_type:type},function(data){
+				//alert(data);
+				var string=data.trim().split("::");
+				var rep_year=string[0];
+				var apvr_year=string[1];
+				var apprd_year=string[2];
+				var rep_month=string[3];
+				var apvr_month=string[4];
+				var apprd_month=string[5];
+				
+				var balance=year_limit-parseInt(apprd_year);
+				if(year_limit==0){balance="---";}
+			
+				document.getElementById('rep_year').innerHTML=rep_year;
+				document.getElementById('apvr_year').innerHTML=apvr_year;
+				document.getElementById('apprd_year').innerHTML=apprd_year;
+				document.getElementById('rep_month').innerHTML=rep_month;
+				document.getElementById('apvr_month').innerHTML=apvr_month;
+				document.getElementById('apprd_month').innerHTML=apprd_month;
+				document.getElementById('balance').innerHTML=balance;
+				
+			});
+		}	
+		
+				
+		
+		
+		
+					/* * * 			 Validating Date			* * */
 		
 		function validate_Date(date1,type1){
 				if(date1){

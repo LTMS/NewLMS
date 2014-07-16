@@ -98,7 +98,38 @@ class Apply extends CI_Controller
 		$this->template->render();
 	}
 
+																					/* * * 		Leave Balance 			* * */
+		function get_Leave_Balance(){
+			$form_data=$this->input->post();
+			$type=$form_data["leave_type"];
+			$Leave_Details_Year=$this->apply_model->get_Leave_At_Reporter_Year($type);
+			$Leave_Details_Month=$this->apply_model->get_Leave_At_Reporter_Month($type);
+			
+			
+				$rep_month=$rep_year=$apvr_month=$apvr_year=$apprd_month=$apprd_year=0;
+			
+		if(!empty($Leave_Details_Year) && $Leave_Details_Year!=null && $Leave_Details_Year!=""){
+					foreach($Leave_Details_Year as $row3){
+						$rep_year=$row3["At_Reporter"];
+						$apvr_year=$row3["At_Approver"];
+						$apprd_year=$row3["Approved"];
+					}
+				//	echo "true";
+		}
+		
+		if(!empty($Leave_Details_Month) && $Leave_Details_Month!=null && $Leave_Details_Month!=""){
+					foreach($Leave_Details_Month as $row4){
+						$rep_month=$row4["At_Reporter"];
+						$apvr_month=$row4["At_Approver"];
+						$apprd_month=$row4["Approved"];
+					}
+				//	echo "true";
+		}
 
+	
+			echo $rep_year."::".$apvr_year."::".$apprd_year."::".$rep_month."::".$apvr_month."::".$apprd_month;
+			
+		}
 	
 																					/* * *		 Date Validation 			* * */
 

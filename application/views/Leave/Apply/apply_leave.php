@@ -101,6 +101,7 @@
 <input type='hidden'  id='max_limit_CL'  value='<?php echo $max_limit_CL;?>'/>
 <input type='hidden'  id='prior_days_CL'  value='<?php echo $prior_days_CL;?>'/>
 <input type='hidden'  id='doc_days_CL'  value='<?php echo $doc_days_CL;?>'/>
+<input type='hidden'  id='carry_CL'  value='<?php echo $carry_CL;?>'/>
 
 
 <input type='hidden'  id='month_limit_SL' value='<?php echo $month_limit_SL;?>'/>
@@ -110,6 +111,7 @@
 <input type='hidden'  id='max_limit_SL'  value='<?php echo $max_limit_SL;?>'/>
 <input type='hidden'  id='prior_days_SL'  value='<?php echo $prior_days_SL;?>'/>
 <input type='hidden'  id='doc_days_SL'  value='<?php echo $doc_days_SL;?>'/>
+<input type='hidden'  id='carry_SL'  value='<?php echo $carry_SL;?>'/>
 
 
 <input type='hidden'  id='month_limit_EL' value='<?php echo $month_limit_EL;?>'/>
@@ -119,6 +121,7 @@
 <input type='hidden'  id='max_limit_EL'  value='<?php echo $max_limit_EL;?>'/>
 <input type='hidden'  id='prior_days_EL'  value='<?php echo $prior_days_EL;?>'/>
 <input type='hidden'  id='doc_days_EL'  value='<?php echo $doc_days_EL;?>'/>
+<input type='hidden'  id='carry_EL'  value='<?php echo $carry_EL;?>'/>
 
 
 <input type='hidden'  id='month_limit_CO' value='<?php echo $month_limit_CO;?>'/>
@@ -128,6 +131,7 @@
 <input type='hidden'  id='max_limit_CO'  value='<?php echo $max_limit_CO;?>'/>
 <input type='hidden'  id='prior_days_CO'  value='<?php echo $prior_days_CO;?>'/>
 <input type='hidden'  id='doc_days_CO'  value='<?php echo $doc_days_CO;?>'/>
+<input type='hidden'  id='carry_CO'  value='<?php echo $carry_CO;?>'/>
 
 
 <input type='hidden'  id='month_limit_ML' value='<?php echo $month_limit_ML;?>'/>
@@ -137,6 +141,7 @@
 <input type='hidden'  id='max_limit_ML'  value='<?php echo $max_limit_ML;?>'/>
 <input type='hidden'  id='prior_days_ML'  value='<?php echo $prior_days_ML;?>'/>
 <input type='hidden'  id='doc_days_ML'  value='<?php echo $doc_days_ML;?>'/>
+<input type='hidden'  id='carry_ML'  value='<?php echo $carry_ML;?>'/>
 <input type='hidden'  id='chances_ML'  value='<?php echo $chances_ML;?>'/>
 
 <input type='hidden'  id='Row_Id_SL' value='0'/>			
@@ -148,7 +153,7 @@
 
 // Assinging Leave Balance Variables
 
-//	$rep_month=$rep_year=$apvr_month=$apvr_year=$apprd_month=$apprd_year=0;
+	$rep_month=$rep_year=$apvr_month=$apvr_year=$apprd_month=$apprd_year=0;
 	
 		if(!empty($Leave_Details_Year)){
 					foreach($Leave_Details_Year as $row3){
@@ -169,10 +174,10 @@
 	$balance=$year_limit_CL-$apprd_year;
 ?>
 
-<div id='Criteria_CL' style='position:absolute;width:28%;height:69%;margin:9.5% 0 0 54%;background:#ECF4FF;box-shadow: 5px 5px 5px #BBDAFF;border:1px groove #62A9FF;border-radius:10px;'>
+<div id='Criteria_CL' style='position:absolute;width:28%;height:65%;margin:9.5% 0 0 54%;background:#FFFFFF;box-shadow: 5px 5px 5px #BBDAFF;border:1px groove #62A9FF;border-radius:10px;'>
 
-			<p class="Font_Small" style='font-size:13pt;' align='center'><u>Criteria</u></p>
-			<table class='Font_Small'>
+			<p class="Font_Small" style='font-size:13pt;color:#AD0000' align='center'><u>Criteria</u></p>
+			<table id='Criteria_Table' style='color:#218429' class='Font_Small'>
 				<tr>
 					<td > * Experience Needed </td>
 					<td width='5'>:</td>
@@ -215,13 +220,13 @@
 				</tr>	
 			</table>
 			<br>
-			<p class="Font_Small" style='font-size:13pt;' align='center'><u>Leave Balance</u></p>
+			<p class="Font_Small" style='font-size:13pt;color:#AD0000' align='center'><u>Leave Balance</u></p>
 			
-			<table width='100%'align='center' class='Font_Small' >
+			<table  id='Balance_Table' width='100%'align='center' style="color:#218429" class='Font_Small' >
 				<tr align='center'>
 						<td  ></td>
-						<td >This Month</td>
-						<td  >This Year</td>
+						<td ><u>This Month</u></td>
+						<td  ><u>This Year</u></td>
 				</tr>
 				<tr align='center'>
 						<td  align='left'>Pending @ Reporter</td>
@@ -233,13 +238,16 @@
 						<td id='apvr_month'><?php echo $apvr_month;?></td>
 						<td  id='apvr_year'><?php echo $apvr_year;?></td>
 				</tr>
-				<tr align='center'>
+				<tr align='center' style="font-size:12pt;color:#2F619C;font-family:Tahoma;">
 						<td  align='left'>Approved Leaves</td>
 						<td id='apprd_month'><?php echo $apprd_month;?></td>
 						<td  id='apprd_year'><?php echo $apprd_year;?></td>
 				</tr>
+				<tr align='center' >
+						<td  align='center' colspan='4' ><hr></td>
+				</tr>
 				<tr align='center'  style="font-size:12pt;color:#2F619C;font-family:Tahoma;">
-						<td  colspan='2' align='left'>Balance <font color='red'  size='2px'>&nbsp; (Excld Pending Leaves)</font></td>
+						<td  colspan='2' align='right'>Balance <font color='red'  size='2px'>&nbsp; (Excld Pending Leaves) </font></td>
 						<td id="balance"><?php echo $balance;?></td>
 				</tr>
 			</table>
@@ -250,11 +258,11 @@
 <div style='width:60%;margin:1% 0 0 1%'>
 	<table id='Leave_List' >
 		<tr >
-			<td align='center'><input type='image' id='CL_Div' width='130' height='90' src='../../../images/Leave/CL.png'  alt='Casual Leave' onclick='show_LeaveDiv("CL_Table","CL")' onmouseover='show_Shadow("CL_Div","#E3FBE9")' /></td>
-			<td align='center'><input type='image' id='SL_Div' width='130' height='90' src='../../../images/Leave/SL.png' alt='Sick Leave' onclick='show_LeaveDiv("SL_Table","SL")'  onmouseover='show_Shadow("SL_Div","#FFEEFD")'/></td>
-			<td align='center'><input type='image' id='EL_Div' width='130' height='90' src='../../../images/Leave/EL.png' alt='Earned Leave' onclick='show_LeaveDiv("EL_Table","EL")'  onmouseover='show_Shadow("EL_Div","#E0E0E0")'/></td>
-			<td align='center'><input type='image' id='CO_Div' width='130' height='90' src='../../../images/Leave/CO.png' alt='Comp Off' onclick='show_LeaveDiv("CO_Table","CO")' onmouseover='show_Shadow("CO_Div","#FFFFD7")'/></td>
-			<td align='center'><input type='image' id='ML_Div' width='130' height='90' src='../../../images/Leave/ML.png' alt='Maternity Leave' onclick='show_LeaveDiv("ML_Table","ML")'  onmouseover='show_Shadow("ML_Div","#E6FCFF")'/></td>
+			<td align='center'><input type='image' id='CL_Div' width='130' height='90' src='../../../images/Leave/CL.png'  alt='Casual Leave' onclick='show_LeaveDiv("CL_Table","CL","#218429")' onmouseover='show_Shadow("CL_Div","#E3FBE9")' /></td>
+			<td align='center'><input type='image' id='SL_Div' width='130' height='90' src='../../../images/Leave/SL.png' alt='Sick Leave' onclick='show_LeaveDiv("SL_Table","SL","#872187")'  onmouseover='show_Shadow("SL_Div","#FFEEFD")'/></td>
+			<td align='center'><input type='image' id='EL_Div' width='130' height='90' src='../../../images/Leave/EL.png' alt='Earned Leave' onclick='show_LeaveDiv("EL_Table","EL","#616161")'  onmouseover='show_Shadow("EL_Div","#E0E0E0")'/></td>
+			<td align='center'><input type='image' id='CO_Div' width='130' height='90' src='../../../images/Leave/CO.png' alt='Comp Off' onclick='show_LeaveDiv("CO_Table","CO","#DB9900")' onmouseover='show_Shadow("CO_Div","#FFFFD7")'/></td>
+			<td align='center'><input type='image' id='ML_Div' width='130' height='90' src='../../../images/Leave/ML.png' alt='Maternity Leave' onclick='show_LeaveDiv("ML_Table","ML","#087B7B")'  onmouseover='show_Shadow("ML_Div","#E6FCFF")'/></td>
 		</tr>
 	</table>
 	
@@ -269,8 +277,8 @@
 	
 </div>
 
-<div id='CL_Table' style='background-color:#E3FBE9;width:60%;margin:1% 0 0 2%;border:5px groove #BDF4CB;border-radius:5px;' >
-		<center><p style='font-size:14pt;font-weight:bolder;color:#218429;'><u>CASUAL LEAVE</u></p></center>
+<div id='CL_Table' style='background-color:#DEF3BD;width:60%;margin:1% 0 0 2%;border:5px groove #BDF4CB;border-radius:5px;' >
+		<center><p style='font-size:16pt;font-weight:bolder;color:#218429;'><u>CASUAL LEAVE</u></p></center>
 		<?php if(!empty($experience) && $experience>=$experience_CL)
 		{?>			
 			<table   height='200'   border="0" align="center">
@@ -350,8 +358,8 @@
 
 
 
-<div id='SL_Table'  style='display:none;background:#FFEEFD;width:60%;margin:1% 0 0 2%;border:5px groove #F4D2F4;border-radius:5px;' >
-		<center><p style='font-size:14pt;font-weight:bolder;color:#730063;'><u>SICK LEAVE</u></p></center>
+<div id='SL_Table'  style='display:none;background:#DEBDDE;width:60%;margin:1% 0 0 2%;border:5px groove #F4D2F4;border-radius:5px;' >
+		<center><p style='font-size:16pt;font-weight:bolder;color:#730063;'><u>SICK LEAVE</u></p></center>
 		<?php if(!empty($experience) && $experience>=$experience_CL)
 		{?>			
 			<table  height='200'  border="0" align="center">
@@ -446,7 +454,7 @@
 
 
 <div id='EL_Table'  style='display:none;background:#E0E0E0;width:60%;margin:1% 0 0 2%;border:5px groove #BFBFBF;border-radius:5px;' >
-		<center><p style='font-size:14pt;font-weight:bolder;color:#616161;'><u>EARNED LEAVE</u></p></center>
+		<center><p style='font-size:16pt;font-weight:bolder;color:#616161;'><u>EARNED LEAVE</u></p></center>
 		<?php if(!empty($experience) && $experience>=$experience_EL)
 		{?>			
 			<table   height='200'  border="0" align="center">
@@ -519,8 +527,8 @@
 </div>
 
 
-<div id='CO_Table'  style='display:none;background:#FFFFD7;width:60%;margin:1% 0 0 2%;border:5px groove #FFF9CE;border-radius:5px;' >
-		<center><p style='font-size:14pt;font-weight:bolder;color:#AD9410;'><u>COMPENSATORY LEAVE</u></p></center>
+<div id='CO_Table'  style='display:none;background:#EFE8AD;width:60%;margin:1% 0 0 2%;border:5px groove #FFF9CE;border-radius:5px;' >
+		<center><p style='font-size:16pt;font-weight:bolder;color:#AD9410;'><u>COMPENSATORY LEAVE</u></p></center>
 		<?php if(!empty($experience) && $experience>=$experience_CO)
 		{?>			
 			<table   height='200'  border="0" align="center">
@@ -597,8 +605,8 @@
 </div>
 
 
-<div id='ML_Table'  style='display:none;background:#E6FCFF;width:60%;margin:1% 0 0 2%;border:5px groove #ACF3FD;border-radius:5px;' >
-		<center><p style='font-size:14pt;font-weight:bolder;color:#730063;'><u>MATERNITY LEAVE</u></p></center>
+<div id='ML_Table'  style='display:none;background:#C6E7DE;width:60%;margin:1% 0 0 2%;border:5px groove #ACF3FD;border-radius:5px;' >
+		<center><p style='font-size:16pt;font-weight:bolder;color:#087B7B;'><u>MATERNITY LEAVE</u></p></center>
 		<?php if(!empty($experience) && $experience>=$experience_ML)
 		{?>			
 			<table  height='200'  border="0" align="center">
