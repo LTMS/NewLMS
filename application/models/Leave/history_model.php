@@ -5,7 +5,7 @@ Class History_model extends CI_Model{
 		parent::_construct();
 	}
 
-	function get_years(){
+	function get_LeaveReporters(){
 		return $this->db->query("SELECT  DISTINCT YEAR(From_Date) AS 'year' FROM leave_history ORDER BY year DESC")->result_array();
 	}
 	

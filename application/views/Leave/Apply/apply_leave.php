@@ -238,10 +238,10 @@
 						<td id='apvr_month'><?php echo $apvr_month;?></td>
 						<td  id='apvr_year'><?php echo $apvr_year;?></td>
 				</tr>
-				<tr align='center' style="font-size:12pt;color:#2F619C;font-family:Tahoma;">
+				<tr align='center' >
 						<td  align='left'>Approved Leaves</td>
 						<td id='apprd_month'><?php echo $apprd_month;?></td>
-						<td  id='apprd_year'><?php echo $apprd_year;?></td>
+						<td  id='apprd_year' style="font-size:12pt;color:#2F619C; ahoma;"><?php echo $apprd_year;?></td>
 				</tr>
 				<tr align='center' >
 						<td  align='center' colspan='4' ><hr></td>
@@ -256,14 +256,28 @@
 
 
 <div style='width:60%;margin:1% 0 0 1%'>
-	<table id='Leave_List' >
-		<tr >
+	<table id='Leave_List' align='center'>
+		<?php if($this->session->userdata["Gender"]=="Female"){?>
+		<tr align='center'>
 			<td align='center'><input type='image' id='CL_Div' width='130' height='90' src='../../../images/Leave/CL.png'  alt='Casual Leave' onclick='show_LeaveDiv("CL_Table","CL","#218429")' onmouseover='show_Shadow("CL_Div","#E3FBE9")' /></td>
 			<td align='center'><input type='image' id='SL_Div' width='130' height='90' src='../../../images/Leave/SL.png' alt='Sick Leave' onclick='show_LeaveDiv("SL_Table","SL","#872187")'  onmouseover='show_Shadow("SL_Div","#FFEEFD")'/></td>
 			<td align='center'><input type='image' id='EL_Div' width='130' height='90' src='../../../images/Leave/EL.png' alt='Earned Leave' onclick='show_LeaveDiv("EL_Table","EL","#616161")'  onmouseover='show_Shadow("EL_Div","#E0E0E0")'/></td>
 			<td align='center'><input type='image' id='CO_Div' width='130' height='90' src='../../../images/Leave/CO.png' alt='Comp Off' onclick='show_LeaveDiv("CO_Table","CO","#DB9900")' onmouseover='show_Shadow("CO_Div","#FFFFD7")'/></td>
 			<td align='center'><input type='image' id='ML_Div' width='130' height='90' src='../../../images/Leave/ML.png' alt='Maternity Leave' onclick='show_LeaveDiv("ML_Table","ML","#087B7B")'  onmouseover='show_Shadow("ML_Div","#E6FCFF")'/></td>
 		</tr>
+		<?php } 
+		else{ ?>
+			<tr align='center'>
+			<td></td>
+			<td align='center'><input type='image' id='CL_Div' width='160' height='90' src='../../../images/Leave/CL.png'  alt='Casual Leave' onclick='show_LeaveDiv("CL_Table","CL","#218429")' onmouseover='show_Shadow("CL_Div","#E3FBE9")' /></td>
+			<td align='center'><input type='image' id='SL_Div' width='160' height='90' src='../../../images/Leave/SL.png' alt='Sick Leave' onclick='show_LeaveDiv("SL_Table","SL","#872187")'  onmouseover='show_Shadow("SL_Div","#FFEEFD")'/></td>
+			<td align='center'><input type='image' id='EL_Div' width='160' height='90' src='../../../images/Leave/EL.png' alt='Earned Leave' onclick='show_LeaveDiv("EL_Table","EL","#616161")'  onmouseover='show_Shadow("EL_Div","#E0E0E0")'/></td>
+			<td align='center'><input type='image' id='CO_Div' width='160' height='90' src='../../../images/Leave/CO.png' alt='Comp Off' onclick='show_LeaveDiv("CO_Table","CO","#DB9900")' onmouseover='show_Shadow("CO_Div","#FFFFD7")'/></td>
+		</tr>
+		
+		<?php 
+				}?>
+		
 	</table>
 	
 	<table align='center' id='Error' style='display:none;background-color:#FFEAEA;height:30px;box-shadow: 5px 5px 5px #FFC8C8;border:1px inset red;' >

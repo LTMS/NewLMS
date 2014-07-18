@@ -8,11 +8,9 @@ class Apply extends CI_Controller
 		$this->load->library('SimpleLoginSecure');
 		$this->load->library('My_PHPMailer');
 		$this->load->model('Leave/apply_model');
-		$this->load->model('Leave/summary_model');
-		$this->load->model('Timesheet/overtime_model');
-		$this->load->helper('url');
-			
+		$this->load->helper('url');			
 		$this->load->library('session');
+		
 		if(!$this->session->userdata('admin_logged_in'))
 		{
 			redirect("logincheck");
@@ -21,20 +19,18 @@ class Apply extends CI_Controller
 	}
 
 
-	function index()
-	{
-
+	function index(){
 
 		$urole=$this->session->userdata('Emp_Role');
 		if($urole == 'MD')
 		{
 			$data["menu"]='LMS';
 			$data["submenu"]='lms_intro';
-			$this->template->write('titleText', "Leave Criteria");
 			$data['img']="/images/leave1.png";
 			$data['Titlebar']="Leave Management System";
 			$data["Criteria"]=$this->apply_model->get_LeaveCriteria();
 			$data["Experience"]=$this->apply_model->get_Experience();
+			$this->template->write('titleText', "Leave Criteria");
 			$this->template->write_view('sideLinks', 'General/menu',$data);
 			$this->template->write_view('bodyContent', 'Leave/Apply/apply_leave',$data);
 			$this->template->render();

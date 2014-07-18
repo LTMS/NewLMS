@@ -1,11 +1,43 @@
 <?php
-Class Misc_model extends CI_Model{
+Class Leave_misc_model extends CI_Model{
 	
 	function _construct()
 	{
 		parent::_construct();
 	}
-
+	
+	
+																/* * * 			Authorities		* * */
+	
+		function get_LeaveReporters(){
+					return $this->db->query("SELECT Emp_Number, Emp_Name, Department
+																		FROM authorities
+																		WHERE Task='Reporting' 
+																		ORDER BY Emp_Number  ")->result_array();
+		}
+	
+		function get_LeaveApprovers(){			
+					return $this->db->query(" SELECT Emp_Number, Emp_Name, Department
+																		FROM authorities
+																		WHERE Task='Approving'
+																		ORDER BY Emp_Number  ")->result_array();
+		}
+		
+		function get_ReporterEmployees	($emp_num){
+					return $this->db->query("SELECT Employee_Number, Employee_Name
+																		FROM employees
+																		WHERE Reporter='$emp_num' ")->result_array();
+		}
+		
+		function get_ApproverEmployees($emp_num){
+					return $this->db->query("SELECT Employee_Number, Employee_Name
+																		FROM employees 
+																		WHERE Approver='$emp_num' ")->result_array();
+		}
+		
+		
+		
+		
 		function get_parameters(){
 					return $this->db->query("SELECT *, HOUR(comp_off_reduct) as hour, MINUTE(comp_off_reduct) as min,ROUND(TIME_TO_SEC(comp_off_reduct)/60) as comp_minutes FROM parameters ")->result_array();
 		}

@@ -112,6 +112,7 @@ class SimpleLoginSecure
 			$row = $query->row_array();
 			$emp_role=$row['Emp_Role'];
 			$emp_name=$row['Emp_Name'];
+			$gender=$row['Gender'];
 			$dept=$row['Department'];
 			$reporter=$row['Reporter'];
 			$approver=$row['Approver'];
@@ -125,6 +126,7 @@ class SimpleLoginSecure
 			$user_data['admin_logged_in'] = true;
 			$user_data['Emp_Role'] = $emp_role;
 			$user_data['Emp_Name'] = $emp_name;
+			$user_data['Gender'] = $gender;
 			$user_data['Department'] = $dept;
 			$user_data['Reporter'] = $reporter;
 			$user_data['Approver'] = $approver;

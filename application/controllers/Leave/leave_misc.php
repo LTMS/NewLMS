@@ -1,76 +1,66 @@
 <?php
-class Leave_misc extends CI_Controller
-{
-	function __construct()
-	{
-		parent::__construct();
-
-		$this->load->library('SimpleLoginSecure');
-		$this->load->model('Leave/misc_model');
-		$this->load->helper('url');
-			
-		$this->load->library('session');
-		if(!$this->session->userdata('admin_logged_in'))
-		{
-			redirect("logincheck");
-		}
-
-	}
+class Leave_misc extends CI_Controller{
 	
-	
-	
-	function lms_intro_md(){
-			$data["menu"]='LMS';
-			$data["submenu"]='lms_intro_md';
-			$this->template->write('titleText', "Leave Criteria");
-			$data["Param"]=$this->misc_model->get_parameters();
 
-			$this->template->write_view('sideLinks', 'general/menu',$data);
-			$this->template->write_view('bodyContent', 'Leave/Misc/lms_intro_admin',$data);
-			$this->template->render();
+		function __construct()
+				{
+				parent::__construct();
 		
+				$this->load->library("SimpleLoginSecure");
+				$this->load->model("Leave/leave_misc_model");
+				$this->load->helper("url");
+				$this->load->library('session');
+				
+				if(!$this->session->userdata('admin_logged_in')){
+					redirect("logincheck");
+				}
 	}
 	
-	function lms_intro_emp(){
+	function authorities(){
 			$data["menu"]='LMS';
-			$data["submenu"]='lms_intro_emp';
-			$this->template->write('titleText', "Leave Criteria");
-			$data["Param"]=$this->misc_model->get_parameters();
-
-			$this->template->write_view('sideLinks', 'general/menu',$data);
-			$this->template->write_view('bodyContent', 'Leave/Misc/lms_intro_emp',$data);
+			$data["submenu"]='authorities';
+			$data["Reporter"]=$this->leave_misc_model->get_LeaveReporters();
+			$data["Approver"]=$this->leave_misc_model->get_LeaveApprovers();
+			//$result["Employees"]=$this->leave_misc_model->get_ReporterEmployees();
+			$this->template->write('titleText','Leave Authorities');
+			$this->template->write_view('sideLinks', 'General/menu',$data);
+			$this->template->write_view('bodyContent','Leave/Misc/authorities');
 			$this->template->render();
+	}
+	
+	
 		
+	function get_ReporterEmployees(){
+		$form_data=$this->input->post();
+		$emp_num=$form_data["emp_num"];
+		$result["Employees"]=$this->leave_misc_model->get_ReporterEmployees($emp_num);
+		
+		$this->load->view('Leave/Misc/authorities_div',$result);
 	}
 	
-	function leave_reprocess()	{
-			$data["menu"]='LMS';
-			$data["submenu"]='reprocess';
-			$data["members"]=$this->misc_model->get_leave_members();
-			$data['years']=$this->misc_model->get_years();
+	function get_ApproverEmployees(){
+		$form_data=$this->input->post();
+		$emp_num=$form_data["emp_num"];
+		$result["Employees"]=$this->leave_misc_model->get_ApproverEmployees($emp_num);
 	
-			$this->template->write('titleText', "Reprocess Approved Leaves");
-			$this->template->write_view('sideLinks', 'general/menu',$data);
-			$this->template->write_view('bodyContent', 'Leave/Misc/reprocess_leave',$data);
-			$this->template->render();
-	}
-
-
-	function get_approved_leaves(){
-			$form_data = $this->input->post();
-			$data["summary"]=$this->misc_model->get_approved_leaves($form_data["year"],$form_data["month"],$form_data["emp"]);
-				
-			$this->load->view('lms/reprocess_leave_page',$data);
-			
-	}
-
-	function process_leave(){
-			$form_data = $this->input->post();
-			$this->misc_model->process_leave($form_data["id"]);
-				
+		$this->load->view('Leave/Misc/authorities_div',$result);
 	}
 	
-
-
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
 ?>

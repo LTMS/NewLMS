@@ -1602,6 +1602,14 @@ textarea{
 	border-radius:3px;'	
 }
 
+.Normal_Button{
+	width:50px;
+	font-size:11pt;
+	font-weight:bolder;
+	color:green;
+
+}
+
 
 														/* * * 			Image Effects			* * */
 														

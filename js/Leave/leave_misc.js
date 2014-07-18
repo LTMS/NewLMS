@@ -1,26 +1,47 @@
-/* * *  Reprocessing Leave		* * */	
-			
-			function reprocess_leave(l_id,row,l_type,uname,days){
-				document.getElementById(row).style.background="#FF6699";
-				var hrs1=parseInt(days)*8;
-				var hrs2=hrs1+':00:00';
-				//alert(days);
-					if(l_id!=""){
-						var l_reason=prompt("Remarks for Rejecting the Leave ID: "+l_id);
-						if(l_reason != null && l_reason != ""){
-							$.post(site_url+"/lms/reject/",{lid:l_id,reason:l_reason,type:l_type,user:uname,hrs:hrs2},function(data){
-								get_approved_leaves();
-									});
-								}
-							else if(l_reason==""){alert("You Must Enter the Reason to Process.!");}
-						}
-					else {
-						alert("Select a Leave ID to Process.!");
-					}
-			}
+																					/* * *			Leave Authorities			* * */
+
+		function get_ReporterEmployees(emp_num1,emp_name1,row1){
 			
 			
+			$.post(site_url+"/Leave/leave_misc/get_ReporterEmployees",{emp_num:emp_num1},function(data){
+				//alert(data);
+				$("#Rep_Employees").html("");
+				$("#Rep_Employees").append(data);
+				document.getElementById('Row_Title').innerHTML='List of Employees of Reporter '+emp_name1;
+
+			});
 			
+			document.getElementById('Rep_Employees').style.display='';
+			
+			
+		}
+
+
+
+		function get_ApproverEmployees(emp_num1,emp_name1,row1){
+			
+			$.post(site_url+"/Leave/leave_misc/get_ApproverEmployees",{emp_num:emp_num1},function(data){
+				//alert(data);
+				$("#App_Employees").html("");
+				$("#App_Employees").append(data);
+				document.getElementById('Row_Title').innerHTML='List of Employees of Reporter '+emp_name1;
+
+			});
+			
+			document.getElementById('App_Employees').style.display='';
+			
+			
+		}
+
+
+
+
+
+
+
+
+
+
 																								/* * *     LMS Criteria     * * */
 			
 			
